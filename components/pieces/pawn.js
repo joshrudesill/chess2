@@ -56,17 +56,11 @@ const Pawn = ({ piece }) => {
 
 
     useEffect(() => {
-        
-       calculateLegalMoves()
-        
-    }, [])
-
-
-    useEffect(() => {
-        if(activePiece && activePiece.id === piece.id) {
+        if(!piece.legalMovesUpdated) {
+            console.log('updating: ', piece.id )
             calculateLegalMoves()
         }
-    }, [activePiece])
+    }, [piece.legalMovesUpdated])
 
     return (
         <div>

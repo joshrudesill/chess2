@@ -1,6 +1,8 @@
 import { useDispatch, useSelector } from "react-redux";
 import { changePieceAtSquare, setActivePiece, resetActivePiece, capturePiece } from "../features/board/boardSlice";
+import King from "./pieces/king";
 import Pawn from "./pieces/pawn";
+import Rook from "./pieces/rook";
 
 const BoardSquare = ({ squareData, color }) => {
     const dispatch = useDispatch()
@@ -67,16 +69,53 @@ const BoardSquare = ({ squareData, color }) => {
 
     }
 // pieces into components which handle available moves property
-    return (
-        <div 
-            className={`column is-clickable is-unselectable is-1 p-auto ${ color % 2 === 0 ? 'has-background-primary' : ''}`} 
-            onMouseDown={ onMouseDown }
-            onMouseUp={ onMouseUp }
-            style={{width: '50px', height: '50px'}}
-        >
-           {squareData.piece !== null ? <Pawn piece={squareData.piece} /> : ' '}
-        </div>
-    )
+    if(squareData.piece !== null && squareData.piece.type === 2) {
+        return (
+            <div 
+                className={`column is-clickable is-unselectable is-1 p-auto ${ color % 2 === 0 ? 'has-background-primary' : ''}`} 
+                onMouseDown={ onMouseDown }
+                onMouseUp={ onMouseUp }
+                style={{width: '50px', height: '50px'}}
+            >
+               <Rook piece={squareData.piece} />
+            </div>
+        )
+    }
+    if(squareData.piece !== null && squareData.piece.type === 1) {
+        return (
+            <div 
+                className={`column is-clickable is-unselectable is-1 p-auto ${ color % 2 === 0 ? 'has-background-primary' : ''}`} 
+                onMouseDown={ onMouseDown }
+                onMouseUp={ onMouseUp }
+                style={{width: '50px', height: '50px'}}
+            >
+               <Pawn piece={squareData.piece} />
+            </div>
+        )
+    }
+    if(squareData.piece !== null && squareData.piece.type === 3) {
+        return (
+            <div 
+                className={`column is-clickable is-unselectable is-1 p-auto ${ color % 2 === 0 ? 'has-background-primary' : ''}`} 
+                onMouseDown={ onMouseDown }
+                onMouseUp={ onMouseUp }
+                style={{width: '50px', height: '50px'}}
+            >
+               <King piece={squareData.piece} />
+            </div>
+        )
+    }
+    if(squareData.piece == null) {
+        return (
+            <div 
+                className={`column is-clickable is-unselectable is-1 p-auto ${ color % 2 === 0 ? 'has-background-primary' : ''}`} 
+                onMouseDown={ onMouseDown }
+                onMouseUp={ onMouseUp }
+                style={{width: '50px', height: '50px'}}
+            >
+            </div>
+        )
+    }
 } 
 
 export default BoardSquare;

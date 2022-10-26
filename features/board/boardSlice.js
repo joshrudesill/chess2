@@ -3,10 +3,10 @@ import { createSlice } from '@reduxjs/toolkit'
 var is = []
 
 const pieces = [
-    { type: 1, x: 1, y: 1, hasMoved: false, id: 1, white: true, legalMoves: [], captured: false },
-    { type: 1, x: 1, y: 2, hasMoved: false, id: 2, white: true, legalMoves: [], captured: false },
-    { type: 1, x: 1, y: 3, hasMoved: false, id: 3, white: true, legalMoves: [], captured: false },
-    { type: 1, x: 2, y: 3, hasMoved: false, id: 4, white: false, legalMoves: [], captured: false },
+    { type: 1, x: 1, y: 1, hasMoved: false, id: 1, white: true, legalMoves: [], captured: false, legalMovesUpdated: false },
+    { type: 1, x: 1, y: 2, hasMoved: false, id: 2, white: true, legalMoves: [], captured: false, legalMovesUpdated: false },
+    { type: 1, x: 1, y: 3, hasMoved: false, id: 3, white: true, legalMoves: [], captured: false, legalMovesUpdated: false },
+    { type: 1, x: 2, y: 3, hasMoved: false, id: 4, white: false, legalMoves: [], captured: false, legalMovesUpdated: false },
 ]
 
 for (let i = 0; i < 8; i++) {
@@ -34,6 +34,7 @@ export const boardSlice = createSlice({
     initialState,
     reducers: {
         changePieceAtSquare: (state, action) => {
+            console.log('change piece')
             const { x, y } = action.payload;
             state.position[state.activePiece.x][state.activePiece.y].piece = null
             state.position[x][y].piece = state.activePiece
@@ -44,10 +45,20 @@ export const boardSlice = createSlice({
             state.position[x][y].piece.hasMoved = true
 
             state.activePiece = null
+
+
+            state.position.forEach(r => {
+                r.forEach(s => {
+                    if(s.piece !== null) {
+                        s.piece.legalMovesUpdated = false
+                    }
+                })
+            });
+
         },
         setLegalMoves: (state, action) => {
             const { piece, moves } = action.payload;
-            console.log(moves)
+            state.position[piece.x][piece.y].piece.legalMovesUpdated = true
             state.position[piece.x][piece.y].piece.legalMoves = moves
         },
         resetLegalMoves: (state, action) => {
@@ -61,7 +72,7 @@ export const boardSlice = createSlice({
             state.activePiece = null
         },
         capturePiece: (state, action) => {
-            const {  toBeCaptured } = action.payload;
+            const { toBeCaptured } = action.payload;
             const { x, y } = toBeCaptured;
             state.position[state.activePiece.x][state.activePiece.y].piece = null
             state.position[x][y].piece = state.activePiece
@@ -72,6 +83,14 @@ export const boardSlice = createSlice({
             state.position[x][y].piece.hasMoved = true
 
             state.activePiece = null
+            
+            state.position.forEach(r => {
+                r.forEach(s => {
+                    if(s.piece !== null) {
+                        s.piece.legalMovesUpdated = false
+                    }
+                })
+            });
         }
     },
 })
