@@ -1,5 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
-import { changePieceAtSquare, setActivePiece, resetActivePiece } from "../features/board/boardSlice";
+import { changePieceAtSquare, setActivePiece, resetActivePiece, capturePiece } from "../features/board/boardSlice";
+import Pawn from "./pieces/pawn";
 
 const BoardSquare = ({ squareData, color }) => {
     const dispatch = useDispatch()
@@ -13,7 +14,29 @@ const BoardSquare = ({ squareData, color }) => {
 
         } else if(activePiece && squareData.piece === null) {
 
-            dispatch(changePieceAtSquare(squareData))
+            if(activePiece.legalMoves.some(e => {
+                if(e.x === squareData.x && e.y == squareData.y) {
+                    return true
+                }
+                return false
+            })) {
+                dispatch(changePieceAtSquare(squareData))
+            }
+
+        } else if(activePiece && squareData.piece && activePiece.white === squareData.piece.white) {
+            
+            dispatch(setActivePiece(squareData.piece))
+
+        } else if(activePiece && squareData.piece && activePiece.white !== squareData.piece.white) {
+
+            if(activePiece.legalMoves.some(e => {
+                if(e.x === squareData.x && e.y == squareData.y) {
+                    return true
+                }
+                return false
+            })) {
+                dispatch(capturePiece({ toBeCaptured: squareData.piece}))
+            }
 
         }
 
@@ -22,28 +45,36 @@ const BoardSquare = ({ squareData, color }) => {
     const onMouseUp = () => {
 
         if(activePiece !== null && squareData.piece === null) {
+            if(activePiece.legalMoves.some(e => {
+                if(e.x === squareData.x && e.y == squareData.y) {
+                    return true
+                }
+                return false
+            })) {
+                dispatch(changePieceAtSquare(squareData))
+            }
 
-            dispatch(changePieceAtSquare(squareData))
-
+        } else if(activePiece && squareData.piece && activePiece.white !== squareData.piece.white) {
+            if(activePiece.legalMoves.some(e => {
+                if(e.x === squareData.x && e.y == squareData.y) {
+                    return true
+                }
+                return false
+            })) {
+                dispatch(capturePiece({ toBeCaptured: squareData.piece}))
+            }
         }
 
     }
 // pieces into components which handle available moves property
     return (
         <div 
-            className={`column is-clickable is-unselectable is-1 ${ color % 2 === 0 ? 'has-background-primary' : ''}`} 
+            className={`column is-clickable is-unselectable is-1 p-auto ${ color % 2 === 0 ? 'has-background-primary' : ''}`} 
             onMouseDown={ onMouseDown }
             onMouseUp={ onMouseUp }
+            style={{width: '50px', height: '50px'}}
         >
-            {
-                squareData.piece ? squareData.piece.type : '0'
-            }
-            {
-                squareData.piece ? squareData.x : ''
-            }
-            {
-                squareData.piece ? squareData.y : ''
-            }
+           {squareData.piece !== null ? <Pawn piece={squareData.piece} /> : ' '}
         </div>
     )
 } 
