@@ -26,7 +26,8 @@ is[2][3].piece = pieces[3]
 const initialState = {
     position: is,
     pieces: pieces,
-    activePiece: null
+    activePiece: null,
+    kingPosition: null
 }
 
 export const boardSlice = createSlice({
@@ -34,7 +35,6 @@ export const boardSlice = createSlice({
     initialState,
     reducers: {
         changePieceAtSquare: (state, action) => {
-            console.log('change piece')
             const { x, y } = action.payload;
             state.position[state.activePiece.x][state.activePiece.y].piece = null
             state.position[x][y].piece = state.activePiece

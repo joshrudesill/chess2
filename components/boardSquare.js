@@ -69,6 +69,16 @@ const BoardSquare = ({ squareData, color }) => {
 
     }
 // pieces into components which handle available moves property
+
+/*
+    0 - King
+    1 - Pawn
+    2 - Rook
+    3 - Bishop
+    4 - Knight
+    5 - Queen
+*/ 
+
     if(squareData.piece !== null && squareData.piece.type === 2) {
         return (
             <div 
@@ -93,7 +103,7 @@ const BoardSquare = ({ squareData, color }) => {
             </div>
         )
     }
-    if(squareData.piece !== null && squareData.piece.type === 3) {
+    if(squareData.piece !== null && squareData.piece.type === 0) {
         return (
             <div 
                 className={`column is-clickable is-unselectable is-1 p-auto ${ color % 2 === 0 ? 'has-background-primary' : ''}`} 
