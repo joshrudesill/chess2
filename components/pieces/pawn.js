@@ -57,14 +57,13 @@ const Pawn = ({ piece }) => {
 
     useEffect(() => {
         if(!piece.legalMovesUpdated) {
-            console.log('updating: ', piece.id )
             calculateLegalMoves()
         }
     }, [piece.legalMovesUpdated])
 
     return (
         <div>
-            P{piece.white ? 'w': 'b'}
+            P{piece.pinned ? 'p': ''}{piece.pinDirection !== null ? piece.pinDirection : ''}
         </div>
     )
 }
