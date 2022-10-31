@@ -7,8 +7,7 @@ export default function Home() {
   return (
     <div className='container'>
       <div>
-        {activePiece ? `[ ${activePiece.x} , ${activePiece.y} ] --- ${activePiece.type}` : 'NONE'}<br/>
-        {JSON.stringify(pieces)}
+        {activePiece ? `[ ${activePiece.x} , ${activePiece.y} ] --- ${JSON.stringify(activePiece.legalMoves)}` : 'NONE'}<br/>
       </div>
       <Board />
     </div>

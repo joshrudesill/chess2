@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { pinPiece, setLegalMoves } from "../../features/board/boardSlice";
+import { pinPiece, setLegalMoves, setKingCalculated } from "../../features/board/boardSlice";
 
 
 const King = ({ piece }) => {
@@ -42,7 +42,7 @@ const King = ({ piece }) => {
 
             var friendlyHit = false;
             var endLoop    = false;
-            var friendlyPiece = null;
+            var friendlyPiece = false;
             var j = 1
 
             while(!endLoop) {
@@ -59,22 +59,42 @@ const King = ({ piece }) => {
                         const p = squareData.piece;
 
                         if(friendlyHit) {
-                            console.log('1')
                             if(p.white !== piece.white) {
                                 //console.log(`enemy hit at: [${p.x} , ${p.y}]`)
 
                                 //check piece type and pin accordingly
 
+                                const diagonals = [ 0, 2, 4, 6 ]
+                                const files =     [ 1, 3, 5, 7 ]
+
+                                if(diagonals.includes(i)) {
+                                    if(p.type === 5 || p.type === 3) {
+                                        dispatch(pinPiece({ piece: friendlyPiece, direction: i }))
+                                    }
+                                }
+                                if(files.includes(i)) {
+                                    if(p.type === 5 || p.type === 2) {
+                                        dispatch(pinPiece({ piece: friendlyPiece, direction: i }))
+                                    }
+                                }
+
                                 endLoop = true
-                                dispatch(pinPiece({ piece: friendlyPiece, direction: i }))
+
+                            } else {
+
+                                endLoop = true
+                                break
 
                             }
 
-                        } else if(p.white === piece.white) {
+                        } else if(p.white === piece.white && !friendlyHit) {
                             //console.log(`friendly hit at: [${p.x} , ${p.y}]`)
                             friendlyPiece = squareData.piece
                             friendlyHit = true
 
+                        } else if(p.white === piece.white && friendlyHit) {
+                            endLoop = true
+                            break
                         }
 
                     }
@@ -91,24 +111,22 @@ const King = ({ piece }) => {
 
             }
 
-            console.log('=========================')
-
         }
 
         dispatch(setLegalMoves({ piece: piece, moves: [] }))
+        dispatch(setKingCalculated())
 
     }
 
     useEffect(() => {
         if(!piece.legalMovesUpdated) {
-            console.log('updating king')
             calculateLegalMoves()
         }
     }, [piece.legalMovesUpdated])
 
     return (
         <div>
-            K{piece.legalMovesUpdated === true ? 't' : 'f'}
+            K
         </div>
     )
 }
