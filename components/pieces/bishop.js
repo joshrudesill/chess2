@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setLegalMoves } from "../../features/board/boardSlice";
+import { setLegalMoves, checkKing } from "../../features/board/boardSlice";
 
 
 const Bishop = ({ piece }) => {
@@ -23,8 +23,9 @@ const Bishop = ({ piece }) => {
         
 
         for(let i = 0; i < 4; i++) {
-            var x, y
+            let x, y
             const diagonals = [ 0, 2, 4, 6 ]
+            let checkedSquares = []
 
             if(piece.pinned) {
             
@@ -46,8 +47,8 @@ const Bishop = ({ piece }) => {
                 
             }
 
-            var pieceHit = false;
-            var j = 1;
+            let pieceHit = false;
+            let j = 1;
             while(!pieceHit) {
 
                 const coords = { x: (j * x) + piece.x, y: (j * y) + piece.y }
@@ -66,13 +67,23 @@ const Bishop = ({ piece }) => {
 
                         } else if(p.white !== piece.white) {
 
-                            legalMoves.push({ x: coords.x, y: coords.y })
-                            pieceHit = true
+                            if(p.type === 0) {
+
+                                dispatch(checkKing({ piece: piece, squares: checkedSquares }))
+                                pieceHit = true
+                                
+                            } else {
+                                
+                                legalMoves.push({ x: coords.x, y: coords.y })
+                                pieceHit = true
+
+                            }
 
                         }
 
                     } else if(squareData.piece === null) {
-
+                        
+                        checkedSquares.push( { x: coords.x, y: coords.y } )
                         legalMoves.push( { x: coords.x, y: coords.y } )
 
                     }

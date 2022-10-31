@@ -12,9 +12,9 @@ var is = []
 */ 
 
 const pieces = [
-    { type: 3, x: 1, y: 1, hasMoved: false, id: 1, white: true, legalMoves: [], captured: false, legalMovesUpdated: false, pinned: false, pinDirection: null },
+    { type: 5, x: 1, y: 1, hasMoved: false, id: 1, white: true, legalMoves: [], captured: false, legalMovesUpdated: false, pinned: false, pinDirection: null },
     { type: 2, x: 1, y: 2, hasMoved: false, id: 200, white: true, legalMoves: [], captured: false, legalMovesUpdated: false, pinned: false, pinDirection: null },
-    { type: 3, x: 3, y: 3, hasMoved: false, id: 300, white: false, legalMoves: [], captured: false, legalMovesUpdated: false, pinned: false, pinDirection: null },
+    { type: 5, x: 3, y: 3, hasMoved: false, id: 300, white: false, legalMoves: [], captured: false, legalMovesUpdated: false, pinned: false, pinDirection: null },
     { type: 2, x: 3, y: 4, hasMoved: false, id: 4, white: false, legalMoves: [], captured: false, legalMovesUpdated: false, pinned: false, pinDirection: null },
     { type: 0, x: 4, y: 4, hasMoved: false, id: 5, white: false, legalMoves: [], captured: false, legalMovesUpdated: false, pinned: false, pinDirection: null },
 ]
@@ -38,8 +38,16 @@ const initialState = {
     position: is,
     pieces: pieces,
     activePiece: null,
-    kingCalculated: false
+    kingCalculated: false,
+    kingData: {
+        inCheck: false,
+        checkingPiece: null,
+        squaresToBeBlocked: []
+    }
 }
+// search all legal moves and remove any not in sqauresToBeBlocked
+
+
 
 export const boardSlice = createSlice({
     name: 'board',
@@ -56,7 +64,7 @@ export const boardSlice = createSlice({
             state.position[x][y].piece.hasMoved = true
 
             state.activePiece = null
-
+            state.kingData.inCheck = false
             state.kingCalculated = false
             state.position.forEach(r => {
                 r.forEach(s => {
@@ -96,7 +104,7 @@ export const boardSlice = createSlice({
             state.position[x][y].piece.hasMoved = true
 
             state.activePiece = null
-
+            state.kingData.inCheck = false
             state.kingCalculated = false
             state.position.forEach(r => {
                 r.forEach(s => {
@@ -116,10 +124,15 @@ export const boardSlice = createSlice({
         },
         setKingCalculated: (state) => {
             state.kingCalculated = true
+        },
+        checkKing: (state, action) => {
+            state.kingData.inCheck = true
+            state.kingData.checkingPiece = action.payload.piece
+            state.kingData.squaresToBeBlocked = action.payload.squares
         }
     },
 })
 
-export const { changePieceAtSquare, setActivePiece, resetActivePiece, setLegalMoves, resetLegalMoves, capturePiece, pinPiece, setKingCalculated } = boardSlice.actions
+export const { changePieceAtSquare, setActivePiece, resetActivePiece, setLegalMoves, resetLegalMoves, capturePiece, pinPiece, setKingCalculated, checkKing } = boardSlice.actions
 
 export default boardSlice.reducer;
