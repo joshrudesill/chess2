@@ -123,7 +123,7 @@ const Rook = ({ piece }) => {
 
     return (
         <div>
-            R{piece.pinDirection !== null ? piece.pinDirection : ''}
+            R
         </div>
     )
 }

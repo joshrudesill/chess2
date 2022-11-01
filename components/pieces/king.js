@@ -1,13 +1,14 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { pinPiece, setLegalMoves, setKingCalculated } from "../../features/board/boardSlice";
+import { pinPiece, setLegalMoves, setKingCalculated, recheckLegalMoves } from "../../features/board/boardSlice";
 
 
 const King = ({ piece }) => {
 
     const dispatch = useDispatch()
     const board = useSelector(state => state.board.position)
-    const activePiece = useSelector(state => state.board.activePiece)
+    const inCheck = useSelector(state => state.board.kingData.inCheck)
+    const squaresToBeBlocked = useSelector(state => state.board.kingData.squaresToBeBlocked)
 
     const calculateLegalMoves = () => {
         var legalMoves = [ ]
@@ -123,6 +124,15 @@ const King = ({ piece }) => {
             calculateLegalMoves()
         }
     }, [piece.legalMovesUpdated])
+
+    useEffect(() => {
+
+        if(inCheck) {
+            console.log('fired')
+            dispatch(recheckLegalMoves())
+        }
+
+    }, [inCheck])
 
     return (
         <div>

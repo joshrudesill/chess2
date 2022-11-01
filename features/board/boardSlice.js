@@ -42,12 +42,12 @@ const initialState = {
     kingData: {
         inCheck: false,
         checkingPiece: null,
-        squaresToBeBlocked: []
+        squaresToBeBlocked: [],
+        white: null
     }
 }
+
 // search all legal moves and remove any not in sqauresToBeBlocked
-
-
 
 export const boardSlice = createSlice({
     name: 'board',
@@ -64,7 +64,9 @@ export const boardSlice = createSlice({
             state.position[x][y].piece.hasMoved = true
 
             state.activePiece = null
-            state.kingData.inCheck = false
+
+            state.kingData = initialState.kingData
+
             state.kingCalculated = false
             state.position.forEach(r => {
                 r.forEach(s => {
@@ -104,7 +106,9 @@ export const boardSlice = createSlice({
             state.position[x][y].piece.hasMoved = true
 
             state.activePiece = null
-            state.kingData.inCheck = false
+
+            state.kingData = initialState.kingData
+
             state.kingCalculated = false
             state.position.forEach(r => {
                 r.forEach(s => {
@@ -129,10 +133,31 @@ export const boardSlice = createSlice({
             state.kingData.inCheck = true
             state.kingData.checkingPiece = action.payload.piece
             state.kingData.squaresToBeBlocked = action.payload.squares
+            state.kingData.white = !action.payload.piece.white
+        },
+        recheckLegalMoves: (state) => {
+            state.position.forEach(r => {
+                r.forEach(s => {
+                    if(s.piece !== null && s.piece.white === state.kingData.white) {
+                        const newMoves = s.piece.legalMoves.filter(m => {    
+                            if(state.kingData.squaresToBeBlocked.some(j => {
+                                if(m.x === j.x && m.y === j.y) {
+                                    return true
+                                }
+                                return false
+                            })) {
+                                return true
+                            }
+                            return false
+                        })
+                        s.piece.legalMoves = newMoves
+                    }
+                })
+            });
         }
-    },
+    }
 })
 
-export const { changePieceAtSquare, setActivePiece, resetActivePiece, setLegalMoves, resetLegalMoves, capturePiece, pinPiece, setKingCalculated, checkKing } = boardSlice.actions
+export const { changePieceAtSquare, setActivePiece, resetActivePiece, setLegalMoves, resetLegalMoves, capturePiece, pinPiece, setKingCalculated, checkKing, recheckLegalMoves } = boardSlice.actions
 
 export default boardSlice.reducer;
