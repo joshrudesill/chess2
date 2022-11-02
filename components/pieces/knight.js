@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setLegalMoves } from "../../features/board/boardSlice";
+import { checkKing, setLegalMoves } from "../../features/board/boardSlice";
 
 
 
@@ -29,12 +29,21 @@ const Knight = ({ piece }) => {
             { x: x - 2, y: y + 1},
 
         ]
+        if(!piece.pinned) {
 
-         moves.forEach(m => {
-            if(m.x >= 0 && m.x <= 7 && m.y >= 0 && m.y <= 7) {
-                legalMoves.push({ x: m.x, y: m.y })
-            }
-        })
+            moves.forEach(m => {
+               if(m.x >= 0 && m.x <= 7 && m.y >= 0 && m.y <= 7) {
+                    if(board[m.x][m.y].piece !== null && board[m.x][m.y].piece.type === 0) {
+
+                        dispatch(checkKing({ piece: piece, squares: [{ x: piece.x, y: piece.y }]})) 
+
+                    }
+                    legalMoves.push({ x: m.x, y: m.y })
+               }
+           })
+
+        }
+
 
         dispatch(setLegalMoves({ piece: piece, moves: legalMoves}))
 

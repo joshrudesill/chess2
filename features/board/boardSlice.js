@@ -12,7 +12,7 @@ var is = []
 */ 
 
 const pieces = [
-    { type: 5, x: 1, y: 1, hasMoved: false, id: 1, white: true, legalMoves: [], captured: false, legalMovesUpdated: false, pinned: false, pinDirection: null },
+    { type: 4, x: 1, y: 1, hasMoved: false, id: 1, white: true, legalMoves: [], captured: false, legalMovesUpdated: false, pinned: false, pinDirection: null },
     { type: 2, x: 1, y: 2, hasMoved: false, id: 200, white: true, legalMoves: [], captured: false, legalMovesUpdated: false, pinned: false, pinDirection: null },
     { type: 5, x: 3, y: 3, hasMoved: false, id: 300, white: false, legalMoves: [], captured: false, legalMovesUpdated: false, pinned: false, pinDirection: null },
     { type: 2, x: 3, y: 4, hasMoved: false, id: 4, white: false, legalMoves: [], captured: false, legalMovesUpdated: false, pinned: false, pinDirection: null },
@@ -43,7 +43,7 @@ const initialState = {
         inCheck: false,
         checkingPiece: null,
         squaresToBeBlocked: [],
-        white: null
+        white: null,
     }
 }
 
@@ -154,7 +154,8 @@ export const boardSlice = createSlice({
                     }
                 })
             });
-        }
+        },
+        
     }
 })
 
