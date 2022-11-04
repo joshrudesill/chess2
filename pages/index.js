@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import Board from "../components/board";
-import io from "Socket.IO-client";
 
 export default function Home() {
   const activePiece = useSelector((state) => state.board.activePiece);
