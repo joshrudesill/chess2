@@ -3,6 +3,7 @@ import socket from "../socket";
 const Ws = () => {
   const [users, setUsers] = useState([]);
   const [rid, setRID] = useState();
+  const [moves, setMoves] = useState([]);
   var inter;
 
   useEffect(() => {
@@ -41,6 +42,10 @@ const Ws = () => {
     socket.on("game not found", () => {
       setTimeout(() => socket.emit("request_game"), 10000);
     });
+    socket.on("move out", (m) => {
+      const newMoves = moves.concat(m);
+      setMoves(newMoves);
+    });
 
     return () => {
       socket.off("connect");
@@ -65,11 +70,33 @@ const Ws = () => {
         <button className='button' onClick={() => socket.emit("request_game")}>
           BEGIN
         </button>
+        <button onClick={() => localStorage.clear()} className='button'>
+          Clear
+        </button>
         {users.map((u) => (
           <div className='p' key={u.userID}>
             {u.username}
           </div>
         ))}
+        {rid ? (
+          <>
+            <button
+              className='button'
+              onClick={() => socket.emit("move", "a", rid)}
+            >
+              A
+            </button>
+            <button
+              className='button'
+              onClick={() => socket.emit("move", "s", rid)}
+            >
+              S
+            </button>
+          </>
+        ) : (
+          <></>
+        )}
+        <div className='p'>{JSON.stringify(moves)}</div>
       </div>
     </div>
   );
