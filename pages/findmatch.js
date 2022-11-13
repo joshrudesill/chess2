@@ -1,13 +1,21 @@
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { setSession } from "../features/app/appSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { setGame, setSession } from "../features/app/appSlice";
 import socket from "../socket";
 
 const FindMatch = () => {
   const dispatch = useDispatch();
   const [sessionReady, setSessionReady] = useState(false);
   const [players, setPlayers] = useState(0);
+  const gameState = useSelector((state) => state.app.sessionDetails.gameID);
+  const router = useRouter();
   var interval;
+  useEffect(() => {
+    if (gameState) {
+      router.push("/play");
+    }
+  }, [gameState]);
   const loadSessionDetails = async (sessionID) => {
     const result = await fetch(
       `http://localhost:8080/loadsession?sid=${sessionID}`,
@@ -21,7 +29,6 @@ const FindMatch = () => {
     );
     const session = await result.json();
     if (session) {
-      console.log(session);
       const sid = session.sessionID;
       const uid = session.userID;
       const un = session.username;
@@ -53,7 +60,7 @@ const FindMatch = () => {
     interval = setInterval(() => {
       console.log("requesting game");
       socket.emit("request game");
-    }, 1500);
+    }, 2500);
   };
   const endInterval = () => {
     clearInterval(interval);
@@ -74,10 +81,13 @@ const FindMatch = () => {
         loadSessionDetails(err.data.content);
       }
     });
-    socket.on("session started", (sid, uid, un) => {
+    socket.on("session started", (sid, uid, un, gid, ig) => {
       localStorage.setItem("sessionID", sid);
-      dispatch(setSession({ sid, uid, un }));
+      dispatch(setSession({ sid, uid, un, gid, ig }));
       saveSessionDetails({ sid: sid, uid: uid, un: un });
+      if (gid && ig) {
+        router.push("/play");
+      }
     });
     socket.on("players in queue", (num) => {
       setPlayers(num);
@@ -87,9 +97,19 @@ const FindMatch = () => {
     });
     socket.on("game created", (gameID) => {
       endInterval();
-      console.log("interval ended");
+      dispatch(setGame(gameID));
+      router.push("/play");
     });
-  }, []);
+    return () => {
+      endInterval();
+      socket.off("connect");
+      socket.off("connect_error");
+      socket.off("session started");
+      socket.off("players in queue");
+      socket.off("queue joined");
+      socket.off("game created");
+    };
+  });
   return (
     <div className='container'>
       <div className='columns'>

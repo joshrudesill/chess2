@@ -113,6 +113,9 @@ export const boardSlice = createSlice({
   name: "board",
   initialState,
   reducers: {
+    setPosition: (state, action) => {
+      state.position = action.payload;
+    },
     changePieceAtSquare: (state, action) => {
       const { x, y } = action.payload;
       state.position[state.activePiece.x][state.activePiece.y].piece = null;
@@ -230,6 +233,7 @@ export const {
   setKingCalculated,
   checkKing,
   recheckLegalMoves,
+  setPosition,
 } = boardSlice.actions;
 
 export default boardSlice.reducer;
