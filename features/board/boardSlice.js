@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
-
-var is = [];
+import socket from "../../socket";
+/*
 
 /*
     0 - King
@@ -9,7 +9,7 @@ var is = [];
     3 - Bishop
     4 - Knight
     5 - Queen
-*/
+
 
 const pieces = [
   {
@@ -79,6 +79,15 @@ const pieces = [
   },
 ];
 
+
+
+is[1][1].piece = pieces[0];
+is[1][2].piece = pieces[1];
+is[3][3].piece = pieces[2];
+is[3][4].piece = pieces[3];
+is[4][4].piece = pieces[4];
+*/
+var is = [];
 for (let i = 0; i < 8; i++) {
   var ta = [];
   for (let j = 0; j < 8; j++) {
@@ -87,16 +96,8 @@ for (let i = 0; i < 8; i++) {
   }
   is.push(ta);
 }
-
-is[1][1].piece = pieces[0];
-is[1][2].piece = pieces[1];
-is[3][3].piece = pieces[2];
-is[3][4].piece = pieces[3];
-is[4][4].piece = pieces[4];
-
 const initialState = {
   position: is,
-  pieces: pieces,
   activePiece: null,
   kingCalculated: false,
   kingData: {
@@ -129,7 +130,7 @@ export const boardSlice = createSlice({
       state.activePiece = null;
 
       state.kingData = initialState.kingData;
-
+      socket.emit("piece move", state.position);
       state.kingCalculated = false;
       state.position.forEach((r) => {
         r.forEach((s) => {

@@ -14,6 +14,9 @@ const Play = () => {
       setGR(true);
       dispatch(setPosition(gs));
     });
+    socket.on("new postition", (p) => {
+      dispatch(setPosition(p));
+    });
   });
   return (
     <>
