@@ -116,6 +116,17 @@ export const boardSlice = createSlice({
   reducers: {
     setPosition: (state, action) => {
       state.position = action.payload;
+
+      state.kingCalculated = false;
+      state.position.forEach((r) => {
+        r.forEach((s) => {
+          if (s.piece !== null) {
+            s.piece.legalMovesUpdated = false;
+            s.piece.pinned = false;
+            s.piece.pinDirection = null;
+          }
+        });
+      });
     },
     changePieceAtSquare: (state, action) => {
       const { x, y } = action.payload;
