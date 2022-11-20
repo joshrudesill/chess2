@@ -182,7 +182,7 @@ export const boardSlice = createSlice({
       state.activePiece = null;
 
       state.kingData = initialState.kingData;
-
+      socket.emit("piece move", state.position);
       state.kingCalculated = false;
       state.position.forEach((r) => {
         r.forEach((s) => {
