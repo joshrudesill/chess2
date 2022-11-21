@@ -4,7 +4,9 @@ import "../styles/globals.css";
 function MyApp({ Component, pageProps }) {
   return (
     <Provider store={store}>
-      <Component {...pageProps} />
+      <div className='bg-neutral-800'>
+        <Component {...pageProps} />
+      </div>
     </Provider>
   );
 }
