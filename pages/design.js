@@ -1,18 +1,24 @@
-import Image from "next/image";
-import logo1 from "../public/logo1.svg";
+import { useEffect, useState } from "react";
+import useScreenSize from "../util/usescreensize";
+
+/* eslint-disable react/jsx-key */
 const Design = () => {
   const a = Array.from(Array(8).keys());
+  const [boardSize, setBoardSize] = useState("");
+  const { height, width } = useScreenSize();
+  useEffect(() => {
+    if (height > width * 0.65) {
+      setBoardSize("w-1/2");
+    } else {
+      setBoardSize("h-[95%]");
+    }
+  }, [height, width]);
   return (
-    <div className=''>
-      <div className='flex'>
-        <br />
-        <br />
-        <br />
-      </div>
-      <div className='container mx-auto px-4 '>
-        <div className='grid grid-cols-12 gap-3'>
-          <div className='col-start-2 col-end-8'>
-            <div className='grid grid-cols-8 grid-rows-8'>
+    <div className="">
+      <div className="container mx-3 px-4">
+        <div className="flex flex-row gap-3 justify-end h-screen p-3">
+          <div className={`${boardSize} aspect-square`}>
+            <div className="grid grid-cols-8 grid-rows-8">
               {a.map((j) => {
                 return a.map((e) => (
                   <div
@@ -30,30 +36,30 @@ const Design = () => {
               })}
             </div>
           </div>
-          <div className='col-start-8 col-end-12 border rounded-md border-neutral-600 divide-neutral-600 shadow-lg flex flex-col divide-y p-1 text-white'>
-            <div className='flex justify-between p-2'>
-              <p className='font-mono text-5xl'>10:00</p>
-              <p className='font-mono text-5xl'>10:00</p>
+          <div className="border w-2/5  rounded-md border-neutral-600 divide-neutral-600 shadow-lg flex flex-col divide-y p-1 text-white">
+            <div className="flex justify-between p-2">
+              <p className="font-mono text-5xl">10:00</p>
+              <p className="font-mono text-5xl text-neutral-400">10:00</p>
             </div>
-            <div className='flex flex-row justify-center gap-x-1 p-2 '>
-              <p className='font-sans text-xl '>Player1</p>
-              <p className='font-mono text-1xl grow text-center'>VS</p>
-              <p className='font-sans text-xl'>Player2</p>
+            <div className="flex flex-row justify-center gap-x-1 p-2 ">
+              <p className="font-sans text-xl ">Player1</p>
+              <p className="font-mono text-1xl grow text-center">VS</p>
+              <p className="font-sans text-xl">Player2</p>
             </div>
-            <div className='flex grow flex-row p-2 flex-wrap content-start text-xs'>
-              <div className='flex m-1 bg-neutral-700 p-2 rounded'>1. asdf</div>
-              <div className='flex m-1 bg-neutral-700 p-2 rounded'>1. asdf</div>
-              <div className='flex m-1 bg-neutral-700 p-2 rounded'>1. asdf</div>
-              <div className='flex m-1 bg-neutral-700 p-2 rounded'>1. asdf</div>
-              <div className='flex m-1 bg-neutral-700 p-2 rounded'>1. asdf</div>
-              <div className='flex m-1 bg-neutral-700 p-2 rounded'>1. asdf</div>
-              <div className='flex m-1 bg-neutral-700 p-2 rounded'>1. asdf</div>
-              <div className='flex m-1 bg-neutral-700 p-2 rounded'>1. asdf</div>
-              <div className='flex m-1 bg-neutral-700 p-2 rounded'>1. asdf</div>
-              <div className='flex m-1 bg-neutral-700 p-2 rounded'>1. asdf</div>
+            <div className="flex grow flex-row p-2 flex-wrap content-start text-xs">
+              <div className="flex m-1 bg-neutral-700 p-2 rounded">1. asdf</div>
+              <div className="flex m-1 bg-neutral-700 p-2 rounded">1. asdf</div>
+              <div className="flex m-1 bg-neutral-700 p-2 rounded">1. asdf</div>
+              <div className="flex m-1 bg-neutral-700 p-2 rounded">1. asdf</div>
+              <div className="flex m-1 bg-neutral-700 p-2 rounded">1. asdf</div>
+              <div className="flex m-1 bg-neutral-700 p-2 rounded">1. asdf</div>
+              <div className="flex m-1 bg-neutral-700 p-2 rounded">1. asdf</div>
+              <div className="flex m-1 bg-neutral-700 p-2 rounded">1. asdf</div>
+              <div className="flex m-1 bg-neutral-700 p-2 rounded">1. asdf</div>
+              <div className="flex m-1 bg-neutral-700 p-2 rounded">1. asdf</div>
             </div>
-            <div className='flex p-2'>
-              <p className='font-mono text-xl underline '>Variant name</p>
+            <div className="flex p-2">
+              <p className="font-mono text-xl underline ">Variant name</p>
             </div>
           </div>
         </div>
