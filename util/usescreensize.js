@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 
 const useScreenSize = () => {
   const [windowDimenion, detectHW] = useState({
-    winWidth: window.innerWidth,
-    winHeight: window.innerHeight,
+    winWidth: 0,
+    winHeight: 0,
   });
 
   const detectSize = () => {
@@ -12,7 +12,12 @@ const useScreenSize = () => {
       winHeight: window.innerHeight,
     });
   };
-
+  useEffect(() => {
+    detectHW({
+      winWidth: window.innerWidth,
+      winHeight: window.innerHeight,
+    });
+  }, []);
   useEffect(() => {
     window.addEventListener("resize", detectSize);
 

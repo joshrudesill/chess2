@@ -3,4 +3,5 @@
 @tailwind utilities;
 html {
   background-color: rgb(38 38 38);
+  box-sizing: content-box;
 }
