@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setSession } from "../features/app/appSlice";
+import { setGame, setSession } from "../features/app/appSlice";
 import socket from "../socket";
 
 const FindMatch = () => {
@@ -32,6 +32,9 @@ const FindMatch = () => {
     socket.on("sessionStart", (sid, un, uid) => {
       localStorage.setItem("sessionID", sid);
       dispatch(setSession({ sid: sid, un: un, uid: uid }));
+    });
+    socket.on("gameRoomCreated", (gid) => {
+      dispatch(setGame(gid));
     });
     return () => {
       socket.off("connect");

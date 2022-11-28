@@ -6,10 +6,9 @@ import { setPosition } from "../features/board/boardSlice";
 import { setGame, setSession } from "../features/app/appSlice";
 import socket from "../socket";
 const Play = () => {
-  const [gr, setGR] = useState(false);
   const dispatch = useDispatch();
   const router = useRouter();
-  const gameState = useSelector((state) => state.app.sessionDetails.gameID);
+  const gameID = useSelector((state) => state.app.sessionDetails.gameID);
   const sessionID = useSelector((state) => state.app.sessionDetails.sessionID);
 
   useEffect(() => {
@@ -20,9 +19,18 @@ const Play = () => {
     } else {
       router.push("/findmatch");
     }
-    if (gameState && !gr) {
-      socket.emit("ready to play", gameState);
-    }
+    socket.on("sessionStart", () => {
+      if (gameID) {
+        socket.emit("joinGameLobby", gameID);
+      } else {
+        router.push("/findmatch");
+      }
+    });
+    socket.on("connect_error", (err) => {
+      if (err.message === "sidInvalid") {
+        router.push("/findmatch");
+      }
+    });
 
     socket.on("game ready", (gs) => {
       setGR(true);

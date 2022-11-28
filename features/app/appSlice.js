@@ -4,7 +4,6 @@ const initialState = {
     sessionID: null,
     userID: null,
     username: null,
-    inGame: false,
     gameID: null,
   },
 };
@@ -20,7 +19,6 @@ export const appSlice = createSlice({
     },
     setGame: (state, action) => {
       state.sessionDetails.gameID = action.payload;
-      state.sessionDetails.inGame = true;
     },
   },
 });
