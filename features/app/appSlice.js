@@ -12,10 +12,12 @@ export const appSlice = createSlice({
   initialState,
   reducers: {
     setSession: (state, action) => {
-      const { sid, uid, un } = action.payload;
+      console.log("setsession");
+      const { sid, uid, un, gid } = action.payload;
       state.sessionDetails.sessionID = sid;
       state.sessionDetails.userID = uid;
       state.sessionDetails.username = un;
+      state.sessionDetails.gameID = gid;
     },
     setGame: (state, action) => {
       state.sessionDetails.gameID = action.payload;

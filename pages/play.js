@@ -8,23 +8,38 @@ import socket from "../socket";
 const Play = () => {
   const dispatch = useDispatch();
   const router = useRouter();
+  const [inGameRoom, setInGameRoom] = useState(false);
+  const [gameReady, setGameReady] = useState(false);
   const gameID = useSelector((state) => state.app.sessionDetails.gameID);
   const sessionID = useSelector((state) => state.app.sessionDetails.sessionID);
-
   useEffect(() => {
     const sid = localStorage.getItem("sessionID");
     if (sid) {
+      if (!inGameRoom && gameID) {
+        socket.emit("joinGameLobby", gameID);
+      }
+      console.log("connect");
       socket.auth = { sid };
       socket.connect();
     } else {
       router.push("/findmatch");
     }
-    socket.on("sessionStart", () => {
-      if (gameID) {
-        socket.emit("joinGameLobby", gameID);
+    socket.on("sessionStart", (sid, un, uid, gid) => {
+      if (gid) {
+        dispatch(setSession({ sid: sid, un: un, uid: uid, gid: gid }));
+        socket.emit("joinGameLobby", gid);
       } else {
         router.push("/findmatch");
       }
+    });
+    socket.on("gameRoomJoined", (gid) => {
+      setInGameRoom(true);
+      socket.emit("readyToPlay", gid);
+      console.log("gameRoom true");
+    });
+    socket.on("gameReadyToStart", () => {
+      setInGameRoom(true);
+      setGameReady(true);
     });
     socket.on("connect_error", (err) => {
       if (err.message === "sidInvalid") {
@@ -32,42 +47,12 @@ const Play = () => {
       }
     });
 
-    socket.on("game ready", (gs) => {
-      setGR(true);
-      dispatch(setPosition(gs));
-    });
-    socket.on("new postition", (p) => {
-      dispatch(setPosition(p));
-    });
-    socket.on("session started", (sid, uid, un, gid, ig) => {
-      if (ig && gid) {
-        console.log("attempting reconnect");
-        setGR(true);
-        dispatch(setSession({ sid, uid, un, gid, ig }));
-        socket.emit("reconnecting to game", gid);
-      } else {
-        router.push("/findmatch");
-      }
-    });
-    socket.on("reload gamestate", (gs) => {
-      console.log("gamestate reeived");
-      setGR(true);
-      dispatch(setPosition(gs));
-    });
-    return () => {
-      socket.off("game ready");
-      socket.off("new postition");
-      socket.off("session started");
-      socket.off("reload gamestate");
-    };
-  });
+    return () => {};
+  }, []);
   return (
     <>
-      <div>{gameState}</div>
-      <button onClick={() => socket.emit("end game", gameState)}>
-        End Game
-      </button>
-      <p>{gr ? "game ready" : "not ready"}</p>
+      <div className='text-white'>{gameID}</div>
+      <p className='text-white'>{gameReady ? "Game Ready" : "Not ready"}</p>
       <Board />
     </>
   );
