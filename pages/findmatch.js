@@ -51,16 +51,14 @@ const FindMatch = () => {
     };
   });
   return (
-    <div className='container'>
-      <div className='columns'>
-        <div className='column is-4'>
-          <button
-            className='bg-white border p-5 m-5 cursor-pointer'
-            onClick={() => joinQueue()}
-          >
-            Start Search
-          </button>
-        </div>
+    <div className='container w-screen'>
+      <div className='flex flex-row mt-48'>
+        <button
+          className='bg-white border p-5 mx-auto cursor-pointer'
+          onClick={() => joinQueue()}
+        >
+          Start Search
+        </button>
         <div className='text-white'>{sessionID}</div>
         <div className='text-white'>{gameID}</div>
       </div>

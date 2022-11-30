@@ -5,6 +5,12 @@ import {
   resetActivePiece,
   capturePiece,
 } from "../features/board/boardSlice";
+import {
+  FlagIcon,
+  HandThumbUpIcon,
+  TrophyIcon,
+  InformationCircleIcon,
+} from "@heroicons/react/20/solid";
 import Bishop from "./pieces/bishop";
 import King from "./pieces/king";
 import Knight from "./pieces/knight";
@@ -12,7 +18,7 @@ import Pawn from "./pieces/pawn";
 import Queen from "./pieces/queen";
 import Rook from "./pieces/rook";
 import socket from "../socket";
-const BoardSquare = ({ squareData, color }) => {
+const BoardSquare = ({ squareData, j, e }) => {
   const dispatch = useDispatch();
   const activePiece = useSelector((state) => state.board.activePiece);
   const position = useSelector((state) => state.board.position);
@@ -99,14 +105,15 @@ const BoardSquare = ({ squareData, color }) => {
   if (squareData.piece !== null && squareData.piece.type === 2) {
     return (
       <div
-        className={`column is-clickable is-unselectable is-1 p-auto ${
-          color % 2 === 0 ? "has-background-primary" : ""
-        } ${squareData.piece.white ? "" : "has-text-danger"} ${
-          squareData.piece.pinned ? "is-underlined" : ""
+        className={`aspect-square flex justify-center items-center cursor-pointer ${
+          j % 2 === 0
+            ? e % 2 === 0
+              ? "bg-emerald-800"
+              : "bg-stone-400"
+            : e % 2 !== 0
+            ? "bg-emerald-800 "
+            : "bg-stone-400"
         }`}
-        onMouseDown={onMouseDown}
-        onMouseUp={onMouseUp}
-        style={{ width: "50px", height: "50px" }}
       >
         <Rook piece={squareData.piece} />
       </div>
@@ -115,14 +122,17 @@ const BoardSquare = ({ squareData, color }) => {
   if (squareData.piece !== null && squareData.piece.type === 1) {
     return (
       <div
-        className={`column is-clickable is-unselectable is-1 p-auto ${
-          color % 2 === 0 ? "has-background-primary" : ""
-        } ${squareData.piece.white ? "" : "has-text-danger"} ${
-          squareData.piece.pinned ? "is-underlined" : ""
+        className={`aspect-square flex justify-center items-center cursor-pointer ${
+          j % 2 === 0
+            ? e % 2 === 0
+              ? "bg-emerald-800"
+              : "bg-stone-400"
+            : e % 2 !== 0
+            ? "bg-emerald-800 "
+            : "bg-stone-400"
         }`}
         onMouseDown={onMouseDown}
         onMouseUp={onMouseUp}
-        style={{ width: "50px", height: "50px" }}
       >
         <Pawn piece={squareData.piece} />
       </div>
@@ -131,14 +141,17 @@ const BoardSquare = ({ squareData, color }) => {
   if (squareData.piece !== null && squareData.piece.type === 0) {
     return (
       <div
-        className={`column is-clickable is-unselectable is-1 p-auto ${
-          color % 2 === 0 ? "has-background-primary" : ""
-        } ${squareData.piece.white ? "" : "has-text-danger"} ${
-          squareData.piece.pinned ? "is-underlined" : ""
+        className={`aspect-square flex justify-center items-center cursor-pointer ${
+          j % 2 === 0
+            ? e % 2 === 0
+              ? "bg-emerald-800"
+              : "bg-stone-400"
+            : e % 2 !== 0
+            ? "bg-emerald-800 "
+            : "bg-stone-400"
         }`}
         onMouseDown={onMouseDown}
         onMouseUp={onMouseUp}
-        style={{ width: "50px", height: "50px" }}
       >
         <King piece={squareData.piece} />
       </div>
@@ -147,14 +160,17 @@ const BoardSquare = ({ squareData, color }) => {
   if (squareData.piece !== null && squareData.piece.type === 3) {
     return (
       <div
-        className={`column is-clickable is-unselectable is-1 p-auto ${
-          color % 2 === 0 ? "has-background-primary" : ""
-        } ${squareData.piece.white ? "" : "has-text-danger"} ${
-          squareData.piece.pinned ? "is-underlined" : ""
+        className={`aspect-square flex justify-center items-center cursor-pointer ${
+          j % 2 === 0
+            ? e % 2 === 0
+              ? "bg-emerald-800"
+              : "bg-stone-400"
+            : e % 2 !== 0
+            ? "bg-emerald-800 "
+            : "bg-stone-400"
         }`}
         onMouseDown={onMouseDown}
         onMouseUp={onMouseUp}
-        style={{ width: "50px", height: "50px" }}
       >
         <Bishop piece={squareData.piece} />
       </div>
@@ -163,14 +179,17 @@ const BoardSquare = ({ squareData, color }) => {
   if (squareData.piece !== null && squareData.piece.type === 4) {
     return (
       <div
-        className={`column is-clickable is-unselectable is-1 p-auto ${
-          color % 2 === 0 ? "has-background-primary" : ""
-        } ${squareData.piece.white ? "" : "has-text-danger"} ${
-          squareData.piece.pinned ? "is-underlined" : ""
+        className={`aspect-square flex justify-center items-center cursor-pointer ${
+          j % 2 === 0
+            ? e % 2 === 0
+              ? "bg-emerald-800"
+              : "bg-stone-400"
+            : e % 2 !== 0
+            ? "bg-emerald-800 "
+            : "bg-stone-400"
         }`}
         onMouseDown={onMouseDown}
         onMouseUp={onMouseUp}
-        style={{ width: "50px", height: "50px" }}
       >
         <Knight piece={squareData.piece} />
       </div>
@@ -179,14 +198,17 @@ const BoardSquare = ({ squareData, color }) => {
   if (squareData.piece !== null && squareData.piece.type === 5) {
     return (
       <div
-        className={`column is-clickable is-unselectable is-1 p-auto ${
-          color % 2 === 0 ? "has-background-primary" : ""
-        } ${squareData.piece.white ? "" : "has-text-danger"} ${
-          squareData.piece.pinned ? "is-underlined" : ""
+        className={`aspect-square flex justify-center items-center cursor-pointer ${
+          j % 2 === 0
+            ? e % 2 === 0
+              ? "bg-emerald-800"
+              : "bg-stone-400"
+            : e % 2 !== 0
+            ? "bg-emerald-800 "
+            : "bg-stone-400"
         }`}
         onMouseDown={onMouseDown}
         onMouseUp={onMouseUp}
-        style={{ width: "50px", height: "50px" }}
       >
         <Queen piece={squareData.piece} />
       </div>
@@ -195,12 +217,17 @@ const BoardSquare = ({ squareData, color }) => {
   if (squareData.piece === null) {
     return (
       <div
-        className={`column is-clickable is-unselectable is-1 p-auto ${
-          color % 2 === 0 ? "has-background-primary" : ""
+        className={`aspect-square flex justify-center items-center ${
+          j % 2 === 0
+            ? e % 2 === 0
+              ? "bg-emerald-800"
+              : "bg-stone-400"
+            : e % 2 !== 0
+            ? "bg-emerald-800 "
+            : "bg-stone-400"
         }`}
         onMouseDown={onMouseDown}
         onMouseUp={onMouseUp}
-        style={{ width: "50px", height: "50px" }}
       ></div>
     );
   }

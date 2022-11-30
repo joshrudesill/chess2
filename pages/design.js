@@ -4,6 +4,7 @@ import {
   FlagIcon,
   HandThumbUpIcon,
   TrophyIcon,
+  InformationCircleIcon,
 } from "@heroicons/react/20/solid";
 import { Tooltip } from "flowbite-react";
 /* eslint-disable react/jsx-key */
@@ -30,44 +31,34 @@ const Design = () => {
         <div className='w-36 flex-initial flex hover:bg-neutral-500 p-3'>
           {boardSize}
         </div>
-        <div className='w-36 inline-flex hover:bg-neutral-500 p-3 font-semibold text-white hover:skew-y-3 cursor-pointer text-lg'>
+        <div className='w-36 inline-flex hover:bg-neutral-500 p-3 font-semibold text-white hover:skew-y-3 cursor-pointer text-md'>
           <TrophyIcon className='h-6 w-6 mt-0.5 mr-2 text-green-500 ' />
           Play
+        </div>
+        <div className='w-36 inline-flex hover:bg-neutral-500 p-3 font-semibold text-white hover:skew-y-3 cursor-pointer text-md'>
+          <InformationCircleIcon className='h-6 w-6 mt-0.5 mr-2 text-blue-400 ' />
+          More Info
         </div>
       </div>
       <div className='flex w-[85vmin] md:w-max mx-auto md:mx-0 flex-col lg:flex-row gap-3 md:ml-48 overflow-x-hidden'>
         <div className='flex flex-col md:flex-row justify-center gap-3 mt-8'>
           <div className='md:shrink w-[100%] md:w-[88vmin] overflow-x-hidden'>
-            <div className='grid grid-cols-8 grid-rows-8'>
-              {a.map((j) => {
-                return a.map((e) => (
-                  <div
-                    className={`aspect-square  ${
-                      j % 2 === 0
-                        ? e % 2 === 0
-                          ? "bg-emerald-800"
-                          : "bg-stone-400"
-                        : e % 2 !== 0
-                        ? "bg-emerald-800 "
-                        : "bg-stone-400"
-                    }`}
-                  ></div>
-                ));
-              })}
-            </div>
+            <div className='grid grid-cols-8 grid-rows-8'></div>
           </div>
         </div>
         <div className='lg:w-[30vw] w-11/12 border rounded-md border-neutral-600 divide-neutral-600 shadow-lg flex flex-col divide-y  text-white mx-auto md:mx-0 lg:mt-8 lg:mr-2'>
-          <div className='flex justify-between p-3'>
-            <p className='font-mono md:text-2xl lg:text-xl mr-4'>10:00</p>
+          <div className='flex justify-between p-2'>
+            <p className='font-mono md:text-2xl lg:text-xl mr-4 border rounded-lg px-2'>
+              8:42
+            </p>
             <p className='font-mono md:text-2xl text-neutral-400 lg:text-xl ml-4'>
-              10:00
+              9:21
             </p>
           </div>
           <div className='flex flex-row justify-center gap-x-1 p-3 text-xs'>
-            <p className='font-sans xl:text-lg '>Player1</p>
+            <p className='font-sans xl:text-lg '>CornMan123</p>
             <p className='font-mono xl:text-xl grow text-center'>VS</p>
-            <p className='font-sans xl:text-lg'>Player2</p>
+            <p className='font-sans xl:text-lg'>noobslayer16</p>
           </div>
           <div className='flex grow flex-row flex-wrap content-start text-xs'>
             <div className='flex bg-neutral-700 w-full p-1 justify-between'>
@@ -75,32 +66,12 @@ const Design = () => {
               <div>1.3s</div>
             </div>
             <div className='flex w-full p-1 justify-between'>
-              <div>1. Kxb2</div>
-              <div>1.3s</div>
+              <div>2. e1</div>
+              <div>2.8s</div>
             </div>
             <div className='flex bg-neutral-700 w-full p-1 justify-between'>
-              <div>1. Kxb2</div>
-              <div>1.3s</div>
-            </div>
-            <div className='flex w-full p-1 justify-between'>
-              <div>1. Kxb2</div>
-              <div>1.3s</div>
-            </div>
-            <div className='flex bg-neutral-700 w-full p-1 justify-between'>
-              <div>1. Kxb2</div>
-              <div>1.3s</div>
-            </div>
-            <div className='flex w-full p-1 justify-between'>
-              <div>1. Kxb2</div>
-              <div>1.3s</div>
-            </div>
-            <div className='flex bg-neutral-700 w-full p-1 justify-between'>
-              <div>1. Kxb2</div>
-              <div>1.3s</div>
-            </div>
-            <div className='flex w-full p-1 justify-between'>
-              <div>1. Kxb2</div>
-              <div>1.3s</div>
+              <div>3. c5</div>
+              <div>4.1s</div>
             </div>
           </div>
           <div className='flex flex-row flex-wrap p-1'>

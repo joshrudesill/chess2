@@ -5,7 +5,11 @@ import Board from "../components/board";
 import { setPosition } from "../features/board/boardSlice";
 import { setGame, setSession } from "../features/app/appSlice";
 import socket from "../socket";
+import Sidebar from "../components/sidebar";
+import GameInfo from "../components/gameInfo";
+
 const Play = () => {
+  const a = Array.from(Array(8).keys());
   const dispatch = useDispatch();
   const router = useRouter();
   const [inGameRoom, setInGameRoom] = useState(false);
@@ -37,9 +41,10 @@ const Play = () => {
       socket.emit("readyToPlay", gid);
       console.log("gameRoom true");
     });
-    socket.on("gameReadyToStart", () => {
+    socket.on("gameReadyToStart", (p) => {
       setInGameRoom(true);
       setGameReady(true);
+      dispatch(setPosition(p));
     });
     socket.on("connect_error", (err) => {
       if (err.message === "sidInvalid") {
@@ -50,11 +55,13 @@ const Play = () => {
     return () => {};
   }, []);
   return (
-    <>
-      <div className='text-white'>{gameID}</div>
-      <p className='text-white'>{gameReady ? "Game Ready" : "Not ready"}</p>
-      <Board />
-    </>
+    <div className='flex flex-row gap-5 overflow-x-hidden'>
+      <Sidebar />
+      <div className='flex w-[85vmin] md:w-max mx-auto md:mx-0 flex-col lg:flex-row gap-3 md:ml-48 overflow-x-hidden'>
+        <Board />
+        <GameInfo />
+      </div>
+    </div>
   );
 };
 export default Play;
