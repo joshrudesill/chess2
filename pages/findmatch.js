@@ -52,15 +52,21 @@ const FindMatch = () => {
   });
   return (
     <div className='container w-screen'>
-      <div className='flex flex-row mt-48'>
+      <div className='flex flex-col mt-48'>
         <button
           className='bg-white border p-5 mx-auto cursor-pointer'
           onClick={() => joinQueue()}
         >
           Start Search
         </button>
-        <div className='text-white'>{sessionID}</div>
-        <div className='text-white'>{gameID}</div>
+        <button
+          className='bg-white border p-5 mx-auto mt-5 cursor-pointer'
+          onClick={() => localStorage.removeItem("sessionID")}
+        >
+          Clear
+        </button>
+        <div className='text-white mx-auto mt-5 '>SID: {sessionID}</div>
+        <div className='text-white mx-auto mt-5 '>GID: {gameID}</div>
       </div>
     </div>
   );

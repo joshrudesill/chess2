@@ -24,13 +24,14 @@ const Play = () => {
       }
       console.log("connect");
       socket.auth = { sid };
+
       socket.connect();
     } else {
       router.push("/findmatch");
     }
     socket.on("sessionStart", (sid, un, uid, gid) => {
       if (gid) {
-        dispatch(setSession({ sid: sid, un: un, uid: uid, gid: gid }));
+        dispatch(setSession({ sid, un, uid, gid }));
         socket.emit("joinGameLobby", gid);
       } else {
         router.push("/findmatch");
@@ -44,6 +45,9 @@ const Play = () => {
     socket.on("gameReadyToStart", (p) => {
       setInGameRoom(true);
       setGameReady(true);
+      dispatch(setPosition(p));
+    });
+    socket.on("newPosition", (p) => {
       dispatch(setPosition(p));
     });
     socket.on("connect_error", (err) => {
