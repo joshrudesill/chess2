@@ -4,7 +4,7 @@ import "../styles/globals.css";
 function MyApp({ Component, pageProps }) {
   return (
     <Provider store={store}>
-      <div className='bg-neutral-800 overflow-x-hidden'>
+      <div>
         <Component {...pageProps} />
       </div>
     </Provider>

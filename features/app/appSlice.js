@@ -6,6 +6,15 @@ const initialState = {
     username: null,
     gameID: null,
   },
+  inGameData: {
+    white: null,
+    myTurn: null,
+    timer: 0,
+    opponentData: {
+      username: null,
+      timer: 0,
+    },
+  },
 };
 export const appSlice = createSlice({
   name: "app",
@@ -21,6 +30,13 @@ export const appSlice = createSlice({
     },
     setGame: (state, action) => {
       state.sessionDetails.gameID = action.payload;
+    },
+    setInGameData: (state, action) => {
+      const { white, myTurn, timer, opponentData } = action.payload;
+      state.inGameData.white = white;
+      state.inGameData.myTurn = myTurn;
+      state.inGameData.timer = timer;
+      state.inGameData.opponentData = opponentData;
     },
   },
 });
