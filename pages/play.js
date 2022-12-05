@@ -1,12 +1,21 @@
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Board from "../components/board";
 import { setPosition } from "../features/board/boardSlice";
-import { setGame, setSession } from "../features/app/appSlice";
+import {
+  setGame,
+  setGameStarted,
+  setGameStartTime,
+  setInGameData,
+  setSession,
+} from "../features/app/appSlice";
 import socket from "../socket";
 import Sidebar from "../components/sidebar";
 import GameInfo from "../components/gameInfo";
+import useTimer from "../util/usetimer";
+const dayjs = require("dayjs");
+var utc = require("dayjs/plugin/utc");
 
 const Play = () => {
   const a = Array.from(Array(8).keys());
@@ -16,6 +25,18 @@ const Play = () => {
   const [gameReady, setGameReady] = useState(false);
   const gameID = useSelector((state) => state.app.sessionDetails.gameID);
   const sessionID = useSelector((state) => state.app.sessionDetails.sessionID);
+  const gameStarted = useSelector((state) => state.app.inGameData.gameStarted);
+  const startTime = useSelector((state) => state.app.inGameData.startTime);
+  const {
+    ms,
+    isPaused,
+    isRunning,
+    startTimeRef,
+    startTimer,
+    stopTimer,
+    resumeTimer,
+    clearTimer,
+  } = useTimer(startTime);
   useEffect(() => {
     const sid = localStorage.getItem("sessionID");
     if (sid) {
@@ -40,14 +61,37 @@ const Play = () => {
     socket.on("gameRoomJoined", (gid) => {
       setInGameRoom(true);
       socket.emit("readyToPlay", gid);
-      console.log("gameRoom true");
     });
-    socket.on("gameReadyToStart", (p) => {
+    socket.on("gameReadyToStart", (g) => {
       setInGameRoom(true);
       setGameReady(true);
-      dispatch(setPosition(p));
+      const gameType = g.gameType;
+      const white = g.players[0].sid === sessionID ? true : false;
+      const myTurn = white;
+      const startTime = g.gameStartTime;
+      const gameStarted = startTime ? true : false;
+      const opponent = g.players.find((p) => p.sid !== sessionID);
+      const opponentData = {
+        username: opponent.username,
+        connected: opponent.connected,
+      };
+      dispatch(
+        setInGameData({ gameType, white, myTurn, startTime, opponentData })
+      );
+      if (gameStarted) {
+        dispatch(setGameStarted());
+      }
+      dispatch(setPosition(g.gameStates.at(-1)));
+    });
+    socket.on("gameStartTime", (startTime) => {
+      dispatch(setGameStarted());
+      dispatch(setGameStartTime(startTime));
     });
     socket.on("newPosition", (p) => {
+      if (!gameStarted) {
+        dispatch(setGameStarted());
+        socket.emit("setGameStartTime", dayjs().utc().toDate());
+      }
       dispatch(setPosition(p));
     });
     socket.on("connect_error", (err) => {

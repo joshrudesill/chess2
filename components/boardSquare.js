@@ -21,8 +21,7 @@ import socket from "../socket";
 const BoardSquare = ({ squareData, j, e }) => {
   const dispatch = useDispatch();
   const activePiece = useSelector((state) => state.board.activePiece);
-  const position = useSelector((state) => state.board.position);
-  const gameState = useSelector((state) => state.app.sessionDetails.gameID);
+  const myTurn = useSelector((state) => state.app.inGameData.myTurn);
 
   const onMouseDown = () => {
     if (activePiece === null && squareData.piece !== null) {

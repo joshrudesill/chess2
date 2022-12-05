@@ -7,12 +7,14 @@ const initialState = {
     gameID: null,
   },
   inGameData: {
+    gameType: null,
     white: null,
     myTurn: null,
-    timer: 0,
+    gameStarted: false,
+    startTime: null,
     opponentData: {
       username: null,
-      timer: 0,
+      connected: false,
     },
   },
 };
@@ -32,14 +34,31 @@ export const appSlice = createSlice({
       state.sessionDetails.gameID = action.payload;
     },
     setInGameData: (state, action) => {
-      const { white, myTurn, timer, opponentData } = action.payload;
+      const { gameType, white, myTurn, startTime, opponentData } =
+        action.payload;
+      console.log("WHITE: ", white);
+      console.log("myturn: ", myTurn);
+      console.log("ODATA: ", JSON.stringify(opponentData));
+      state.inGameData.gameType = gameType;
       state.inGameData.white = white;
       state.inGameData.myTurn = myTurn;
-      state.inGameData.timer = timer;
+      state.inGameData.startTime = startTime;
       state.inGameData.opponentData = opponentData;
+    },
+    setGameStarted: (state) => {
+      state.inGameData.gameStarted = true;
+    },
+    setGameStartTime: (state, action) => {
+      state.inGameData.startTime = action.payload;
     },
   },
 });
 
-export const { setSession, setGame } = appSlice.actions;
+export const {
+  setSession,
+  setGame,
+  setInGameData,
+  setGameStarted,
+  setGameStartTime,
+} = appSlice.actions;
 export default appSlice.reducer;

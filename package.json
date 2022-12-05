@@ -11,6 +11,7 @@
   "dependencies": {
     "@heroicons/react": "^2.0.13",
     "@reduxjs/toolkit": "^1.8.6",
+    "dayjs": "^1.11.6",
     "flowbite": "^1.5.4",
     "flowbite-react": "^0.3.5",
     "next": "12.3.1",

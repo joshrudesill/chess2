@@ -96,7 +96,10 @@ export default function Home() {
                 <p>Games</p>
                 <p>50</p>
               </div>
-              <p className='text-white p-3'>W/L: 20 : 29</p>
+              <p className='text-white p-3 flex flex-row justify-between'>
+                <p>W/L</p>
+                <p>20/25</p>
+              </p>
             </div>
           </div>
         </div>

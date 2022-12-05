@@ -5,7 +5,11 @@ import {
   InformationCircleIcon,
 } from "@heroicons/react/20/solid";
 import { Tooltip } from "flowbite-react";
+import { useSelector } from "react-redux";
 const GameInfo = () => {
+  const myTurn = useSelector((state) => state.app.inGameData.myTurn);
+  const startTime = useSelector((state) => state.app.inGameData.startTime);
+  const gameStarted = useSelector((state) => state.app.inGameData.gameStarted);
   return (
     <div className='lg:w-[30vw] w-11/12 border rounded-md border-neutral-600 divide-neutral-600 shadow-lg flex flex-col divide-y  text-white mx-auto md:mx-0 lg:mt-8 lg:mr-2'>
       <div className='flex justify-between p-2'>
@@ -23,16 +27,16 @@ const GameInfo = () => {
       </div>
       <div className='flex grow flex-row flex-wrap content-start text-xs'>
         <div className='flex bg-neutral-700 w-full p-1 justify-between'>
-          <div>1. Kxb2</div>
-          <div>1.3s</div>
+          <div>myTurn</div>
+          <div>{myTurn ? "True" : "False"}</div>
         </div>
         <div className='flex w-full p-1 justify-between'>
-          <div>2. e1</div>
-          <div>2.8s</div>
+          <div>StartTime</div>
+          <div>{startTime ? JSON.stringify(startTime) : "Not Set"}</div>
         </div>
         <div className='flex bg-neutral-700 w-full p-1 justify-between'>
-          <div>3. c5</div>
-          <div>4.1s</div>
+          <div>GameStarted</div>
+          <div>{gameStarted ? "True" : "False"}</div>
         </div>
       </div>
       <div className='flex flex-row flex-wrap p-1'>
