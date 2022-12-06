@@ -115,7 +115,7 @@ const initialState = {
     squaresToBeBlocked: [],
     white: null,
   },
-  firstMoveMade: false,
+  firstMove: true,
   myTurn: null,
 };
 
@@ -126,17 +126,15 @@ export const boardSlice = createSlice({
   initialState,
   reducers: {
     setTimerOffset: (state, action) => {
-      if (state.white) {
-        state.currentTimerOffset.white = action.payload;
-      } else {
-        state.currentTimerOffset.black = action.payload;
-      }
+      const { offsetW, offsetB } = action.payload;
+      state.currentTimerOffset.white = offsetW;
+      state.currentTimerOffset.black = offsetB;
     },
     setWhite: (state, action) => {
       state.white = action.payload;
     },
     setFirstMove: (state) => {
-      state.firstMoveMade = true;
+      state.firstMove = false;
     },
     setGameStartTime: (state, action) => {
       state.startTime = action.payload;
@@ -172,17 +170,17 @@ export const boardSlice = createSlice({
       state.activePiece = null;
 
       state.kingData = initialState.kingData;
-      const cto = state.white
-        ? state.currentTimerOffset.white
-        : state.currentTimerOffset.black;
+      const cto =
+        state.currentTimerOffset.white + state.currentTimerOffset.black;
       socket.emit(
         "pieceMove",
         state.position,
         cto,
         state.startTime,
-        state.firstMoveMade
+        state.firstMoveMade,
+        state.white
       );
-      state.firstMoveMade = true;
+      state.firstMove = false;
       state.kingCalculated = false;
       state.position.forEach((r) => {
         r.forEach((s) => {

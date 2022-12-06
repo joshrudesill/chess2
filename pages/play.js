@@ -106,25 +106,20 @@ const Play = () => {
         socket.emit("setGameStartTime", dayjs().utc().toDate());
       }
       if (t) {
-        let offset = 0;
-        if (whitelocal.current) {
-          console.log("adding");
-          t.forEach((t, i) => {
-            if (i === 0 || i % 2 === 0) {
-              console.log(t);
-              offset += t;
-            }
-          });
-        } else if (t.length > 1 && !whitelocal.current) {
-          console.log("adding2");
-          t.forEach((t, i) => {
-            if (i % 2 !== 0) {
-              console.log(t);
-              offset += t;
-            }
-          });
-        }
-        dispatch(setTimerOffset(offset));
+        let offsetW = 0;
+        let offsetB = 0;
+
+        t.forEach((t, i) => {
+          if (i === 0 || i % 2 === 0) {
+            console.log(t);
+            offsetW += t;
+          } else if (i % 2 !== 0) {
+            console.log(t);
+            offsetB += t;
+          }
+        });
+
+        dispatch(setTimerOffset({ offsetW, offsetB }));
       }
       dispatch(setPosition(p));
     });
