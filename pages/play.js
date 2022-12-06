@@ -2,11 +2,17 @@ import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Board from "../components/board";
-import { setPosition } from "../features/board/boardSlice";
+import {
+  setPosition,
+  setTimerOffset,
+  setGameStartTime,
+  setWhite,
+  setFirstMove,
+  setMyTurn,
+} from "../features/board/boardSlice";
 import {
   setGame,
   setGameStarted,
-  setGameStartTime,
   setInGameData,
   setSession,
 } from "../features/app/appSlice";
@@ -16,17 +22,19 @@ import GameInfo from "../components/gameInfo";
 import useTimer from "../util/usetimer";
 const dayjs = require("dayjs");
 var utc = require("dayjs/plugin/utc");
+dayjs.extend(utc);
 
 const Play = () => {
   const a = Array.from(Array(8).keys());
   const dispatch = useDispatch();
   const router = useRouter();
   const [inGameRoom, setInGameRoom] = useState(false);
-  const [gameReady, setGameReady] = useState(false);
+  const whitelocal = useRef(null);
   const gameID = useSelector((state) => state.app.sessionDetails.gameID);
   const sessionID = useSelector((state) => state.app.sessionDetails.sessionID);
   const gameStarted = useSelector((state) => state.app.inGameData.gameStarted);
-  const startTime = useSelector((state) => state.app.inGameData.startTime);
+  const startTime = useSelector((state) => state.board.startTime);
+  const white = useSelector((state) => state.board.white);
   const {
     ms,
     isPaused,
@@ -36,6 +44,7 @@ const Play = () => {
     stopTimer,
     resumeTimer,
     clearTimer,
+    resumeTimerWithOffset,
   } = useTimer(startTime);
   useEffect(() => {
     const sid = localStorage.getItem("sessionID");
@@ -64,10 +73,9 @@ const Play = () => {
     });
     socket.on("gameReadyToStart", (g) => {
       setInGameRoom(true);
-      setGameReady(true);
       const gameType = g.gameType;
-      const white = g.players[0].sid === sessionID ? true : false;
-      const myTurn = white;
+      const w = g.players[0].sid === sessionID ? true : false;
+      const myTurn = w;
       const startTime = g.gameStartTime;
       const gameStarted = startTime ? true : false;
       const opponent = g.players.find((p) => p.sid !== sessionID);
@@ -75,9 +83,13 @@ const Play = () => {
         username: opponent.username,
         connected: opponent.connected,
       };
-      dispatch(
-        setInGameData({ gameType, white, myTurn, startTime, opponentData })
-      );
+      dispatch(setInGameData({ gameType, w, myTurn, startTime, opponentData }));
+      dispatch(setMyTurn(w));
+      dispatch(setWhite(w));
+      whitelocal.current = w;
+      if (w) {
+        dispatch(setFirstMove());
+      }
       if (gameStarted) {
         dispatch(setGameStarted());
       }
@@ -87,10 +99,32 @@ const Play = () => {
       dispatch(setGameStarted());
       dispatch(setGameStartTime(startTime));
     });
-    socket.on("newPosition", (p) => {
-      if (!gameStarted) {
-        dispatch(setGameStarted());
+    socket.on("newPosition", (p, t) => {
+      console.log(whitelocal);
+      dispatch(setMyTurn(true));
+      if (t.length === 1) {
         socket.emit("setGameStartTime", dayjs().utc().toDate());
+      }
+      if (t) {
+        let offset = 0;
+        if (whitelocal.current) {
+          console.log("adding");
+          t.forEach((t, i) => {
+            if (i === 0 || i % 2 === 0) {
+              console.log(t);
+              offset += t;
+            }
+          });
+        } else if (t.length > 1 && !whitelocal.current) {
+          console.log("adding2");
+          t.forEach((t, i) => {
+            if (i % 2 !== 0) {
+              console.log(t);
+              offset += t;
+            }
+          });
+        }
+        dispatch(setTimerOffset(offset));
       }
       dispatch(setPosition(p));
     });
@@ -102,10 +136,13 @@ const Play = () => {
 
     return () => {};
   }, []);
+
   return (
     <div className='flex flex-row gap-5 overflow-x-hidden'>
       <Sidebar />
       <div className='flex w-[85vmin] md:w-max mx-auto md:mx-0 flex-col lg:flex-row gap-3 md:ml-48 overflow-x-hidden'>
+        {whitelocal !== undefined ? "d" : "ud"}
+        {whitelocal ? "true" : "false"}
         <Board />
         <GameInfo />
       </div>

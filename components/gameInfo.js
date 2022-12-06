@@ -7,9 +7,11 @@ import {
 import { Tooltip } from "flowbite-react";
 import { useSelector } from "react-redux";
 const GameInfo = () => {
-  const myTurn = useSelector((state) => state.app.inGameData.myTurn);
-  const startTime = useSelector((state) => state.app.inGameData.startTime);
+  const myTurn = useSelector((state) => state.board.myTurn);
+  const startTime = useSelector((state) => state.board.startTime);
   const gameStarted = useSelector((state) => state.app.inGameData.gameStarted);
+  const cto = useSelector((state) => state.board.currentTimerOffset);
+  const white = useSelector((state) => state.board.white);
   return (
     <div className='lg:w-[30vw] w-11/12 border rounded-md border-neutral-600 divide-neutral-600 shadow-lg flex flex-col divide-y  text-white mx-auto md:mx-0 lg:mt-8 lg:mr-2'>
       <div className='flex justify-between p-2'>
@@ -37,6 +39,16 @@ const GameInfo = () => {
         <div className='flex bg-neutral-700 w-full p-1 justify-between'>
           <div>GameStarted</div>
           <div>{gameStarted ? "True" : "False"}</div>
+        </div>
+        <div className='flex bg-neutral-700 w-full p-1 justify-between'>
+          <div>CTO</div>
+          <div>
+            {cto.white}:{cto.black}
+          </div>
+        </div>
+        <div className='flex bg-neutral-700 w-full p-1 justify-between'>
+          <div>White</div>
+          <div>{white ? "True" : "False"}</div>
         </div>
       </div>
       <div className='flex flex-row flex-wrap p-1'>

@@ -1,20 +1,18 @@
 const dayjs = require("dayjs");
 var utc = require("dayjs/plugin/utc");
-const { useRef, useState } = require("react");
 dayjs.extend(utc);
+const { useRef, useState } = require("react");
 const useTimer = (startTime) => {
-  const [playerOneMS, setPlayerOneMS] = useState(0);
-  const [playerTwoMS, setPlayerTwoMS] = useState(0);
+  const [ms, setMS] = useState(0);
   const startTimeRef = useRef(null);
-  const intermediateTimeRefOne = useRef(null);
-  const intermediateTimeRefTwo = useRef(null);
+  const intermediateTimeRef = useRef(null);
   const timerRef = useRef(null);
   const [isPaused, setIsPaused] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
 
   const startTimer = () => {
     clearInterval(timerRef.current);
-    startTimeRef.current = dayjs(startTime).utc();
+    startTimeRef.current = startTime;
     setIsRunning(true);
     timerRef.current = setInterval(() => {
       const diff = startTimeRef.current.diff(dayjs().utc(), "ms");
@@ -24,6 +22,18 @@ const useTimer = (startTime) => {
   const stopTimer = () => {
     clearInterval(timerRef.current);
     setIsPaused(true);
+  };
+  const resumeTimerWithOffset = (offset) => {
+    clearInterval(timerRef.current);
+    setIsRunning(true);
+    setIsPaused(false);
+    intermediateTimeRef.current = offset;
+    timerRef.current = setInterval(() => {
+      const diff =
+        startTimeRef.current.diff(dayjs().utc(), "ms") -
+        intermediateTimeRef.current;
+      setMS(diff);
+    }, 100);
   };
   const resumeTimer = () => {
     clearInterval(timerRef.current);
@@ -56,6 +66,7 @@ const useTimer = (startTime) => {
     stopTimer,
     clearTimer,
     resumeTimer,
+    resumeTimerWithOffset,
   };
 };
 

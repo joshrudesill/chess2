@@ -21,72 +21,76 @@ import socket from "../socket";
 const BoardSquare = ({ squareData, j, e }) => {
   const dispatch = useDispatch();
   const activePiece = useSelector((state) => state.board.activePiece);
-  const myTurn = useSelector((state) => state.app.inGameData.myTurn);
+  const myTurn = useSelector((state) => state.board.myTurn);
 
   const onMouseDown = () => {
-    if (activePiece === null && squareData.piece !== null) {
-      dispatch(setActivePiece(squareData.piece));
-    } else if (activePiece && squareData.piece === null) {
-      if (
-        activePiece.legalMoves.some((e) => {
-          if (e.x === squareData.x && e.y == squareData.y) {
-            return true;
-          }
-          return false;
-        })
+    if (myTurn) {
+      if (activePiece === null && squareData.piece !== null) {
+        dispatch(setActivePiece(squareData.piece));
+      } else if (activePiece && squareData.piece === null) {
+        if (
+          activePiece.legalMoves.some((e) => {
+            if (e.x === squareData.x && e.y == squareData.y) {
+              return true;
+            }
+            return false;
+          })
+        ) {
+          dispatch(changePieceAtSquare(squareData));
+        }
+      } else if (
+        activePiece &&
+        squareData.piece &&
+        activePiece.white === squareData.piece.white
       ) {
-        dispatch(changePieceAtSquare(squareData));
-      }
-    } else if (
-      activePiece &&
-      squareData.piece &&
-      activePiece.white === squareData.piece.white
-    ) {
-      dispatch(setActivePiece(squareData.piece));
-    } else if (
-      activePiece &&
-      squareData.piece &&
-      activePiece.white !== squareData.piece.white
-    ) {
-      if (
-        activePiece.legalMoves.some((e) => {
-          if (e.x === squareData.x && e.y == squareData.y) {
-            return true;
-          }
-          return false;
-        })
+        dispatch(setActivePiece(squareData.piece));
+      } else if (
+        activePiece &&
+        squareData.piece &&
+        activePiece.white !== squareData.piece.white
       ) {
-        dispatch(capturePiece({ toBeCaptured: squareData.piece }));
+        if (
+          activePiece.legalMoves.some((e) => {
+            if (e.x === squareData.x && e.y == squareData.y) {
+              return true;
+            }
+            return false;
+          })
+        ) {
+          dispatch(capturePiece({ toBeCaptured: squareData.piece }));
+        }
       }
     }
   };
 
   const onMouseUp = () => {
-    if (activePiece !== null && squareData.piece === null) {
-      if (
-        activePiece.legalMoves.some((e) => {
-          if (e.x === squareData.x && e.y == squareData.y) {
-            return true;
-          }
-          return false;
-        })
+    if (myTurn) {
+      if (activePiece !== null && squareData.piece === null) {
+        if (
+          activePiece.legalMoves.some((e) => {
+            if (e.x === squareData.x && e.y == squareData.y) {
+              return true;
+            }
+            return false;
+          })
+        ) {
+          dispatch(changePieceAtSquare(squareData));
+        }
+      } else if (
+        activePiece &&
+        squareData.piece &&
+        activePiece.white !== squareData.piece.white
       ) {
-        dispatch(changePieceAtSquare(squareData));
-      }
-    } else if (
-      activePiece &&
-      squareData.piece &&
-      activePiece.white !== squareData.piece.white
-    ) {
-      if (
-        activePiece.legalMoves.some((e) => {
-          if (e.x === squareData.x && e.y == squareData.y) {
-            return true;
-          }
-          return false;
-        })
-      ) {
-        dispatch(capturePiece({ toBeCaptured: squareData.piece }));
+        if (
+          activePiece.legalMoves.some((e) => {
+            if (e.x === squareData.x && e.y == squareData.y) {
+              return true;
+            }
+            return false;
+          })
+        ) {
+          dispatch(capturePiece({ toBeCaptured: squareData.piece }));
+        }
       }
     }
   };

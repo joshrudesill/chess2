@@ -1,5 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 import socket from "../../socket";
+const dayjs = require("dayjs");
+var utc = require("dayjs/plugin/utc");
+dayjs.extend(utc);
 /*
 
 /*
@@ -100,12 +103,20 @@ const initialState = {
   position: is,
   activePiece: null,
   kingCalculated: false,
+  currentTimerOffset: {
+    white: 0,
+    black: 0,
+  },
+  startTime: null,
+  white: null,
   kingData: {
     inCheck: false,
     checkingPiece: null,
     squaresToBeBlocked: [],
     white: null,
   },
+  firstMoveMade: false,
+  myTurn: null,
 };
 
 // search all legal moves and remove any not in sqauresToBeBlocked
@@ -114,6 +125,25 @@ export const boardSlice = createSlice({
   name: "board",
   initialState,
   reducers: {
+    setTimerOffset: (state, action) => {
+      if (state.white) {
+        state.currentTimerOffset.white = action.payload;
+      } else {
+        state.currentTimerOffset.black = action.payload;
+      }
+    },
+    setWhite: (state, action) => {
+      state.white = action.payload;
+    },
+    setFirstMove: (state) => {
+      state.firstMoveMade = true;
+    },
+    setGameStartTime: (state, action) => {
+      state.startTime = action.payload;
+    },
+    setMyTurn: (state, action) => {
+      state.myTurn = action.payload;
+    },
     setPosition: (state, action) => {
       state.position = action.payload;
 
@@ -129,6 +159,7 @@ export const boardSlice = createSlice({
       });
     },
     changePieceAtSquare: (state, action) => {
+      state.myTurn = false;
       const { x, y } = action.payload;
       state.position[state.activePiece.x][state.activePiece.y].piece = null;
       state.position[x][y].piece = state.activePiece;
@@ -141,7 +172,17 @@ export const boardSlice = createSlice({
       state.activePiece = null;
 
       state.kingData = initialState.kingData;
-      socket.emit("pieceMove", state.position);
+      const cto = state.white
+        ? state.currentTimerOffset.white
+        : state.currentTimerOffset.black;
+      socket.emit(
+        "pieceMove",
+        state.position,
+        cto,
+        state.startTime,
+        state.firstMoveMade
+      );
+      state.firstMoveMade = true;
       state.kingCalculated = false;
       state.position.forEach((r) => {
         r.forEach((s) => {
@@ -246,6 +287,11 @@ export const {
   checkKing,
   recheckLegalMoves,
   setPosition,
+  setGameStartTime,
+  setTimerOffset,
+  setWhite,
+  setFirstMove,
+  setMyTurn,
 } = boardSlice.actions;
 
 export default boardSlice.reducer;
