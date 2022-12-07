@@ -1,14 +1,29 @@
 import { UserCircleIcon } from "@heroicons/react/20/solid";
+import dayjs from "dayjs";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import Board from "../components/board";
 import Sidebar from "../components/sidebar";
+import useTimer from "../util/usetimer";
 const logo = require("../assets/Frame1.svg");
 export default function Home() {
   const activePiece = useSelector((state) => state.board.activePiece);
   const check = useSelector((state) => state.board.kingData.squaresToBeBlocked);
   const [Socket, st] = useState("");
+  const {
+    ms,
+    isPaused,
+    isRunning,
+    startTimeRef,
+    startTimer,
+    stopTimer,
+    resumeTimer,
+    clearTimer,
+    resumeTimerWithOffset,
+    formattedTime,
+    tt,
+  } = useTimer(10);
   return (
     <div className='flex flex-row gap-5 overflow-x-hidden'>
       <Sidebar />
@@ -91,7 +106,32 @@ export default function Home() {
               </div>
             </div>
             <div className='bg-neutral-600 basis-1/3 rounded-md flex flex-col divide-y divide-neutral-500'>
-              <p className='text-white p-3'>Stats</p>
+              <p className='text-white p-3'>
+                {formattedTime} - {ms} - {tt}
+              </p>
+              <div className='text-white p-3 flex flex-row justify-between'>
+                <button
+                  className='border p-1'
+                  onClick={() => {
+                    const s = dayjs().utc();
+                    startTimer(s);
+                  }}
+                >
+                  Start
+                </button>
+                <button className='border p-1' onClick={() => stopTimer()}>
+                  STOP
+                </button>
+                <button
+                  className='border p-1'
+                  onClick={() => resumeTimerWithOffset(5000)}
+                >
+                  ResumeO
+                </button>
+                <button className='border p-1' onClick={() => clearTimer()}>
+                  Start
+                </button>
+              </div>
               <div className='text-white p-3 flex flex-row justify-between'>
                 <p>Games</p>
                 <p>50</p>
