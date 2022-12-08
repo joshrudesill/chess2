@@ -172,14 +172,20 @@ export const boardSlice = createSlice({
       state.kingData = initialState.kingData;
       const cto =
         state.currentTimerOffset.white + state.currentTimerOffset.black;
-      socket.emit(
-        "pieceMove",
-        state.position,
-        cto,
-        state.startTime,
-        state.firstMoveMade,
-        state.white
-      );
+      console.log("FM: ", state.firstMove);
+      if (state.firstMove) {
+        console.log("sending first move");
+        socket.emit("firstMove", state.position);
+      } else {
+        socket.emit(
+          "pieceMove",
+          state.position,
+          cto,
+          state.startTime,
+          state.firstMove,
+          state.white
+        );
+      }
       state.firstMove = false;
       state.kingCalculated = false;
       state.position.forEach((r) => {

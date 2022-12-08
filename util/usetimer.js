@@ -42,7 +42,7 @@ const useTimer = (timeF) => {
     clearInterval(timerRef.current);
     setIsRunning(true);
     setIsPaused(false);
-    intermediateTimeRef.current = offset;
+    totalTimeMS.current = 60000 * timeF;
     const startTimeIntermediate = dayjs().utc().subtract(offset, "ms");
     timerRef.current = setInterval(() => {
       const diff = startTimeIntermediate.diff(dayjs().utc(), "ms");

@@ -34,18 +34,11 @@ const Play = () => {
   const sessionID = useSelector((state) => state.app.sessionDetails.sessionID);
   const gameStarted = useSelector((state) => state.app.inGameData.gameStarted);
   const startTime = useSelector((state) => state.board.startTime);
+  const timerOffset = useSelector((state) => state.board.currentTimerOffset);
+  const myTurn = useSelector((state) => state.board.myTurn);
   const white = useSelector((state) => state.board.white);
-  const {
-    ms,
-    isPaused,
-    isRunning,
-    startTimeRef,
-    startTimer,
-    stopTimer,
-    resumeTimer,
-    clearTimer,
-    resumeTimerWithOffset,
-  } = useTimer(startTime);
+  const myTimer = useTimer(10);
+  const oppTimer = useTimer(10);
   useEffect(() => {
     const sid = localStorage.getItem("sessionID");
     if (sid) {
@@ -72,6 +65,7 @@ const Play = () => {
       socket.emit("readyToPlay", gid);
     });
     socket.on("gameReadyToStart", (g) => {
+      //check for dc stuff
       setInGameRoom(true);
       const gameType = g.gameType;
       const w = g.players[0].sid === sessionID ? true : false;
@@ -87,24 +81,26 @@ const Play = () => {
       dispatch(setMyTurn(w));
       dispatch(setWhite(w));
       whitelocal.current = w;
-      if (w) {
-        dispatch(setFirstMove());
-      }
+
       if (gameStarted) {
         dispatch(setGameStarted());
       }
       dispatch(setPosition(g.gameStates.at(-1)));
     });
     socket.on("gameStartTime", (startTime) => {
-      dispatch(setGameStarted());
       dispatch(setGameStartTime(startTime));
     });
-    socket.on("newPosition", (p, t) => {
-      console.log(whitelocal);
+    socket.on("firstMove", (position) => {
+      let offsetW = 0;
+      let offsetB = 0;
+      dispatch(setGameStarted());
+      dispatch(setFirstMove());
+      dispatch(setTimerOffset({ offsetW, offsetB }));
       dispatch(setMyTurn(true));
-      if (t.length === 1) {
-        socket.emit("setGameStartTime", dayjs().utc().toDate());
-      }
+      dispatch(setPosition(position));
+    });
+    socket.on("newPosition", (p, t) => {
+      dispatch(setGameStarted());
       if (t) {
         let offsetW = 0;
         let offsetB = 0;
@@ -120,6 +116,7 @@ const Play = () => {
         });
 
         dispatch(setTimerOffset({ offsetW, offsetB }));
+        dispatch(setMyTurn(true));
       }
       dispatch(setPosition(p));
     });
@@ -128,16 +125,42 @@ const Play = () => {
         router.push("/findmatch");
       }
     });
-
     return () => {};
   }, []);
 
+  useEffect(() => {
+    if (myTurn && gameStarted) {
+      console.log("I am starting my timer");
+      console.log(white);
+      var myOffset = 0;
+      if (white) {
+        myOffset = timerOffset.white;
+      } else {
+        myOffset = timerOffset.black;
+      }
+      myTimer.resumeTimerWithOffset(myOffset);
+      oppTimer.stopTimer();
+    } else if (!myTurn && gameStarted) {
+      //start opp timer with delay
+      console.log("I am starting the opp timer");
+      console.log(white);
+      var oppOffset = 0;
+      if (white) {
+        oppOffset = timerOffset.black;
+      } else {
+        oppOffset = timerOffset.white;
+      }
+      oppTimer.resumeTimerWithOffset(oppOffset);
+      myTimer.stopTimer();
+    }
+  }, [myTurn]);
   return (
     <div className='flex flex-row gap-5 overflow-x-hidden'>
       <Sidebar />
       <div className='flex w-[85vmin] md:w-max mx-auto md:mx-0 flex-col lg:flex-row gap-3 md:ml-48 overflow-x-hidden'>
-        {whitelocal !== undefined ? "d" : "ud"}
-        {whitelocal ? "true" : "false"}
+        {myTimer.formattedTime}
+        <br />
+        {oppTimer.formattedTime}
         <Board />
         <GameInfo />
       </div>
