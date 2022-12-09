@@ -12,6 +12,10 @@ const useTimer = (timeF) => {
   const [isPaused, setIsPaused] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
 
+  const initTimer = (startTime, timeF) => {
+    startTimeRef.current = dayjs(startTime).utc();
+    totalTimeMS.current = 60000 * timeF;
+  };
   const startTimer = (startTime) => {
     clearInterval(timerRef.current);
     startTimeRef.current = startTime;
@@ -38,14 +42,28 @@ const useTimer = (timeF) => {
     clearInterval(timerRef.current);
     setIsPaused(true);
   };
-  const resumeTimerWithOffset = (offset) => {
+  const resumeTimerWithOffset = (myOffset, oppOffset) => {
     clearInterval(timerRef.current);
     setIsRunning(true);
     setIsPaused(false);
-    totalTimeMS.current = 60000 * timeF;
-    const startTimeIntermediate = dayjs().utc().subtract(offset, "ms");
+
+    const lastMoveMadeAt = startTimeRef.current.add(myOffset + oppOffset, "ms");
+    const serverDelay = Math.abs(lastMoveMadeAt.diff());
+    console.log("SD: ", serverDelay);
+    console.log(
+      "Last move made at: ",
+      lastMoveMadeAt.format("YYYY-MM-DDTHH:mm:ss:SSS")
+    );
+    console.log(
+      "Current Time: ",
+      dayjs().utc().format("YYYY-MM-DDTHH:mm:ss:SSS")
+    );
     timerRef.current = setInterval(() => {
-      const diff = startTimeIntermediate.diff(dayjs().utc(), "ms");
+      const diff = startTimeRef.current.diff(
+        dayjs()
+          .utc()
+          .subtract(myOffset - serverDelay, "ms")
+      );
       setMS(diff);
       const ctd = totalTimeMS.current - Math.abs(diff);
       var ftm;
@@ -93,6 +111,8 @@ const useTimer = (timeF) => {
     resumeTimer,
     resumeTimerWithOffset,
     formattedTime,
+    initTimer,
+    intermediateTimeRef,
   };
 };
 

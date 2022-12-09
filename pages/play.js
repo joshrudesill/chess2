@@ -88,6 +88,8 @@ const Play = () => {
       dispatch(setPosition(g.gameStates.at(-1)));
     });
     socket.on("gameStartTime", (startTime) => {
+      myTimer.initTimer(startTime, 10);
+      oppTimer.initTimer(startTime, 10);
       dispatch(setGameStartTime(startTime));
     });
     socket.on("firstMove", (position) => {
@@ -107,14 +109,13 @@ const Play = () => {
 
         t.forEach((t, i) => {
           if (i === 0 || i % 2 === 0) {
-            console.log(t);
             offsetW += t;
           } else if (i % 2 !== 0) {
-            console.log(t);
             offsetB += t;
           }
         });
-
+        console.log("OB: ", offsetB);
+        console.log("OW: ", offsetW);
         dispatch(setTimerOffset({ offsetW, offsetB }));
         dispatch(setMyTurn(true));
       }
@@ -130,27 +131,31 @@ const Play = () => {
 
   useEffect(() => {
     if (myTurn && gameStarted) {
-      console.log("I am starting my timer");
       console.log(white);
       var myOffset = 0;
+      var oppOffset = 0;
       if (white) {
         myOffset = timerOffset.white;
+        oppOffset = timerOffset.black;
       } else {
         myOffset = timerOffset.black;
+        oppOffset = timerOffset.white;
       }
-      myTimer.resumeTimerWithOffset(myOffset);
+      myTimer.resumeTimerWithOffset(myOffset, oppOffset);
       oppTimer.stopTimer();
     } else if (!myTurn && gameStarted) {
       //start opp timer with delay
-      console.log("I am starting the opp timer");
-      console.log(white);
+      var myOffset = 0;
       var oppOffset = 0;
       if (white) {
+        myOffset = timerOffset.white;
         oppOffset = timerOffset.black;
       } else {
+        myOffset = timerOffset.black;
         oppOffset = timerOffset.white;
       }
-      oppTimer.resumeTimerWithOffset(oppOffset);
+      oppTimer.resumeTimerWithOffset(myOffset, oppOffset);
+      //resume timer from where its at, possibly send time stamps
       myTimer.stopTimer();
     }
   }, [myTurn]);
@@ -161,6 +166,14 @@ const Play = () => {
         {myTimer.formattedTime}
         <br />
         {oppTimer.formattedTime}
+        <br />
+        {myTimer.intermediateTimeRef.current
+          ? myTimer.intermediateTimeRef.current.format(" YYYY-MM-DDTHH:mm:SSS")
+          : "f"}
+        <br />
+        {oppTimer.intermediateTimeRef.current
+          ? oppTimer.intermediateTimeRef.current.format(" YYYY-MM-DDTHH:mm:SSS")
+          : "f"}
         <Board />
         <GameInfo />
       </div>
