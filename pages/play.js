@@ -102,7 +102,9 @@ const Play = () => {
           .utc()
           .add(offsetB + offsetW);
         const diffToReconnect = Math.abs(lastMoveTime.diff());
-        dispatch(setMoveInTime(lastMoveTime));
+        const s = lastMoveTime.toISOString();
+        console.log("ST: ", s);
+        dispatch(setMoveInTime(s));
         const myOffset = w ? timerOffset.white : timerOffset.black;
         const oppOffset = w ? timerOffset.black : timerOffset.white;
         if (whiteTurn === w) {
@@ -137,6 +139,13 @@ const Play = () => {
       myTimer.initTimer(startTime, 10);
       oppTimer.initTimer(startTime, 10);
       dispatch(setGameStartTime(startTime));
+      const myOffset = white ? timerOffset.white : timerOffset.black;
+      const oppOffset = white ? timerOffset.black : timerOffset.white;
+      if (myTurn) {
+        myTimer.resumeTimerWithOffset(myOffset);
+        myTimer.stopTimer();
+        oppTimer.resumeTimerWithOffset(oppOffset);
+      }
     });
     socket.on("firstMove", (position) => {
       let offsetW = 0;

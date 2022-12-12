@@ -176,9 +176,7 @@ export const boardSlice = createSlice({
       state.kingData = initialState.kingData;
       const cto =
         state.currentTimerOffset.white + state.currentTimerOffset.black;
-      console.log("FM: ", state.firstMove);
       if (state.firstMove) {
-        console.log("sending first move");
         socket.emit("firstMove", state.position);
       } else {
         socket.emit(
