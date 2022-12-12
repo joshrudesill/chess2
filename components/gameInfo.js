@@ -6,21 +6,35 @@ import {
 } from "@heroicons/react/20/solid";
 import { Tooltip } from "flowbite-react";
 import { useSelector } from "react-redux";
-const GameInfo = () => {
+const GameInfo = ({ myTimer, oppTimer }) => {
   const myTurn = useSelector((state) => state.board.myTurn);
   const startTime = useSelector((state) => state.board.startTime);
   const gameStarted = useSelector((state) => state.app.inGameData.gameStarted);
   const cto = useSelector((state) => state.board.currentTimerOffset);
   const white = useSelector((state) => state.board.white);
+
   return (
     <div className='lg:w-[30vw] w-11/12 border rounded-md border-neutral-600 divide-neutral-600 shadow-lg flex flex-col divide-y  text-white mx-auto md:mx-0 lg:mt-8 lg:mr-2'>
-      <div className='flex justify-between p-2'>
-        <p className='font-mono md:text-2xl lg:text-xl mr-4 border rounded-lg px-2'>
-          8:42
-        </p>
-        <p className='font-mono md:text-2xl text-neutral-400 lg:text-xl ml-4'>
-          9:21
-        </p>
+      <div className='flex justify-between p-2 text-black'>
+        {myTurn ? (
+          <>
+            <p className='font-mono md:text-2xl lg:text-2xl border bg-white rounded-lg px-2'>
+              {myTimer.formattedTime}
+            </p>
+            <p className='font-mono md:text-2xl rounded-lg text-gray-500 bg-neutral-400 lg:text-2xl px-2'>
+              {oppTimer.formattedTime}
+            </p>
+          </>
+        ) : (
+          <>
+            <p className='font-mono md:text-2xl rounded-lg text-gray-500 bg-neutral-400 lg:text-2xl px-2'>
+              {myTimer.formattedTime}
+            </p>
+            <p className='font-mono md:text-2xl lg:text-2xl bg-white rounded-lg px-2 '>
+              {oppTimer.formattedTime}
+            </p>
+          </>
+        )}
       </div>
       <div className='flex flex-row justify-center gap-x-1 p-3 text-xs'>
         <p className='font-sans xl:text-lg '>CornMan123</p>

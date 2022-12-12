@@ -34,11 +34,9 @@ export const appSlice = createSlice({
       state.sessionDetails.gameID = action.payload;
     },
     setInGameData: (state, action) => {
-      const { gameType, white, myTurn, startTime, opponentData } =
-        action.payload;
+      const { gameType, white, startTime, opponentData } = action.payload;
       state.inGameData.gameType = gameType;
       state.inGameData.white = white;
-      state.inGameData.myTurn = myTurn;
       state.inGameData.startTime = startTime;
       state.inGameData.opponentData = opponentData;
     },

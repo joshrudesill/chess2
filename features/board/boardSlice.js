@@ -109,6 +109,7 @@ const initialState = {
   },
   startTime: null,
   white: null,
+  moveInTime: null,
   kingData: {
     inCheck: false,
     checkingPiece: null,
@@ -129,6 +130,9 @@ export const boardSlice = createSlice({
       const { offsetW, offsetB } = action.payload;
       state.currentTimerOffset.white = offsetW;
       state.currentTimerOffset.black = offsetB;
+    },
+    setMoveInTime: (state, action) => {
+      state.moveInTime = action.payload;
     },
     setWhite: (state, action) => {
       state.white = action.payload;
@@ -182,8 +186,7 @@ export const boardSlice = createSlice({
           state.position,
           cto,
           state.startTime,
-          state.firstMove,
-          state.white
+          state.moveInTime
         );
       }
       state.firstMove = false;
@@ -296,6 +299,7 @@ export const {
   setWhite,
   setFirstMove,
   setMyTurn,
+  setMoveInTime,
 } = boardSlice.actions;
 
 export default boardSlice.reducer;

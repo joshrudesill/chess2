@@ -9,6 +9,7 @@ import {
   setWhite,
   setFirstMove,
   setMyTurn,
+  setMoveInTime,
 } from "../features/board/boardSlice";
 import {
   setGame,
@@ -37,6 +38,8 @@ const Play = () => {
   const timerOffset = useSelector((state) => state.board.currentTimerOffset);
   const myTurn = useSelector((state) => state.board.myTurn);
   const white = useSelector((state) => state.board.white);
+  const [c2s, setC2S] = useState(0);
+  const [c2st, setC2St] = useState("");
   const myTimer = useTimer(10);
   const oppTimer = useTimer(10);
   useEffect(() => {
@@ -60,31 +63,74 @@ const Play = () => {
         router.push("/findmatch");
       }
     });
+    socket.on("c2sr", (t) => {
+      const d = dayjs(t).diff();
+      setC2S(d);
+    });
     socket.on("gameRoomJoined", (gid) => {
       setInGameRoom(true);
       socket.emit("readyToPlay", gid);
     });
     socket.on("gameReadyToStart", (g) => {
-      //check for dc stuff
-      setInGameRoom(true);
-      const gameType = g.gameType;
       const w = g.players[0].sid === sessionID ? true : false;
-      const myTurn = w;
-      const startTime = g.gameStartTime;
-      const gameStarted = startTime ? true : false;
+      const gameType = g.gameType;
       const opponent = g.players.find((p) => p.sid !== sessionID);
       const opponentData = {
         username: opponent.username,
         connected: opponent.connected,
       };
-      dispatch(setInGameData({ gameType, w, myTurn, startTime, opponentData }));
-      dispatch(setMyTurn(w));
       dispatch(setWhite(w));
-      whitelocal.current = w;
-
-      if (gameStarted) {
+      if (g.moveTimes.length > 0 || g.gameStartTime !== null) {
         dispatch(setGameStarted());
+        let offsetW = 0;
+        let offsetB = 0;
+
+        g.moveTimes.forEach((t, i) => {
+          if (i === 0 || i % 2 === 0) {
+            offsetW += t;
+          } else if (i % 2 !== 0) {
+            offsetB += t;
+          }
+        });
+        //game started
+
+        const startTime = g.gameStartTime;
+        const whiteTurn = g.moveTimes.length % 2 === 0;
+        myTimer.initTimer(startTime, 10);
+        oppTimer.initTimer(startTime, 10);
+        const lastMoveTime = dayjs(startTime)
+          .utc()
+          .add(offsetB + offsetW);
+        const diffToReconnect = Math.abs(lastMoveTime.diff());
+        dispatch(setMoveInTime(lastMoveTime));
+        const myOffset = w ? timerOffset.white : timerOffset.black;
+        const oppOffset = w ? timerOffset.black : timerOffset.white;
+        if (whiteTurn === w) {
+          dispatch(setMyTurn(true));
+          //if its my move, get last move time from move time list
+          myTimer.resumeTimerWithOffset(myOffset + diffToReconnect);
+          oppTimer.resumeTimerWithOffset(oppOffset);
+          oppTimer.stopTimer();
+          //set opptimer and pause
+        } else {
+          dispatch(setMyTurn(false));
+          oppTimer.resumeTimerWithOffset(oppOffset + diffToReconnect);
+          myTimer.resumeTimerWithOffset(myOffset);
+          myTimer.stopTimer();
+        }
+        dispatch(setInGameData({ gameType, w, startTime, opponentData }));
+        //init timer and ..
+        //resume timer with my offset plus the diff between last move made and now
+        //set other data
+        //else
+        //set other data and init timers, new method to set and pause timer
+      } else {
+        dispatch(setMyTurn(w));
       }
+      setInGameRoom(true);
+
+      dispatch(setInGameData({ gameType, w, startTime, opponentData }));
+      whitelocal.current = w;
       dispatch(setPosition(g.gameStates.at(-1)));
     });
     socket.on("gameStartTime", (startTime) => {
@@ -95,6 +141,7 @@ const Play = () => {
     socket.on("firstMove", (position) => {
       let offsetW = 0;
       let offsetB = 0;
+      dispatch(setMoveInTime(dayjs().utc().toISOString()));
       dispatch(setGameStarted());
       dispatch(setFirstMove());
       dispatch(setTimerOffset({ offsetW, offsetB }));
@@ -103,6 +150,7 @@ const Play = () => {
     });
     socket.on("newPosition", (p, t) => {
       dispatch(setGameStarted());
+      dispatch(setMoveInTime(dayjs().utc().toISOString()));
       if (t) {
         let offsetW = 0;
         let offsetB = 0;
@@ -141,7 +189,7 @@ const Play = () => {
         myOffset = timerOffset.black;
         oppOffset = timerOffset.white;
       }
-      myTimer.resumeTimerWithOffset(myOffset, oppOffset);
+      myTimer.resumeTimerWithOffset(myOffset);
       oppTimer.stopTimer();
     } else if (!myTurn && gameStarted) {
       //start opp timer with delay
@@ -154,7 +202,7 @@ const Play = () => {
         myOffset = timerOffset.black;
         oppOffset = timerOffset.white;
       }
-      oppTimer.resumeTimerWithOffset(myOffset, oppOffset);
+      oppTimer.resumeTimerWithOffset(oppOffset);
       //resume timer from where its at, possibly send time stamps
       myTimer.stopTimer();
     }
@@ -163,19 +211,25 @@ const Play = () => {
     <div className='flex flex-row gap-5 overflow-x-hidden'>
       <Sidebar />
       <div className='flex w-[85vmin] md:w-max mx-auto md:mx-0 flex-col lg:flex-row gap-3 md:ml-48 overflow-x-hidden'>
-        {myTimer.formattedTime}
-        <br />
-        {oppTimer.formattedTime}
-        <br />
-        {myTimer.intermediateTimeRef.current
-          ? myTimer.intermediateTimeRef.current.format(" YYYY-MM-DDTHH:mm:SSS")
-          : "f"}
-        <br />
-        {oppTimer.intermediateTimeRef.current
-          ? oppTimer.intermediateTimeRef.current.format(" YYYY-MM-DDTHH:mm:SSS")
-          : "f"}
         <Board />
-        <GameInfo />
+        <GameInfo myTimer={myTimer} oppTimer={oppTimer} />
+        <button
+          onClick={() => {
+            socket.emit("c2c", dayjs.utc().toISOString());
+          }}
+        >
+          C2C
+        </button>
+        <button
+          onClick={() => {
+            setC2St(dayjs().utc().toISOString());
+            socket.emit("c2s", dayjs.utc().toISOString());
+          }}
+        >
+          C2S
+        </button>
+        <p>{c2s}</p>
+        <p>{c2st}</p>
       </div>
     </div>
   );

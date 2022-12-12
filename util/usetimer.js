@@ -15,6 +15,7 @@ const useTimer = (timeF) => {
   const initTimer = (startTime, timeF) => {
     startTimeRef.current = dayjs(startTime).utc();
     totalTimeMS.current = 60000 * timeF;
+    setFT(`${timeF}:00`);
   };
   const startTimer = (startTime) => {
     clearInterval(timerRef.current);
@@ -42,28 +43,13 @@ const useTimer = (timeF) => {
     clearInterval(timerRef.current);
     setIsPaused(true);
   };
-  const resumeTimerWithOffset = (myOffset, oppOffset) => {
+  const resumeTimerWithOffset = (myOffset) => {
     clearInterval(timerRef.current);
     setIsRunning(true);
     setIsPaused(false);
-
-    const lastMoveMadeAt = startTimeRef.current.add(myOffset + oppOffset, "ms");
-    const serverDelay = Math.abs(lastMoveMadeAt.diff());
-    console.log("SD: ", serverDelay);
-    console.log(
-      "Last move made at: ",
-      lastMoveMadeAt.format("YYYY-MM-DDTHH:mm:ss:SSS")
-    );
-    console.log(
-      "Current Time: ",
-      dayjs().utc().format("YYYY-MM-DDTHH:mm:ss:SSS")
-    );
+    intermediateTimeRef.current = dayjs().utc().subtract(myOffset, "ms");
     timerRef.current = setInterval(() => {
-      const diff = startTimeRef.current.diff(
-        dayjs()
-          .utc()
-          .subtract(myOffset - serverDelay, "ms")
-      );
+      const diff = intermediateTimeRef.current.diff();
       setMS(diff);
       const ctd = totalTimeMS.current - Math.abs(diff);
       var ftm;
@@ -78,17 +64,9 @@ const useTimer = (timeF) => {
       setFT(`${ftm}:${fts < 10 ? `0${fts}` : fts}`);
     }, 100);
   };
-  const resumeTimer = () => {
+  const resumeTimer = (moveTime) => {
+    const lastOffset = ms;
     clearInterval(timerRef.current);
-    setIsPaused(false);
-    intermediateTimeRef.current =
-      startTimeRef.current.diff(dayjs().utc(), "ms") - ms;
-    timerRef.current = setInterval(() => {
-      const diff =
-        startTimeRef.current.diff(dayjs().utc(), "ms") -
-        intermediateTimeRef.current;
-      setMS(diff);
-    }, 100);
   };
   const clearTimer = () => {
     clearInterval(timerRef.current);
