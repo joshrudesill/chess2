@@ -15,6 +15,7 @@ import {
   setGame,
   setGameStarted,
   setInGameData,
+  setPing,
   setSession,
 } from "../features/app/appSlice";
 import socket from "../socket";
@@ -42,6 +43,16 @@ const Play = () => {
   const [c2st, setC2St] = useState("");
   const myTimer = useTimer(10);
   const oppTimer = useTimer(10);
+  const pingRef = useRef(null);
+
+  useEffect(() => {
+    pingRef.current = setInterval(() => {
+      socket.emit("c2s", dayjs.utc().toISOString());
+    }, 5000);
+    return () => {
+      clearInterval(pingRef.current);
+    };
+  }, []);
   useEffect(() => {
     const sid = localStorage.getItem("sessionID");
     if (sid) {
@@ -64,8 +75,8 @@ const Play = () => {
       }
     });
     socket.on("c2sr", (t) => {
-      const d = dayjs(t).diff();
-      setC2S(d);
+      const d = Math.abs(dayjs(t).diff());
+      dispatch(setPing(d));
     });
     socket.on("gameRoomJoined", (gid) => {
       setInGameRoom(true);
@@ -105,30 +116,20 @@ const Play = () => {
         .utc()
         .add(offsetB + offsetW);
       const diffToReconnect = Math.abs(lastMoveTime.diff());
-      console.log("DTR: ", diffToReconnect);
       const s = lastMoveTime.toISOString();
-      console.log("LMT: ", s);
       dispatch(setMoveInTime(s));
       const myOffset = w ? offsetW : offsetB;
       const oppOffset = w ? offsetB : offsetW;
-      console.log("myoff: ", myOffset);
-      console.log("oppoff: ", oppOffset);
-      console.log(timerOffset.white);
-      console.log(timerOffset.black);
       if (whiteTurn === w) {
-        console.log("myturn");
         dispatch(setMyTurn(true));
         //if its my move, get last move time from move time list
         const newOffset = myOffset + diffToReconnect;
-        console.log(newOffset);
         myTimer.resumeTimerWithOffset(newOffset);
         oppTimer.updateTimerToOffset(oppOffset);
         //set opptimer and pause
       } else {
-        console.log("not myturn");
         dispatch(setMyTurn(false));
         const newOffset = oppOffset + diffToReconnect;
-        console.log(newOffset);
         oppTimer.resumeTimerWithOffset(newOffset);
         myTimer.updateTimerToOffset(myOffset);
       }
@@ -248,23 +249,6 @@ const Play = () => {
       <div className='flex w-[85vmin] md:w-max mx-auto md:mx-0 flex-col lg:flex-row gap-3 md:ml-48 overflow-x-hidden'>
         <Board />
         <GameInfo myTimer={myTimer} oppTimer={oppTimer} />
-        <button
-          onClick={() => {
-            socket.emit("c2c", dayjs.utc().toISOString());
-          }}
-        >
-          {white ? "w" : "b"}
-        </button>
-        <button
-          onClick={() => {
-            setC2St(dayjs().utc().toISOString());
-            socket.emit("c2s", dayjs.utc().toISOString());
-          }}
-        >
-          C2S
-        </button>
-        <p>{c2s}</p>
-        <p>{c2st}</p>
       </div>
     </div>
   );

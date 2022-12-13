@@ -12,6 +12,7 @@ const GameInfo = ({ myTimer, oppTimer }) => {
   const gameStarted = useSelector((state) => state.app.inGameData.gameStarted);
   const cto = useSelector((state) => state.board.currentTimerOffset);
   const white = useSelector((state) => state.board.white);
+  const ping = useSelector((state) => state.app.ping);
 
   return (
     <div className='lg:w-[30vw] w-11/12 border rounded-md border-neutral-600 divide-neutral-600 shadow-lg flex flex-col divide-y  text-white mx-auto md:mx-0 lg:mt-8 lg:mr-2'>
@@ -63,6 +64,10 @@ const GameInfo = ({ myTimer, oppTimer }) => {
         <div className='flex bg-neutral-700 w-full p-1 justify-between'>
           <div>White</div>
           <div>{white ? "True" : "False"}</div>
+        </div>
+        <div className='flex bg-neutral-700 w-full p-1 justify-between'>
+          <div>Ping</div>
+          <div>{ping}</div>
         </div>
       </div>
       <div className='flex flex-row flex-wrap p-1'>

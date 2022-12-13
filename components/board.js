@@ -15,7 +15,14 @@ const Board = () => {
       <div className='md:shrink w-[100%] md:w-[88vmin] overflow-x-hidden'>
         <div className='grid grid-cols-8 grid-rows-8'>
           {board.map((bs, j) => {
-            return bs.map((b, e) => <BoardSquare squareData={b} j={j} e={e} />);
+            return bs.map((b, e) => (
+              <BoardSquare
+                squareData={b}
+                j={j}
+                e={e}
+                key={(j + 1) * (e + 1) * (j + 1)}
+              />
+            ));
           })}
         </div>
       </div>

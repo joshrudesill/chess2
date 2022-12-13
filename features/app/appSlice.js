@@ -6,6 +6,7 @@ const initialState = {
     username: null,
     gameID: null,
   },
+  ping: 0,
   inGameData: {
     gameType: null,
     white: null,
@@ -47,9 +48,18 @@ export const appSlice = createSlice({
     setMyTurn: (state, action) => {
       state.myTurn = action.payload;
     },
+    setPing: (state, action) => {
+      state.ping = action.payload;
+    },
   },
 });
 
-export const { setSession, setGame, setInGameData, setGameStarted, setMyTurn } =
-  appSlice.actions;
+export const {
+  setSession,
+  setGame,
+  setInGameData,
+  setGameStarted,
+  setMyTurn,
+  setPing,
+} = appSlice.actions;
 export default appSlice.reducer;
