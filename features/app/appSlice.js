@@ -41,6 +41,7 @@ export const appSlice = createSlice({
       state.inGameData.opponentData = opponentData;
     },
     setGameStarted: (state) => {
+      console.log("gamestarted set");
       state.inGameData.gameStarted = true;
     },
     setMyTurn: (state, action) => {

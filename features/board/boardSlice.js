@@ -128,6 +128,9 @@ export const boardSlice = createSlice({
   reducers: {
     setTimerOffset: (state, action) => {
       const { offsetW, offsetB } = action.payload;
+      console.log("setting offsets");
+      console.log(offsetW);
+      console.log(offsetB);
       state.currentTimerOffset.white = offsetW;
       state.currentTimerOffset.black = offsetB;
     },
@@ -144,6 +147,7 @@ export const boardSlice = createSlice({
       state.startTime = action.payload;
     },
     setMyTurn: (state, action) => {
+      console.log("myturn set");
       state.myTurn = action.payload;
     },
     setPosition: (state, action) => {

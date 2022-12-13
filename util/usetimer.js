@@ -10,7 +10,7 @@ const useTimer = (timeF) => {
   const totalTimeMS = useRef(null);
   const timerRef = useRef(null);
   const [isPaused, setIsPaused] = useState(false);
-  const [isRunning, setIsRunning] = useState(false);
+  const isRunning = useRef(false);
 
   const initTimer = (startTime, timeF) => {
     startTimeRef.current = dayjs(startTime).utc();
@@ -21,7 +21,7 @@ const useTimer = (timeF) => {
     clearInterval(timerRef.current);
     startTimeRef.current = startTime;
     totalTimeMS.current = 60000 * timeF;
-    setIsRunning(true);
+
     timerRef.current = setInterval(() => {
       const diff = startTimeRef.current.diff(dayjs().utc(), "ms");
       setMS(diff);
@@ -40,29 +40,51 @@ const useTimer = (timeF) => {
     }, 100);
   };
   const stopTimer = () => {
+    console.log("stopping timer");
     clearInterval(timerRef.current);
     setIsPaused(true);
+    isRunning.current = false;
   };
   const resumeTimerWithOffset = (myOffset) => {
+    if (!isRunning.current) {
+      console.log("starting timer with ", myOffset, "ms");
+      clearInterval(timerRef.current);
+      isRunning.current = true;
+      setIsPaused(false);
+      intermediateTimeRef.current = dayjs().utc().subtract(myOffset, "ms");
+      timerRef.current = setInterval(() => {
+        const diff = intermediateTimeRef.current.diff();
+        setMS(diff);
+        const ctd = totalTimeMS.current - Math.abs(diff);
+        var ftm;
+        var fts;
+        if (ctd >= 60000) {
+          ftm = Math.floor(ctd / 60000);
+          fts = Math.floor((ctd % 60000) / 1000);
+        } else {
+          ftm = 0;
+          fts = Math.floor(Math.floor(ctd / 1000) / 1000);
+        }
+        setFT(`${ftm}:${fts < 10 ? `0${fts}` : fts}`);
+      }, 100);
+    }
+  };
+  const updateTimerToOffset = (offset) => {
     clearInterval(timerRef.current);
-    setIsRunning(true);
-    setIsPaused(false);
-    intermediateTimeRef.current = dayjs().utc().subtract(myOffset, "ms");
-    timerRef.current = setInterval(() => {
-      const diff = intermediateTimeRef.current.diff();
-      setMS(diff);
-      const ctd = totalTimeMS.current - Math.abs(diff);
-      var ftm;
-      var fts;
-      if (ctd >= 60000) {
-        ftm = Math.floor(ctd / 60000);
-        fts = Math.floor((ctd % 60000) / 1000);
-      } else {
-        ftm = 0;
-        fts = Math.floor(Math.floor(ctd / 1000) / 1000);
-      }
-      setFT(`${ftm}:${fts < 10 ? `0${fts}` : fts}`);
-    }, 100);
+    isRunning.current = false;
+    const diff = dayjs().utc().subtract(offset, "ms").diff();
+    setMS(diff);
+    const ctd = totalTimeMS.current - Math.abs(diff);
+    var ftm;
+    var fts;
+    if (ctd >= 60000) {
+      ftm = Math.floor(ctd / 60000);
+      fts = Math.floor((ctd % 60000) / 1000);
+    } else {
+      ftm = 0;
+      fts = Math.floor(Math.floor(ctd / 1000) / 1000);
+    }
+    setFT(`${ftm}:${fts < 10 ? `0${fts}` : fts}`);
   };
   const resumeTimer = (moveTime) => {
     const lastOffset = ms;
@@ -73,7 +95,7 @@ const useTimer = (timeF) => {
     timerRef.current = null;
     startTimeRef.current = null;
     intermediateTimeRef.current = null;
-    setIsRunning(false);
+
     setIsPaused(false);
     setMS(0);
   };
@@ -91,6 +113,7 @@ const useTimer = (timeF) => {
     formattedTime,
     initTimer,
     intermediateTimeRef,
+    updateTimerToOffset,
   };
 };
 

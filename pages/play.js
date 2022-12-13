@@ -71,6 +71,80 @@ const Play = () => {
       setInGameRoom(true);
       socket.emit("readyToPlay", gid);
     });
+    socket.on("reconnectingToGame", (g) => {
+      console.log("reconnecting");
+      dispatch(setFirstMove());
+      const w = g.players[0].sid === sessionID ? true : false;
+      const gameType = g.gameType;
+      const opponent = g.players.find((p) => p.sid !== sessionID);
+      const opponentData = {
+        username: opponent.username,
+        connected: opponent.connected,
+      };
+      dispatch(setWhite(w));
+
+      let offsetW = 0;
+      let offsetB = 0;
+
+      g.moveTimes.forEach((t, i) => {
+        if (i === 0 || i % 2 === 0) {
+          offsetW += t;
+        } else if (i % 2 !== 0) {
+          offsetB += t;
+        }
+      });
+      dispatch(setTimerOffset({ offsetW, offsetB }));
+      console.log(offsetW, offsetB);
+      //game started
+
+      const startTime = g.gameStartTime;
+      const whiteTurn = g.moveTimes.length % 2 === 0;
+      myTimer.initTimer(startTime, 10);
+      oppTimer.initTimer(startTime, 10);
+      const lastMoveTime = dayjs(startTime)
+        .utc()
+        .add(offsetB + offsetW);
+      const diffToReconnect = Math.abs(lastMoveTime.diff());
+      console.log("DTR: ", diffToReconnect);
+      const s = lastMoveTime.toISOString();
+      console.log("LMT: ", s);
+      dispatch(setMoveInTime(s));
+      const myOffset = w ? offsetW : offsetB;
+      const oppOffset = w ? offsetB : offsetW;
+      console.log("myoff: ", myOffset);
+      console.log("oppoff: ", oppOffset);
+      console.log(timerOffset.white);
+      console.log(timerOffset.black);
+      if (whiteTurn === w) {
+        console.log("myturn");
+        dispatch(setMyTurn(true));
+        //if its my move, get last move time from move time list
+        const newOffset = myOffset + diffToReconnect;
+        console.log(newOffset);
+        myTimer.resumeTimerWithOffset(newOffset);
+        oppTimer.updateTimerToOffset(oppOffset);
+        //set opptimer and pause
+      } else {
+        console.log("not myturn");
+        dispatch(setMyTurn(false));
+        const newOffset = oppOffset + diffToReconnect;
+        console.log(newOffset);
+        oppTimer.resumeTimerWithOffset(newOffset);
+        myTimer.updateTimerToOffset(myOffset);
+      }
+      dispatch(setInGameData({ gameType, w, startTime, opponentData }));
+      //init timer and ..
+      //resume timer with my offset plus the diff between last move made and now
+      //set other data
+      //else
+      //set other data and init timers, new method to set and pause timer
+      dispatch(setGameStartTime(startTime));
+      setInGameRoom(true);
+      dispatch(setInGameData({ gameType, w, startTime, opponentData }));
+      whitelocal.current = w;
+      dispatch(setGameStarted());
+      dispatch(setPosition(g.gameStates.at(-1)));
+    });
     socket.on("gameReadyToStart", (g) => {
       const w = g.players[0].sid === sessionID ? true : false;
       const gameType = g.gameType;
@@ -80,55 +154,7 @@ const Play = () => {
         connected: opponent.connected,
       };
       dispatch(setWhite(w));
-      if (g.moveTimes.length > 0 || g.gameStartTime !== null) {
-        dispatch(setGameStarted());
-        let offsetW = 0;
-        let offsetB = 0;
-
-        g.moveTimes.forEach((t, i) => {
-          if (i === 0 || i % 2 === 0) {
-            offsetW += t;
-          } else if (i % 2 !== 0) {
-            offsetB += t;
-          }
-        });
-        //game started
-
-        const startTime = g.gameStartTime;
-        const whiteTurn = g.moveTimes.length % 2 === 0;
-        myTimer.initTimer(startTime, 10);
-        oppTimer.initTimer(startTime, 10);
-        const lastMoveTime = dayjs(startTime)
-          .utc()
-          .add(offsetB + offsetW);
-        const diffToReconnect = Math.abs(lastMoveTime.diff());
-        const s = lastMoveTime.toISOString();
-        console.log("ST: ", s);
-        dispatch(setMoveInTime(s));
-        const myOffset = w ? timerOffset.white : timerOffset.black;
-        const oppOffset = w ? timerOffset.black : timerOffset.white;
-        if (whiteTurn === w) {
-          dispatch(setMyTurn(true));
-          //if its my move, get last move time from move time list
-          myTimer.resumeTimerWithOffset(myOffset + diffToReconnect);
-          oppTimer.resumeTimerWithOffset(oppOffset);
-          oppTimer.stopTimer();
-          //set opptimer and pause
-        } else {
-          dispatch(setMyTurn(false));
-          oppTimer.resumeTimerWithOffset(oppOffset + diffToReconnect);
-          myTimer.resumeTimerWithOffset(myOffset);
-          myTimer.stopTimer();
-        }
-        dispatch(setInGameData({ gameType, w, startTime, opponentData }));
-        //init timer and ..
-        //resume timer with my offset plus the diff between last move made and now
-        //set other data
-        //else
-        //set other data and init timers, new method to set and pause timer
-      } else {
-        dispatch(setMyTurn(w));
-      }
+      dispatch(setMyTurn(w));
       setInGameRoom(true);
 
       dispatch(setInGameData({ gameType, w, startTime, opponentData }));
@@ -139,12 +165,10 @@ const Play = () => {
       myTimer.initTimer(startTime, 10);
       oppTimer.initTimer(startTime, 10);
       dispatch(setGameStartTime(startTime));
-      const myOffset = white ? timerOffset.white : timerOffset.black;
-      const oppOffset = white ? timerOffset.black : timerOffset.white;
-      if (myTurn) {
-        myTimer.resumeTimerWithOffset(myOffset);
-        myTimer.stopTimer();
-        oppTimer.resumeTimerWithOffset(oppOffset);
+      console.log(white);
+      if (whitelocal.current) {
+        console.log("1");
+        oppTimer.resumeTimerWithOffset(0);
       }
     });
     socket.on("firstMove", (position) => {
@@ -198,6 +222,7 @@ const Play = () => {
         myOffset = timerOffset.black;
         oppOffset = timerOffset.white;
       }
+      console.log("2");
       myTimer.resumeTimerWithOffset(myOffset);
       oppTimer.stopTimer();
     } else if (!myTurn && gameStarted) {
@@ -211,6 +236,7 @@ const Play = () => {
         myOffset = timerOffset.black;
         oppOffset = timerOffset.white;
       }
+      console.log("3");
       oppTimer.resumeTimerWithOffset(oppOffset);
       //resume timer from where its at, possibly send time stamps
       myTimer.stopTimer();
@@ -227,7 +253,7 @@ const Play = () => {
             socket.emit("c2c", dayjs.utc().toISOString());
           }}
         >
-          C2C
+          {white ? "w" : "b"}
         </button>
         <button
           onClick={() => {
