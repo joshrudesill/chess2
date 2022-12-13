@@ -1,4 +1,4 @@
-import { io } from "socket.IO-client";
+import { io } from "socket.io-client";
 
 const URL = "https://chess2server.fly.dev";
 const socket = io(URL, { autoConnect: false });
