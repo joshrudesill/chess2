@@ -39,7 +39,7 @@ export default function Home() {
         <div className='col-start-2 col-span-9 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-lg '>
           <div className='flex flex-row p-2 gap-3'>
             <div className='flex basis-1/5'>
-              <Image src={logo} layout='intrinsic'></Image>
+              <Image src={logo} alt='logo' layout='intrinsic'></Image>
             </div>
             <div className='flex flex-col basis-1/2 gap-2'>
               <p className='text-white text-5xl font-semibold'>Chess 2</p>
