@@ -2,15 +2,10 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   changePieceAtSquare,
   setActivePiece,
-  resetActivePiece,
   capturePiece,
+  resetPieceState,
+  setFirstMove,
 } from "../features/board/boardSlice";
-import {
-  FlagIcon,
-  HandThumbUpIcon,
-  TrophyIcon,
-  InformationCircleIcon,
-} from "@heroicons/react/20/solid";
 import Bishop from "./pieces/bishop";
 import King from "./pieces/king";
 import Knight from "./pieces/knight";
@@ -18,8 +13,17 @@ import Pawn from "./pieces/pawn";
 import Queen from "./pieces/queen";
 import Rook from "./pieces/rook";
 import socket from "../socket";
+import { createSelector } from "reselect";
+
+const boardSelector = createSelector(
+  (state) => state.board.position,
+  (position) => position
+);
+
 const BoardSquare = ({ squareData, j, e }) => {
   const dispatch = useDispatch();
+
+  //move these to board and pass as props
   const activePiece = useSelector((state) => state.board.activePiece);
   const myTurn = useSelector((state) => state.board.myTurn);
 
@@ -37,6 +41,8 @@ const BoardSquare = ({ squareData, j, e }) => {
           })
         ) {
           dispatch(changePieceAtSquare(squareData));
+
+          dispatch(resetPieceState());
         }
       } else if (
         activePiece &&
@@ -59,6 +65,7 @@ const BoardSquare = ({ squareData, j, e }) => {
         ) {
           dispatch(capturePiece({ toBeCaptured: squareData.piece }));
         }
+        //else reset active piece to null
       }
     }
   };
@@ -75,6 +82,8 @@ const BoardSquare = ({ squareData, j, e }) => {
           })
         ) {
           dispatch(changePieceAtSquare(squareData));
+
+          dispatch(resetPieceState());
         }
       } else if (
         activePiece &&

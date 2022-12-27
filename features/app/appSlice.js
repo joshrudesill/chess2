@@ -24,7 +24,6 @@ export const appSlice = createSlice({
   initialState,
   reducers: {
     setSession: (state, action) => {
-      console.log("setsession");
       const { sid, uid, un, gid } = action.payload;
       state.sessionDetails.sessionID = sid;
       state.sessionDetails.userID = uid;
@@ -42,14 +41,23 @@ export const appSlice = createSlice({
       state.inGameData.opponentData = opponentData;
     },
     setGameStarted: (state) => {
-      console.log("gamestarted set");
       state.inGameData.gameStarted = true;
     },
+    endGame: (state) => {
+      state.inGameData.gameStarted = true;
+      state.inGameData.myTurn = false;
+      state.sessionDetails.gameID = null;
+      state.inGameData = initialState.inGameData;
+      y;
+    },
     setMyTurn: (state, action) => {
-      state.myTurn = action.payload;
+      state.inGameData.myTurn = action.payload;
     },
     setPing: (state, action) => {
       state.ping = action.payload;
+    },
+    setOpponentConnection: (state, action) => {
+      state.inGameData.opponentData.connected = action.payload;
     },
   },
 });
@@ -61,5 +69,7 @@ export const {
   setGameStarted,
   setMyTurn,
   setPing,
+  setOpponentConnection,
+  endGame,
 } = appSlice.actions;
 export default appSlice.reducer;

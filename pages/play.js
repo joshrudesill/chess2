@@ -10,11 +10,14 @@ import {
   setFirstMove,
   setMyTurn,
   setMoveInTime,
+  resetPieceState,
 } from "../features/board/boardSlice";
 import {
+  endGame,
   setGame,
   setGameStarted,
   setInGameData,
+  setOpponentConnection,
   setPing,
   setSession,
 } from "../features/app/appSlice";
@@ -39,27 +42,30 @@ const Play = () => {
   const timerOffset = useSelector((state) => state.board.currentTimerOffset);
   const myTurn = useSelector((state) => state.board.myTurn);
   const white = useSelector((state) => state.board.white);
-  const [c2s, setC2S] = useState(0);
-  const [c2st, setC2St] = useState("");
   const myTimer = useTimer(10);
   const oppTimer = useTimer(10);
   const pingRef = useRef(null);
 
-  useEffect(() => {
+  const endGameByTimeOut = () => {
+    socket.emit("myTimeRanOut");
+  };
+  const endGameByCheckMate = () => {
+    socket.emit("opponentCheckmated");
+  };
+  /*useEffect(() => {
     pingRef.current = setInterval(() => {
       socket.emit("c2s", dayjs.utc().toISOString());
     }, 5000);
     return () => {
       clearInterval(pingRef.current);
     };
-  }, []);
+  }, []);*/
   useEffect(() => {
     const sid = localStorage.getItem("sessionID");
     if (sid) {
       if (!inGameRoom && gameID) {
         socket.emit("joinGameLobby", gameID);
       }
-      console.log("connect");
       socket.auth = { sid };
 
       socket.connect();
@@ -74,8 +80,8 @@ const Play = () => {
         router.push("/findmatch");
       }
     });
-    socket.on("c2sr", (t) => {
-      const d = Math.abs(dayjs(t).diff());
+    socket.on("c2sr", (t, t2) => {
+      const d = Math.abs(dayjs(t).diff(dayjs(t2).utc()));
       dispatch(setPing(d));
     });
     socket.on("gameRoomJoined", (gid) => {
@@ -83,7 +89,6 @@ const Play = () => {
       socket.emit("readyToPlay", gid);
     });
     socket.on("reconnectingToGame", (g) => {
-      console.log("reconnecting");
       dispatch(setFirstMove());
       const w = g.players[0].sid === sessionID ? true : false;
       const gameType = g.gameType;
@@ -145,6 +150,7 @@ const Play = () => {
       whitelocal.current = w;
       dispatch(setGameStarted());
       dispatch(setPosition(g.gameStates.at(-1)));
+      dispatch(resetPieceState());
     });
     socket.on("gameReadyToStart", (g) => {
       const w = g.players[0].sid === sessionID ? true : false;
@@ -161,6 +167,7 @@ const Play = () => {
       dispatch(setInGameData({ gameType, w, startTime, opponentData }));
       whitelocal.current = w;
       dispatch(setPosition(g.gameStates.at(-1)));
+      dispatch(resetPieceState());
     });
     socket.on("gameStartTime", (startTime) => {
       myTimer.initTimer(startTime, 10);
@@ -168,7 +175,6 @@ const Play = () => {
       dispatch(setGameStartTime(startTime));
       console.log(white);
       if (whitelocal.current) {
-        console.log("1");
         oppTimer.resumeTimerWithOffset(0);
       }
     });
@@ -181,6 +187,7 @@ const Play = () => {
       dispatch(setTimerOffset({ offsetW, offsetB }));
       dispatch(setMyTurn(true));
       dispatch(setPosition(position));
+      dispatch(resetPieceState());
     });
     socket.on("newPosition", (p, t) => {
       dispatch(setGameStarted());
@@ -196,12 +203,31 @@ const Play = () => {
             offsetB += t;
           }
         });
-        console.log("OB: ", offsetB);
-        console.log("OW: ", offsetW);
         dispatch(setTimerOffset({ offsetW, offsetB }));
         dispatch(setMyTurn(true));
       }
       dispatch(setPosition(p));
+      dispatch(resetPieceState());
+    });
+    socket.on("playerDisconnect", () => {
+      dispatch(setOpponentConnection(false));
+    });
+    socket.on("playerReconnected", () => {
+      dispatch(setOpponentConnection(true));
+    });
+    socket.on("youEndedSuccessfully", (typeOfEnd) => {
+      dispatch(setMyTurn(false));
+      dispatch(endGame());
+      myTimer.stopTimer();
+      oppTimer.stopTimer();
+      alert(typeOfEnd);
+    });
+    socket.on("resignation", () => {
+      dispatch(setMyTurn(false));
+      dispatch(endGame());
+      myTimer.stopTimer();
+      oppTimer.stopTimer();
+      alert("enemy resigned");
     });
     socket.on("connect_error", (err) => {
       if (err.message === "sidInvalid") {
@@ -213,31 +239,22 @@ const Play = () => {
 
   useEffect(() => {
     if (myTurn && gameStarted) {
-      console.log(white);
       var myOffset = 0;
-      var oppOffset = 0;
       if (white) {
         myOffset = timerOffset.white;
-        oppOffset = timerOffset.black;
       } else {
         myOffset = timerOffset.black;
-        oppOffset = timerOffset.white;
       }
-      console.log("2");
       myTimer.resumeTimerWithOffset(myOffset);
       oppTimer.stopTimer();
     } else if (!myTurn && gameStarted) {
       //start opp timer with delay
-      var myOffset = 0;
       var oppOffset = 0;
       if (white) {
-        myOffset = timerOffset.white;
         oppOffset = timerOffset.black;
       } else {
-        myOffset = timerOffset.black;
         oppOffset = timerOffset.white;
       }
-      console.log("3");
       oppTimer.resumeTimerWithOffset(oppOffset);
       //resume timer from where its at, possibly send time stamps
       myTimer.stopTimer();

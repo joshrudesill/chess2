@@ -6,6 +6,7 @@ import {
 } from "@heroicons/react/20/solid";
 import { Tooltip } from "flowbite-react";
 import { useSelector } from "react-redux";
+import socket from "../socket";
 const GameInfo = ({ myTimer, oppTimer }) => {
   const myTurn = useSelector((state) => state.board.myTurn);
   const startTime = useSelector((state) => state.board.startTime);
@@ -13,6 +14,10 @@ const GameInfo = ({ myTimer, oppTimer }) => {
   const cto = useSelector((state) => state.board.currentTimerOffset);
   const white = useSelector((state) => state.board.white);
   const ping = useSelector((state) => state.app.ping);
+  const oData = useSelector((state) => state.app.inGameData.opponentData);
+  const endGameByResignation = () => {
+    socket.emit("resigningFromGame", "resignation");
+  };
 
   return (
     <div className='lg:w-[30vw] w-11/12 border rounded-md border-neutral-600 divide-neutral-600 shadow-lg flex flex-col divide-y  text-white mx-auto md:mx-0 lg:mt-8 lg:mr-2'>
@@ -69,11 +74,16 @@ const GameInfo = ({ myTimer, oppTimer }) => {
           <div>Ping</div>
           <div>{ping}</div>
         </div>
+        <div className='flex bg-neutral-700 w-full p-1 justify-between'>
+          <div>Opponent Connected</div>
+          <div>{oData?.connected ? "True" : "False"}</div>
+        </div>
       </div>
       <div className='flex flex-row flex-wrap p-1'>
         <button
           type='button'
           className='inline-flex text-red-700 hover:text-white border border-red-700 hover:bg-red-800 font-medium rounded-lg text-xs px-2 py-2 text-center mx-1 my-2'
+          onClick={endGameByResignation}
         >
           Resign
           <FlagIcon className='h-4 w-4 text-white ml-2' />
