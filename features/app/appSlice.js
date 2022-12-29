@@ -48,7 +48,6 @@ export const appSlice = createSlice({
       state.inGameData.myTurn = false;
       state.sessionDetails.gameID = null;
       state.inGameData = initialState.inGameData;
-      y;
     },
     setMyTurn: (state, action) => {
       state.inGameData.myTurn = action.payload;

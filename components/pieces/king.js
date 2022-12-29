@@ -11,9 +11,6 @@ const King = ({ piece }) => {
   const dispatch = useDispatch();
   const board = useSelector((state) => state.board.position);
   const inCheck = useSelector((state) => state.board.kingData.inCheck);
-  const squaresToBeBlocked = useSelector(
-    (state) => state.board.kingData.squaresToBeBlocked
-  );
 
   const calculateLegalMoves = () => {
     var legalMoves = [];
@@ -69,7 +66,8 @@ const King = ({ piece }) => {
         x = 0;
         y = -1;
       }
-
+      if (board[x][y]) {
+      }
       var friendlyHit = false;
       var endLoop = false;
       var friendlyPiece = false;
@@ -141,7 +139,6 @@ const King = ({ piece }) => {
 
   useEffect(() => {
     if (inCheck) {
-      console.log("fired");
       dispatch(recheckLegalMoves());
     }
   }, [inCheck]);

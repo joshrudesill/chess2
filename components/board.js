@@ -8,6 +8,8 @@ import {
 } from "@heroicons/react/20/solid";
 const Board = () => {
   const board = useSelector((state) => state.board.position);
+  const activePiece = useSelector((state) => state.board.activePiece);
+  const myTurn = useSelector((state) => state.board.myTurn);
   const a = Array.from(Array(8).keys());
   const dispatch = useDispatch();
   return (
@@ -20,6 +22,8 @@ const Board = () => {
                 squareData={b}
                 j={j}
                 e={e}
+                activePiece={activePiece}
+                myTurn={myTurn}
                 key={(j + 1) * (e + 1) * (j + 1)}
               />
             ));

@@ -7,14 +7,17 @@ const useTimer = (timeF) => {
   const [formattedTime, setFT] = useState("00:00");
   const startTimeRef = useRef(null);
   const intermediateTimeRef = useRef(null);
+  const onTimeOut = useRef(null);
   const totalTimeMS = useRef(null);
   const timerRef = useRef(null);
   const [isPaused, setIsPaused] = useState(false);
   const isRunning = useRef(false);
 
-  const initTimer = (startTime, timeF) => {
+  const initTimer = (startTime, timeF, ontimeout) => {
     startTimeRef.current = dayjs(startTime).utc();
     totalTimeMS.current = 60000 * timeF;
+    //bug possible \/
+    onTimeOut.current = ontimeout;
     setFT(`${timeF}:00`);
   };
   const startTimer = (startTime) => {
@@ -25,19 +28,32 @@ const useTimer = (timeF) => {
     timerRef.current = setInterval(() => {
       const diff = startTimeRef.current.diff(dayjs().utc(), "ms");
       setMS(diff);
-
-      const ctd = totalTimeMS.current - Math.abs(diff);
-      var ftm;
-      var fts;
-      if (ctd >= 60000) {
-        ftm = Math.floor(ctd / 60000);
-        fts = ctd % 60000;
+      if (diff >= totalTimeMS.current) {
+        timeOut();
       } else {
-        ftm = 0;
-        fts = Math.floor(ctd / 1000);
+        const ctd = totalTimeMS.current - Math.abs(diff);
+        var ftm;
+        var fts;
+        if (ctd >= 60000) {
+          ftm = Math.floor(ctd / 60000);
+          fts = ctd % 60000;
+        } else {
+          ftm = 0;
+          fts = Math.floor(ctd / 1000);
+        }
+        const timeFormatted = `${ftm}:${Math.floor(fts / 1000)}`;
+        if (timeFormatted !== formattedTime) {
+          //to prevent unnecessary re-renders
+          setFT(timeFormatted);
+        }
       }
-      setFT(`${ftm}:${Math.floor(fts / 1000)}`);
     }, 100);
+  };
+  const timeOut = () => {
+    clearInterval(timerRef.current);
+    onTimeOut.current();
+    isRunning.current = false;
+    setMS(totalTimeMS.current);
   };
   const stopTimer = () => {
     console.log("stopping timer");

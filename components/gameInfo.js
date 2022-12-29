@@ -16,7 +16,7 @@ const GameInfo = ({ myTimer, oppTimer }) => {
   const ping = useSelector((state) => state.app.ping);
   const oData = useSelector((state) => state.app.inGameData.opponentData);
   const endGameByResignation = () => {
-    socket.emit("resigningFromGame", "resignation");
+    socket.emit("endGame", "resignation");
   };
 
   return (

@@ -12,20 +12,9 @@ import Knight from "./pieces/knight";
 import Pawn from "./pieces/pawn";
 import Queen from "./pieces/queen";
 import Rook from "./pieces/rook";
-import socket from "../socket";
-import { createSelector } from "reselect";
 
-const boardSelector = createSelector(
-  (state) => state.board.position,
-  (position) => position
-);
-
-const BoardSquare = ({ squareData, j, e }) => {
+const BoardSquare = ({ squareData, j, e, activePiece, myTurn }) => {
   const dispatch = useDispatch();
-
-  //move these to board and pass as props
-  const activePiece = useSelector((state) => state.board.activePiece);
-  const myTurn = useSelector((state) => state.board.myTurn);
 
   const onMouseDown = () => {
     if (myTurn) {

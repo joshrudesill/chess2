@@ -115,8 +115,8 @@ const Play = () => {
 
       const startTime = g.gameStartTime;
       const whiteTurn = g.moveTimes.length % 2 === 0;
-      myTimer.initTimer(startTime, 10);
-      oppTimer.initTimer(startTime, 10);
+      myTimer.initTimer(startTime, 10, () => socket.emit("endGame", "timeout"));
+      oppTimer.initTimer(startTime, 10, () => {});
       const lastMoveTime = dayjs(startTime)
         .utc()
         .add(offsetB + offsetW);

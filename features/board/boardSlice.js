@@ -102,7 +102,12 @@ for (let i = 0; i < 8; i++) {
 const initialState = {
   position: is,
   activePiece: null,
-  kingCalculated: false,
+  whiteKingCalculated: false,
+  blackKingCalculated: false,
+  kingLocations: [
+    { x: 0, y: 0 },
+    { x: 0, y: 0 },
+  ], //white , black
   currentTimerOffset: {
     white: 0,
     black: 0,
@@ -149,7 +154,8 @@ export const boardSlice = createSlice({
     setPosition: (state, action) => {
       state.position = action.payload;
 
-      state.kingCalculated = false;
+      state.whiteKingCalculated = false;
+      state.blackKingCalculated = false;
       state.position.forEach((r) => {
         r.forEach((s) => {
           if (s.piece !== null) {
@@ -162,6 +168,7 @@ export const boardSlice = createSlice({
     },
     changePieceAtSquare: (state, action) => {
       state.myTurn = false;
+
       const { x, y } = action.payload;
       state.position[state.activePiece.x][state.activePiece.y].piece = null;
       state.position[x][y].piece = state.activePiece;
@@ -174,7 +181,8 @@ export const boardSlice = createSlice({
       state.activePiece = null;
 
       state.kingData = initialState.kingData;
-      if (firstMove) {
+      if (state.firstMove) {
+        state.firstMove = false;
         socket.emit("firstMove", state.position);
       } else {
         socket.emit(
@@ -186,7 +194,8 @@ export const boardSlice = createSlice({
       }
     },
     resetPieceState: (state) => {
-      state.kingCalculated = false;
+      state.whiteKingCalculated = false;
+      state.blackKingCalculated = false;
       state.position.forEach((r) => {
         r.forEach((s) => {
           if (s.piece !== null) {
@@ -227,7 +236,8 @@ export const boardSlice = createSlice({
 
       state.kingData = initialState.kingData;
       socket.emit("pieceMove", state.position);
-      state.kingCalculated = false;
+      state.whiteKingCalculated = false;
+      state.blackKingCalculated = false;
       state.position.forEach((r) => {
         r.forEach((s) => {
           if (s.piece !== null) {
@@ -244,8 +254,10 @@ export const boardSlice = createSlice({
       state.position[x][y].piece.pinned = true;
       state.position[x][y].piece.pinDirection = direction;
     },
-    setKingCalculated: (state) => {
-      state.kingCalculated = true;
+    setKingCalculated: (state, action) => {
+      action.payload
+        ? (state.whiteKingCalculated = true)
+        : (state.blackKingCalculated = true);
     },
     checkKing: (state, action) => {
       state.kingData.inCheck = true;
@@ -254,6 +266,7 @@ export const boardSlice = createSlice({
       state.kingData.white = !action.payload.piece.white;
     },
     recheckLegalMoves: (state) => {
+      //add checkmate logic here
       state.position.forEach((r) => {
         r.forEach((s) => {
           if (s.piece !== null && s.piece.white === state.kingData.white) {
