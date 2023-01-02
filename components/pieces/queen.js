@@ -1,11 +1,20 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setLegalMoves, checkKing } from "../../features/board/boardSlice";
+import {
+  setLegalMoves,
+  checkKing,
+  removeLegalMovesFromKing,
+} from "../../features/board/boardSlice";
 
 const Queen = ({ piece }) => {
   const dispatch = useDispatch();
   const board = useSelector((state) => state.board.position);
-  const kingCalculated = useSelector((state) => state.board.kingCalculated);
+  const whiteKingCalculated = useSelector(
+    (state) => state.board.whiteKingCalculated
+  );
+  const blackKingCalculated = useSelector(
+    (state) => state.board.blackKingCalculated
+  );
 
   const calculateLegalMoves = () => {
     var legalMoves = [];
@@ -71,6 +80,12 @@ const Queen = ({ piece }) => {
             const p = squareData.piece;
 
             if (p.white === piece.white) {
+              dispatch(
+                removeLegalMovesFromKing({
+                  white: piece.white,
+                  moves: [{ x: coords.x, y: coords.y }],
+                })
+              );
               pieceHit = true;
             } else if (p.white !== piece.white) {
               if (p.type === 0) {
@@ -148,6 +163,12 @@ const Queen = ({ piece }) => {
             const p = squareData.piece;
 
             if (p.white === piece.white) {
+              dispatch(
+                removeLegalMovesFromKing({
+                  white: piece.white,
+                  moves: [{ x: coords.x, y: coords.y }],
+                })
+              );
               pieceHit = true;
             } else if (p.white !== piece.white) {
               if (p.type === 0) {
@@ -172,13 +193,23 @@ const Queen = ({ piece }) => {
     }
 
     dispatch(setLegalMoves({ piece: piece, moves: legalMoves }));
+    dispatch(
+      removeLegalMovesFromKing({
+        white: piece.white,
+        moves: legalMoves,
+      })
+    );
   };
 
   useEffect(() => {
-    if (!piece.legalMovesUpdated && kingCalculated) {
+    if (
+      !piece.legalMovesUpdated &&
+      whiteKingCalculated &&
+      blackKingCalculated
+    ) {
       calculateLegalMoves();
     }
-  }, [piece.legalMovesUpdated, kingCalculated]);
+  }, [piece.legalMovesUpdated, whiteKingCalculated, blackKingCalculated]);
 
   return <div>Q</div>;
 };

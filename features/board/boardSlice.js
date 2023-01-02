@@ -211,6 +211,22 @@ export const boardSlice = createSlice({
       state.position[piece.x][piece.y].piece.legalMovesUpdated = true;
       state.position[piece.x][piece.y].piece.legalMoves = moves;
     },
+    removeLegalMovesFromKing: (state, action) => {
+      const { white, moves } = action.payload;
+      const kingPos = !white
+        ? [state.kingLocations[0].x, state.kingLocations[0].y]
+        : [state.kingLocations[1].x, state.kingLocations[1].y];
+      const king = state.position[kingPos[0]][kingPos[1]].piece;
+      const newMoves = king.legalMoves.filter((m) =>
+        moves.some((e) => {
+          if (e.x === m.x && e.y === m.y) {
+            return true;
+          }
+          return false;
+        })
+      );
+      state.position[kingPos[0]][kingPos[1]].piece.legalMoves = newMoves;
+    },
     resetLegalMoves: (state, action) => {
       const { x, y } = action.payload;
       state.position[x][y].piece.legalMoves = [];
@@ -266,6 +282,7 @@ export const boardSlice = createSlice({
       state.kingData.white = !action.payload.piece.white;
     },
     recheckLegalMoves: (state) => {
+      const foundOneLegalMove = false;
       //add checkmate logic here
       state.position.forEach((r) => {
         r.forEach((s) => {
@@ -274,6 +291,7 @@ export const boardSlice = createSlice({
               if (
                 state.kingData.squaresToBeBlocked.some((j) => {
                   if (m.x === j.x && m.y === j.y) {
+                    foundOneLegalMove = true;
                     return true;
                   }
                   return false;
@@ -287,6 +305,19 @@ export const boardSlice = createSlice({
           }
         });
       });
+
+      if (!foundOneLegalMove) {
+        const kingPos = state.kingData.white
+          ? [kingLocations[0].x, kingLocations[0].y]
+          : [kingLocations[1].x, kingLocations[1].y];
+        const king = state.position[kingPos[0]][kingPos[1]].piece;
+        if (!king.legalMoves.length > 0) {
+          console.log(
+            state.kingData.white ? "white " : "black ",
+            "king checkmated"
+          );
+        }
+      }
     },
   },
 });
@@ -310,6 +341,7 @@ export const {
   setMyTurn,
   setMoveInTime,
   resetPieceState,
+  removeLegalMovesFromKing,
 } = boardSlice.actions;
 
 export default boardSlice.reducer;

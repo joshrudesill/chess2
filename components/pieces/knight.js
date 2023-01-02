@@ -1,11 +1,20 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { checkKing, setLegalMoves } from "../../features/board/boardSlice";
+import {
+  checkKing,
+  removeLegalMovesFromKing,
+  setLegalMoves,
+} from "../../features/board/boardSlice";
 
 const Knight = ({ piece }) => {
   const dispatch = useDispatch();
   const board = useSelector((state) => state.board.position);
-  const kingCalculated = useSelector((state) => state.board.kingCalculated);
+  const whiteKingCalculated = useSelector(
+    (state) => state.board.whiteKingCalculated
+  );
+  const blackKingCalculated = useSelector(
+    (state) => state.board.blackKingCalculated
+  );
 
   const calculateLegalMoves = () => {
     const legalMoves = [];
@@ -28,26 +37,56 @@ const Knight = ({ piece }) => {
       moves.forEach((m) => {
         if (m.x >= 0 && m.x <= 7 && m.y >= 0 && m.y <= 7) {
           if (
+            //for checking king
             board[m.x][m.y].piece !== null &&
             board[m.x][m.y].piece.type === 0
           ) {
             dispatch(
               checkKing({ piece: piece, squares: [{ x: piece.x, y: piece.y }] })
             );
+          } else if (
+            //for capturing opp piece
+            board[m.x][m.y].piece !== null &&
+            board[m.x][m.y].piece.white !== piece.white
+          ) {
+            legalMoves.push({ x: m.x, y: m.y });
+          } else if (board[m.x][m.y].piece === null) {
+            //for open square
+            legalMoves.push({ x: m.x, y: m.y });
+          } else if (
+            //for protecting friendly piece
+            board[m.x][m.y].piece !== null &&
+            board[m.x][m.y].piece.white === piece.white
+          ) {
+            dispatch(
+              removeLegalMovesFromKing({
+                white: piece.white,
+                moves: [{ x: m.x, y: m.y }],
+              })
+            );
           }
-          legalMoves.push({ x: m.x, y: m.y });
         }
       });
     }
 
     dispatch(setLegalMoves({ piece: piece, moves: legalMoves }));
+    dispatch(
+      removeLegalMovesFromKing({
+        white: piece.white,
+        moves: legalMoves,
+      })
+    );
   };
 
   useEffect(() => {
-    if (!piece.legalMovesUpdated && kingCalculated) {
+    if (
+      !piece.legalMovesUpdated &&
+      whiteKingCalculated &&
+      blackKingCalculated
+    ) {
       calculateLegalMoves();
     }
-  }, [piece.legalMovesUpdated, kingCalculated]);
+  }, [piece.legalMovesUpdated, whiteKingCalculated, blackKingCalculated]);
 
   return <div>K</div>;
 };

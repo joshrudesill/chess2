@@ -10,7 +10,7 @@ import {
 const King = ({ piece }) => {
   const dispatch = useDispatch();
   const board = useSelector((state) => state.board.position);
-  const inCheck = useSelector((state) => state.board.kingData.inCheck);
+  const kingData = useSelector((state) => state.board.kingData);
 
   const calculateLegalMoves = () => {
     var legalMoves = [];
@@ -66,7 +66,17 @@ const King = ({ piece }) => {
         x = 0;
         y = -1;
       }
-      if (board[x][y]) {
+      if (
+        x + piece.x >= 0 &&
+        x + piece.x <= 7 &&
+        y + piece.y >= 0 &&
+        y + piece.y <= 7
+      ) {
+        if (board[x + piece.x][y + piece.y].piece !== null) {
+          if (board[x + piece.x][y + piece.y].piece.white !== piece.white) {
+            legalMoves.push({ x: x + piece.x, y: y + piece.y });
+          }
+        }
       }
       var friendlyHit = false;
       var endLoop = false;
@@ -127,8 +137,8 @@ const King = ({ piece }) => {
       }
     }
 
-    dispatch(setLegalMoves({ piece: piece, moves: [] }));
-    dispatch(setKingCalculated());
+    dispatch(setLegalMoves({ piece: piece, moves: legalMoves }));
+    dispatch(setKingCalculated(piece.white));
   };
 
   useEffect(() => {
@@ -138,10 +148,10 @@ const King = ({ piece }) => {
   }, [piece.legalMovesUpdated]);
 
   useEffect(() => {
-    if (inCheck) {
+    if (kingData.inCheck && kingData.white == piece.white) {
       dispatch(recheckLegalMoves());
     }
-  }, [inCheck]);
+  }, [kingData.inCheck, kingData.white]);
 
   return <div>K</div>;
 };

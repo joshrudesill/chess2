@@ -1,11 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import BoardSquare from "./boardSquare";
-import {
-  FlagIcon,
-  HandThumbUpIcon,
-  TrophyIcon,
-  InformationCircleIcon,
-} from "@heroicons/react/20/solid";
+
 const Board = () => {
   const board = useSelector((state) => state.board.position);
   const activePiece = useSelector((state) => state.board.activePiece);

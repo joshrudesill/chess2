@@ -6,6 +6,12 @@ const Pawn = ({ piece }) => {
   const dispatch = useDispatch();
   const board = useSelector((state) => state.board.position);
   const activePiece = useSelector((state) => state.board.activePiece);
+  const whiteKingCalculated = useSelector(
+    (state) => state.board.whiteKingCalculated
+  );
+  const blackKingCalculated = useSelector(
+    (state) => state.board.blackKingCalculated
+  );
 
   const calculateLegalMoves = () => {
     var legalMoves = [];
@@ -50,10 +56,14 @@ const Pawn = ({ piece }) => {
   };
 
   useEffect(() => {
-    if (!piece.legalMovesUpdated) {
+    if (
+      !piece.legalMovesUpdated &&
+      whiteKingCalculated &&
+      blackKingCalculated
+    ) {
       calculateLegalMoves();
     }
-  }, [piece.legalMovesUpdated]);
+  }, [piece.legalMovesUpdated, whiteKingCalculated, blackKingCalculated]);
 
   return (
     <div>
