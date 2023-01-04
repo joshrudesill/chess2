@@ -215,20 +215,14 @@ const Play = () => {
     socket.on("playerReconnected", () => {
       dispatch(setOpponentConnection(true));
     });
-    socket.on("youEndedSuccessfully", (typeOfEnd) => {
+    socket.on("gameEnded", (typeOfEnd) => {
       dispatch(setMyTurn(false));
       dispatch(endGame());
       myTimer.stopTimer();
       oppTimer.stopTimer();
       alert(typeOfEnd);
     });
-    socket.on("resignation", () => {
-      dispatch(setMyTurn(false));
-      dispatch(endGame());
-      myTimer.stopTimer();
-      oppTimer.stopTimer();
-      alert("enemy resigned");
-    });
+
     socket.on("connect_error", (err) => {
       if (err.message === "sidInvalid") {
         router.push("/findmatch");

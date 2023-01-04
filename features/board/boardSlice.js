@@ -251,7 +251,12 @@ export const boardSlice = createSlice({
       state.activePiece = null;
 
       state.kingData = initialState.kingData;
-      socket.emit("pieceMove", state.position);
+      socket.emit(
+        "pieceMove",
+        state.position,
+        state.startTime,
+        state.moveInTime
+      );
       state.whiteKingCalculated = false;
       state.blackKingCalculated = false;
       state.position.forEach((r) => {
@@ -312,6 +317,9 @@ export const boardSlice = createSlice({
           : [kingLocations[1].x, kingLocations[1].y];
         const king = state.position[kingPos[0]][kingPos[1]].piece;
         if (!king.legalMoves.length > 0) {
+          if (myTurn) {
+            socket.emit("endGame", "checkmate");
+          }
           console.log(
             state.kingData.white ? "white " : "black ",
             "king checkmated"

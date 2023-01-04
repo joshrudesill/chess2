@@ -114,7 +114,15 @@ const BoardSquare = ({ squareData, j, e, activePiece, myTurn }) => {
             : e % 2 !== 0
             ? "bg-emerald-800 "
             : "bg-stone-400"
-        }`}
+        } ${
+          activePiece
+            ? activePiece.legalMoves.some(
+                (m) => m.x === squareData.x && m.y === squareData.y
+              )
+              ? "border-4 border-red-600"
+              : ""
+            : ""
+        } `}
       >
         <Rook piece={squareData.piece} />
       </div>
@@ -131,7 +139,15 @@ const BoardSquare = ({ squareData, j, e, activePiece, myTurn }) => {
             : e % 2 !== 0
             ? "bg-emerald-800 "
             : "bg-stone-400"
-        }`}
+        } ${
+          activePiece
+            ? activePiece.legalMoves.some(
+                (m) => m.x === squareData.x && m.y === squareData.y
+              )
+              ? "border-4 border-red-600"
+              : ""
+            : ""
+        } `}
         onMouseDown={onMouseDown}
         onMouseUp={onMouseUp}
       >
@@ -150,7 +166,15 @@ const BoardSquare = ({ squareData, j, e, activePiece, myTurn }) => {
             : e % 2 !== 0
             ? "bg-emerald-800 "
             : "bg-stone-400"
-        }`}
+        } ${
+          activePiece
+            ? activePiece.legalMoves.some(
+                (m) => m.x === squareData.x && m.y === squareData.y
+              )
+              ? "border-4 border-red-600"
+              : ""
+            : ""
+        } `}
         onMouseDown={onMouseDown}
         onMouseUp={onMouseUp}
       >
@@ -169,7 +193,15 @@ const BoardSquare = ({ squareData, j, e, activePiece, myTurn }) => {
             : e % 2 !== 0
             ? "bg-emerald-800 "
             : "bg-stone-400"
-        }`}
+        } ${
+          activePiece
+            ? activePiece.legalMoves.some(
+                (m) => m.x === squareData.x && m.y === squareData.y
+              )
+              ? "border-4 border-red-600"
+              : ""
+            : ""
+        } `}
         onMouseDown={onMouseDown}
         onMouseUp={onMouseUp}
       >
@@ -188,7 +220,15 @@ const BoardSquare = ({ squareData, j, e, activePiece, myTurn }) => {
             : e % 2 !== 0
             ? "bg-emerald-800 "
             : "bg-stone-400"
-        }`}
+        } ${
+          activePiece
+            ? activePiece.legalMoves.some(
+                (m) => m.x === squareData.x && m.y === squareData.y
+              )
+              ? "border-4 border-red-600"
+              : ""
+            : ""
+        } `}
         onMouseDown={onMouseDown}
         onMouseUp={onMouseUp}
       >
@@ -207,7 +247,15 @@ const BoardSquare = ({ squareData, j, e, activePiece, myTurn }) => {
             : e % 2 !== 0
             ? "bg-emerald-800 "
             : "bg-stone-400"
-        }`}
+        } ${
+          activePiece
+            ? activePiece.legalMoves.some(
+                (m) => m.x === squareData.x && m.y === squareData.y
+              )
+              ? "border-4 border-red-600"
+              : ""
+            : ""
+        } `}
         onMouseDown={onMouseDown}
         onMouseUp={onMouseUp}
       >
@@ -218,7 +266,7 @@ const BoardSquare = ({ squareData, j, e, activePiece, myTurn }) => {
   if (squareData.piece === null) {
     return (
       <div
-        className={`aspect-square flex justify-center items-center ${
+        className={`aspect-square flex justify-center items-center cursor-pointer ${
           j % 2 === 0
             ? e % 2 === 0
               ? "bg-emerald-800"
@@ -226,7 +274,15 @@ const BoardSquare = ({ squareData, j, e, activePiece, myTurn }) => {
             : e % 2 !== 0
             ? "bg-emerald-800 "
             : "bg-stone-400"
-        }`}
+        } ${
+          activePiece
+            ? activePiece.legalMoves.some(
+                (m) => m.x === squareData.x && m.y === squareData.y
+              )
+              ? "border-4 border-red-600"
+              : ""
+            : ""
+        } `}
         onMouseDown={onMouseDown}
         onMouseUp={onMouseUp}
       ></div>

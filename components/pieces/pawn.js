@@ -1,6 +1,9 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setLegalMoves } from "../../features/board/boardSlice";
+import {
+  setLegalMoves,
+  removeLegalMovesFromKing,
+} from "../../features/board/boardSlice";
 
 const Pawn = ({ piece }) => {
   const dispatch = useDispatch();
@@ -41,6 +44,17 @@ const Pawn = ({ piece }) => {
           board[piece.x + xDirection][piece.y + 1].piece.white !== piece.white
         ) {
           legalMoves.push({ x: piece.x + xDirection, y: piece.y + 1 });
+        } else if (
+          board[piece.x + xDirection][piece.y + 1].piece !== null &&
+          board[piece.x + xDirection][piece.y + 1].piece.white === piece.white
+        ) {
+          //protect
+          dispatch(
+            removeLegalMovesFromKing({
+              white: piece.white,
+              moves: [{ x: piece.x + xDirection, y: piece.y + 1 }],
+            })
+          );
         }
 
         if (
@@ -48,6 +62,17 @@ const Pawn = ({ piece }) => {
           board[piece.x + xDirection][piece.y - 1].piece.white !== piece.white
         ) {
           legalMoves.push({ x: piece.x + xDirection, y: piece.y - 1 });
+        } else if (
+          board[piece.x + xDirection][piece.y - 1].piece !== null &&
+          board[piece.x + xDirection][piece.y - 1].piece.white === piece.white
+        ) {
+          //protect
+          dispatch(
+            removeLegalMovesFromKing({
+              white: piece.white,
+              moves: [{ x: piece.x + xDirection, y: piece.y - 1 }],
+            })
+          );
         }
       }
 
