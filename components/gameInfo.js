@@ -15,6 +15,7 @@ const GameInfo = ({ myTimer, oppTimer }) => {
   const white = useSelector((state) => state.board.white);
   const ping = useSelector((state) => state.app.ping);
   const oData = useSelector((state) => state.app.inGameData.opponentData);
+  const king = useSelector((state) => state.board.kingData.inCheck);
   const endGameByResignation = () => {
     socket.emit("endGame", "resignation");
   };
@@ -77,6 +78,10 @@ const GameInfo = ({ myTimer, oppTimer }) => {
         <div className='flex bg-neutral-700 w-full p-1 justify-between'>
           <div>Opponent Connected</div>
           <div>{oData?.connected ? "True" : "False"}</div>
+        </div>
+        <div className='flex bg-neutral-700 w-full p-1 justify-between'>
+          <div>King</div>
+          <div>{king ? "True" : "False"}</div>
         </div>
       </div>
       <div className='flex flex-row flex-wrap p-1'>

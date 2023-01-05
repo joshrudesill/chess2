@@ -5,6 +5,7 @@ import {
   capturePiece,
   resetPieceState,
   setFirstMove,
+  resetActivePiece,
 } from "../features/board/boardSlice";
 import Bishop from "./pieces/bishop";
 import King from "./pieces/king";
@@ -32,6 +33,8 @@ const BoardSquare = ({ squareData, j, e, activePiece, myTurn }) => {
           dispatch(changePieceAtSquare(squareData));
 
           dispatch(resetPieceState());
+        } else {
+          dispatch(resetActivePiece());
         }
       } else if (
         activePiece &&
@@ -119,10 +122,12 @@ const BoardSquare = ({ squareData, j, e, activePiece, myTurn }) => {
             ? activePiece.legalMoves.some(
                 (m) => m.x === squareData.x && m.y === squareData.y
               )
-              ? "border-4 border-red-600"
+              ? "border-2 border-red-600"
               : ""
             : ""
         } `}
+        onMouseDown={onMouseDown}
+        onMouseUp={onMouseUp}
       >
         <Rook piece={squareData.piece} />
       </div>
@@ -144,7 +149,7 @@ const BoardSquare = ({ squareData, j, e, activePiece, myTurn }) => {
             ? activePiece.legalMoves.some(
                 (m) => m.x === squareData.x && m.y === squareData.y
               )
-              ? "border-4 border-red-600"
+              ? "border-2 border-red-600"
               : ""
             : ""
         } `}
@@ -171,7 +176,7 @@ const BoardSquare = ({ squareData, j, e, activePiece, myTurn }) => {
             ? activePiece.legalMoves.some(
                 (m) => m.x === squareData.x && m.y === squareData.y
               )
-              ? "border-4 border-red-600"
+              ? "border-2 border-red-600"
               : ""
             : ""
         } `}
@@ -198,7 +203,7 @@ const BoardSquare = ({ squareData, j, e, activePiece, myTurn }) => {
             ? activePiece.legalMoves.some(
                 (m) => m.x === squareData.x && m.y === squareData.y
               )
-              ? "border-4 border-red-600"
+              ? "border-2 border-red-600"
               : ""
             : ""
         } `}
@@ -225,7 +230,7 @@ const BoardSquare = ({ squareData, j, e, activePiece, myTurn }) => {
             ? activePiece.legalMoves.some(
                 (m) => m.x === squareData.x && m.y === squareData.y
               )
-              ? "border-4 border-red-600"
+              ? "border-2 border-red-600"
               : ""
             : ""
         } `}
@@ -252,7 +257,7 @@ const BoardSquare = ({ squareData, j, e, activePiece, myTurn }) => {
             ? activePiece.legalMoves.some(
                 (m) => m.x === squareData.x && m.y === squareData.y
               )
-              ? "border-4 border-red-600"
+              ? "border-2 border-red-600"
               : ""
             : ""
         } `}
@@ -279,7 +284,7 @@ const BoardSquare = ({ squareData, j, e, activePiece, myTurn }) => {
             ? activePiece.legalMoves.some(
                 (m) => m.x === squareData.x && m.y === squareData.y
               )
-              ? "border-4 border-red-600"
+              ? "border-2 border-red-600"
               : ""
             : ""
         } `}

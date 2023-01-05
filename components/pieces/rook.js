@@ -74,7 +74,6 @@ const Rook = ({ piece }) => {
       let j = 1;
 
       while (!pieceHit) {
-        //console.log('calc: ' , piece.id)
         const coords = { x: j * x + piece.x, y: j * y + piece.y };
 
         if (coords.x >= 0 && coords.x <= 7 && coords.y >= 0 && coords.y <= 7) {
@@ -113,7 +112,7 @@ const Rook = ({ piece }) => {
       }
     }
 
-    //console.log(legalMoves, piece.id)
+    console.log(legalMoves, piece.id, piece.x, piece.y);
 
     dispatch(setLegalMoves({ piece: piece, moves: legalMoves }));
     dispatch(

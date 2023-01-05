@@ -170,8 +170,8 @@ const Play = () => {
       dispatch(resetPieceState());
     });
     socket.on("gameStartTime", (startTime) => {
-      myTimer.initTimer(startTime, 10);
-      oppTimer.initTimer(startTime, 10);
+      myTimer.initTimer(startTime, 10, () => socket.emit("endGame", "timeout"));
+      oppTimer.initTimer(startTime, 10, () => {});
       dispatch(setGameStartTime(startTime));
       console.log(white);
       if (whitelocal.current) {

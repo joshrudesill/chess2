@@ -281,6 +281,11 @@ export const boardSlice = createSlice({
         : (state.blackKingCalculated = true);
     },
     checkKing: (state, action) => {
+      console.log(
+        "checking king ",
+        action.payload.piece.x,
+        action.payload.piece.y
+      );
       state.kingData.inCheck = true;
       state.kingData.checkingPiece = action.payload.piece;
       state.kingData.squaresToBeBlocked = action.payload.squares;
