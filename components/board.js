@@ -5,6 +5,7 @@ const Board = () => {
   const board = useSelector((state) => state.board.position);
   const activePiece = useSelector((state) => state.board.activePiece);
   const myTurn = useSelector((state) => state.board.myTurn);
+  const white = useSelector((state) => state.board.white);
   const a = Array.from(Array(8).keys());
   const dispatch = useDispatch();
   return (
@@ -19,6 +20,7 @@ const Board = () => {
                 e={e}
                 activePiece={activePiece}
                 myTurn={myTurn}
+                white={white}
                 key={(j + 1) * (e + 1) * (j + 1)}
               />
             ));

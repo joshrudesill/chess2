@@ -5,7 +5,9 @@ import {
   checkKing,
   removeLegalMovesFromKing,
 } from "../../features/board/boardSlice";
-
+import Image from "next/image";
+const white = require("../../assets/whitebishop.svg");
+const black = require("../../assets/blackbishop.svg");
 const Bishop = ({ piece }) => {
   const dispatch = useDispatch();
   const board = useSelector((state) => state.board.position);
@@ -92,7 +94,12 @@ const Bishop = ({ piece }) => {
               pieceHit = true;
             } else if (p.white !== piece.white) {
               if (p.type === 0) {
-                dispatch(checkKing({ piece: piece, squares: checkedSquares }));
+                dispatch(
+                  checkKing({
+                    piece: piece,
+                    squares: [...checkedSquares, { x: piece.x, y: piece.y }],
+                  })
+                );
                 pieceHit = true;
               } else {
                 legalMoves.push({ x: coords.x, y: coords.y });
@@ -131,7 +138,16 @@ const Bishop = ({ piece }) => {
     }
   }, [piece.legalMovesUpdated, whiteKingCalculated, blackKingCalculated]);
 
-  return <div>B</div>;
+  return (
+    <div>
+      <Image
+        src={piece.white ? white : black}
+        alt='king'
+        layout='intrinsic'
+        height={120}
+      ></Image>
+    </div>
+  );
 };
 
 export default Bishop;

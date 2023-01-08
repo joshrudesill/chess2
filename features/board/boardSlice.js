@@ -318,12 +318,12 @@ export const boardSlice = createSlice({
 
       if (!foundOneLegalMove) {
         const kingPos = state.kingData.white
-          ? [kingLocations[0].x, kingLocations[0].y]
-          : [kingLocations[1].x, kingLocations[1].y];
+          ? [state.kingLocations[0].x, state.kingLocations[0].y]
+          : [state.kingLocations[1].x, state.kingLocations[1].y];
         const king = state.position[kingPos[0]][kingPos[1]].piece;
         if (!king.legalMoves.length > 0) {
-          if (myTurn) {
-            socket.emit("endGame", "checkmate");
+          if (state.myTurn) {
+            //socket.emit("endGame", "checkmate");
           }
           console.log(
             state.kingData.white ? "white " : "black ",

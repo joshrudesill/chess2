@@ -6,7 +6,9 @@ import {
   setKingCalculated,
   recheckLegalMoves,
 } from "../../features/board/boardSlice";
-
+import Image from "next/image";
+const white = require("../../assets/whiteking.svg");
+const black = require("../../assets/blackking.svg");
 const King = ({ piece }) => {
   const dispatch = useDispatch();
   const board = useSelector((state) => state.board.position);
@@ -76,6 +78,8 @@ const King = ({ piece }) => {
           if (board[x + piece.x][y + piece.y].piece.white !== piece.white) {
             legalMoves.push({ x: x + piece.x, y: y + piece.y });
           }
+        } else {
+          legalMoves.push({ x: x + piece.x, y: y + piece.y });
         }
       }
       var friendlyHit = false;
@@ -153,7 +157,16 @@ const King = ({ piece }) => {
     }
   }, [kingData.inCheck, kingData.white]);
 
-  return <div>K</div>;
+  return (
+    <div>
+      <Image
+        src={piece.white ? white : black}
+        alt='king'
+        layout='intrinsic'
+        height={130}
+      ></Image>
+    </div>
+  );
 };
 
 export default King;

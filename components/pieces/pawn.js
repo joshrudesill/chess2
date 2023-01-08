@@ -4,7 +4,9 @@ import {
   setLegalMoves,
   removeLegalMovesFromKing,
 } from "../../features/board/boardSlice";
-
+import Image from "next/image";
+const white = require("../../assets/whitepawn.svg");
+const black = require("../../assets/blackpawn.svg");
 const Pawn = ({ piece }) => {
   const dispatch = useDispatch();
   const board = useSelector((state) => state.board.position);
@@ -92,8 +94,12 @@ const Pawn = ({ piece }) => {
 
   return (
     <div>
-      P{piece.pinned ? "p" : ""}
-      {piece.pinDirection !== null ? piece.pinDirection : ""}
+      <Image
+        src={piece.white ? white : black}
+        alt='king'
+        layout='intrinsic'
+        height={130}
+      ></Image>
     </div>
   );
 };

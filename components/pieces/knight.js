@@ -5,7 +5,9 @@ import {
   removeLegalMovesFromKing,
   setLegalMoves,
 } from "../../features/board/boardSlice";
-
+import Image from "next/image";
+const white = require("../../assets/whiteknight.svg");
+const black = require("../../assets/blackknight.svg");
 const Knight = ({ piece }) => {
   const dispatch = useDispatch();
   const board = useSelector((state) => state.board.position);
@@ -88,7 +90,16 @@ const Knight = ({ piece }) => {
     }
   }, [piece.legalMovesUpdated, whiteKingCalculated, blackKingCalculated]);
 
-  return <div>K</div>;
+  return (
+    <div>
+      <Image
+        src={piece.white ? white : black}
+        alt='king'
+        layout='intrinsic'
+        height={120}
+      ></Image>
+    </div>
+  );
 };
 
 export default Knight;

@@ -14,7 +14,7 @@ import Pawn from "./pieces/pawn";
 import Queen from "./pieces/queen";
 import Rook from "./pieces/rook";
 
-const BoardSquare = ({ squareData, j, e, activePiece, myTurn }) => {
+const BoardSquare = ({ squareData, j, e, activePiece, myTurn, white }) => {
   const dispatch = useDispatch();
 
   const onMouseDown = () => {
@@ -56,6 +56,7 @@ const BoardSquare = ({ squareData, j, e, activePiece, myTurn }) => {
           })
         ) {
           dispatch(capturePiece({ toBeCaptured: squareData.piece }));
+          dispatch(resetPieceState());
         }
         //else reset active piece to null
       }
@@ -91,6 +92,7 @@ const BoardSquare = ({ squareData, j, e, activePiece, myTurn }) => {
           })
         ) {
           dispatch(capturePiece({ toBeCaptured: squareData.piece }));
+          dispatch(resetPieceState());
         }
       }
     }
