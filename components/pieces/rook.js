@@ -119,8 +119,6 @@ const Rook = ({ piece }) => {
       }
     }
 
-    console.log(legalMoves, piece.id, piece.x, piece.y);
-
     dispatch(setLegalMoves({ piece: piece, moves: legalMoves }));
     dispatch(
       removeLegalMovesFromKing({

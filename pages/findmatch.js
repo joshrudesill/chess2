@@ -49,7 +49,7 @@ const FindMatch = () => {
       socket.off("sessionStart");
       socket.off("connect_error");
     };
-  }, []);
+  });
   return (
     <div className='container w-screen'>
       <div className='flex flex-col mt-48'>

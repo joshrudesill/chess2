@@ -5,6 +5,7 @@ import {
   setLegalMoves,
   setKingCalculated,
   recheckLegalMoves,
+  changeKingLocation,
 } from "../../features/board/boardSlice";
 import Image from "next/image";
 const white = require("../../assets/whiteking.svg");
@@ -13,6 +14,14 @@ const King = ({ piece }) => {
   const dispatch = useDispatch();
   const board = useSelector((state) => state.board.position);
   const kingData = useSelector((state) => state.board.kingData);
+  useEffect(() => {
+    dispatch(
+      changeKingLocation({
+        white: piece.white,
+        position: { x: piece.x, y: piece.y },
+      })
+    );
+  }, [piece.x, piece.y]);
 
   const calculateLegalMoves = () => {
     var legalMoves = [];

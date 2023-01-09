@@ -216,16 +216,38 @@ export const boardSlice = createSlice({
       const kingPos = !white
         ? [state.kingLocations[0].x, state.kingLocations[0].y]
         : [state.kingLocations[1].x, state.kingLocations[1].y];
-      const king = state.position[kingPos[0]][kingPos[1]].piece;
-      const newMoves = king.legalMoves.filter((m) =>
-        moves.some((e) => {
-          if (e.x === m.x && e.y === m.y) {
-            return true;
-          }
-          return false;
+
+      let newMoves = [];
+      const legalmoves =
+        state.position[kingPos[0]][kingPos[1]].piece.legalMoves;
+      console.log(
+        legalmoves.map((e) => {
+          return { x: e.x, y: e.y };
         })
       );
+      console.log(moves);
+      console.log("--------");
+      if (legalmoves.length > 0) {
+        for (const move of legalmoves) {
+          if (
+            !moves.some((m) => {
+              if (m.x === move.x && m.y === move.y) {
+                return true;
+              }
+              return false;
+            })
+          ) {
+            newMoves.push({ x: move.x, y: move.y });
+          }
+        }
+      }
+      console.log(newMoves);
       state.position[kingPos[0]][kingPos[1]].piece.legalMoves = newMoves;
+    },
+    changeKingLocation: (state, action) => {
+      console.log("king location changed");
+      const { white, position } = action.payload;
+      state.kingLocations[white ? 0 : 1] = position;
     },
     resetLegalMoves: (state, action) => {
       const { x, y } = action.payload;
@@ -238,6 +260,7 @@ export const boardSlice = createSlice({
       state.activePiece = null;
     },
     capturePiece: (state, action) => {
+      state.myTurn = false;
       const { toBeCaptured } = action.payload;
       const { x, y } = toBeCaptured;
       state.position[state.activePiece.x][state.activePiece.y].piece = null;
@@ -257,17 +280,6 @@ export const boardSlice = createSlice({
         state.startTime,
         state.moveInTime
       );
-      state.whiteKingCalculated = false;
-      state.blackKingCalculated = false;
-      state.position.forEach((r) => {
-        r.forEach((s) => {
-          if (s.piece !== null) {
-            s.piece.legalMovesUpdated = false;
-            s.piece.pinned = false;
-            s.piece.pinDirection = null;
-          }
-        });
-      });
     },
     pinPiece: (state, action) => {
       const { piece, direction } = action.payload;
@@ -296,7 +308,11 @@ export const boardSlice = createSlice({
       //add checkmate logic here
       state.position.forEach((r) => {
         r.forEach((s) => {
-          if (s.piece !== null && s.piece.white === state.kingData.white) {
+          if (
+            s.piece !== null &&
+            s.piece.white === state.kingData.white &&
+            s.piece.type !== 0
+          ) {
             const newMoves = s.piece.legalMoves.filter((m) => {
               if (
                 state.kingData.squaresToBeBlocked.some((j) => {
@@ -355,6 +371,7 @@ export const {
   setMoveInTime,
   resetPieceState,
   removeLegalMovesFromKing,
+  changeKingLocation,
 } = boardSlice.actions;
 
 export default boardSlice.reducer;

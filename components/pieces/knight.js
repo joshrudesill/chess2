@@ -41,7 +41,8 @@ const Knight = ({ piece }) => {
           if (
             //for checking king
             board[m.x][m.y].piece !== null &&
-            board[m.x][m.y].piece.type === 0
+            board[m.x][m.y].piece.type === 0 &&
+            board[m.x][m.y].piece.white !== piece.white
           ) {
             dispatch(
               checkKing({ piece: piece, squares: [{ x: piece.x, y: piece.y }] })
