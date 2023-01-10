@@ -220,13 +220,6 @@ export const boardSlice = createSlice({
       let newMoves = [];
       const legalmoves =
         state.position[kingPos[0]][kingPos[1]].piece.legalMoves;
-      console.log(
-        legalmoves.map((e) => {
-          return { x: e.x, y: e.y };
-        })
-      );
-      console.log(moves);
-      console.log("--------");
       if (legalmoves.length > 0) {
         for (const move of legalmoves) {
           if (
@@ -241,7 +234,7 @@ export const boardSlice = createSlice({
           }
         }
       }
-      console.log(newMoves);
+
       state.position[kingPos[0]][kingPos[1]].piece.legalMoves = newMoves;
     },
     changeKingLocation: (state, action) => {

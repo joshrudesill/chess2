@@ -42,8 +42,8 @@ const Play = () => {
   const timerOffset = useSelector((state) => state.board.currentTimerOffset);
   const myTurn = useSelector((state) => state.board.myTurn);
   const white = useSelector((state) => state.board.white);
-  const myTimer = useTimer(10);
-  const oppTimer = useTimer(10);
+  const myTimer = useTimer();
+  const oppTimer = useTimer();
   const pingRef = useRef(null);
 
   const endGameByTimeOut = () => {
@@ -114,7 +114,12 @@ const Play = () => {
       //game started
 
       const startTime = g.gameStartTime;
-      const whiteTurn = g.moveTimes.length % 2 === 0;
+      let whiteTurn;
+      if (g.moveTimes.length % 2 !== 0 || g.moveTimes.length === 0) {
+        whiteTurn = true;
+      } else {
+        whiteTurn = false;
+      }
       myTimer.initTimer(startTime, 10, () => socket.emit("endGame", "timeout"));
       oppTimer.initTimer(startTime, 10, () => {});
       const lastMoveTime = dayjs(startTime)
@@ -153,9 +158,10 @@ const Play = () => {
       dispatch(resetPieceState());
     });
     socket.on("gameReadyToStart", (g) => {
-      const w = g.players[0].sid === sessionID ? true : false;
+      const sid = localStorage.getItem("sessionID");
+      const w = g.players[0].sid === sid ? true : false;
       const gameType = g.gameType;
-      const opponent = g.players.find((p) => p.sid !== sessionID);
+      const opponent = g.players.find((p) => p.sid !== sid);
       const opponentData = {
         username: opponent.username,
         connected: opponent.connected,
@@ -170,8 +176,8 @@ const Play = () => {
       dispatch(resetPieceState());
     });
     socket.on("gameStartTime", (startTime) => {
-      myTimer.initTimer(startTime, 10, () => socket.emit("endGame", "timeout"));
-      oppTimer.initTimer(startTime, 10, () => {});
+      myTimer.initTimer(startTime, 1, () => socket.emit("endGame", "timeout"));
+      oppTimer.initTimer(startTime, 1, () => {});
       dispatch(setGameStartTime(startTime));
       console.log(white);
       if (whitelocal.current) {

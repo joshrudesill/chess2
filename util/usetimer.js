@@ -41,7 +41,7 @@ const useTimer = (timeF) => {
           ftm = 0;
           fts = Math.floor(ctd / 1000);
         }
-        const timeFormatted = `${ftm}:${Math.floor(fts / 1000)}`;
+        const timeFormatted = `${ftm}:${Math.floor(fts)}`;
         if (timeFormatted !== formattedTime) {
           //to prevent unnecessary re-renders
           setFT(timeFormatted);
@@ -50,10 +50,11 @@ const useTimer = (timeF) => {
     }, 100);
   };
   const timeOut = () => {
-    clearInterval(timerRef.current);
+    timerRef.current = null;
     onTimeOut.current();
     isRunning.current = false;
     setMS(totalTimeMS.current);
+    setFT("0:00");
   };
   const stopTimer = () => {
     console.log("stopping timer");
@@ -71,15 +72,21 @@ const useTimer = (timeF) => {
       timerRef.current = setInterval(() => {
         const diff = intermediateTimeRef.current.diff();
         setMS(diff);
-        const ctd = totalTimeMS.current - Math.abs(diff);
-        var ftm;
-        var fts;
-        if (ctd >= 60000) {
-          ftm = Math.floor(ctd / 60000);
-          fts = Math.floor((ctd % 60000) / 1000);
+        if (Math.abs(diff) >= totalTimeMS.current) {
+          setFT("0:00");
+          clearInterval(timerRef.current);
+          timeOut();
         } else {
-          ftm = 0;
-          fts = Math.floor(Math.floor(ctd / 1000) / 1000);
+          const ctd = totalTimeMS.current - Math.abs(diff);
+          var ftm;
+          var fts;
+          if (ctd >= 60000) {
+            ftm = Math.floor(ctd / 60000);
+            fts = Math.floor((ctd % 60000) / 1000);
+          } else {
+            ftm = 0;
+            fts = Math.floor(ctd / 1000);
+          }
         }
         setFT(`${ftm}:${fts < 10 ? `0${fts}` : fts}`);
       }, 100);
