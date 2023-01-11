@@ -73,8 +73,8 @@ const useTimer = (timeF) => {
         const diff = intermediateTimeRef.current.diff();
         setMS(diff);
         if (Math.abs(diff) >= totalTimeMS.current) {
-          setFT("0:00");
           clearInterval(timerRef.current);
+          setFT("0:00");
           timeOut();
         } else {
           const ctd = totalTimeMS.current - Math.abs(diff);
@@ -87,8 +87,8 @@ const useTimer = (timeF) => {
             ftm = 0;
             fts = Math.floor(ctd / 1000);
           }
+          setFT(`${ftm}:${fts < 10 ? `0${fts}` : fts}`);
         }
-        setFT(`${ftm}:${fts < 10 ? `0${fts}` : fts}`);
       }, 100);
     }
   };

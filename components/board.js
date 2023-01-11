@@ -12,19 +12,37 @@ const Board = () => {
     <div className='flex flex-col md:flex-row justify-center gap-3 mt-8'>
       <div className='md:shrink w-[100%] md:w-[88vmin] overflow-x-hidden'>
         <div className='grid grid-cols-8 grid-rows-8'>
-          {board.map((bs, j) => {
-            return bs.map((b, e) => (
-              <BoardSquare
-                squareData={b}
-                j={j}
-                e={e}
-                activePiece={activePiece}
-                myTurn={myTurn}
-                white={white}
-                key={(j + 1) * (e + 1) * (j + 1)}
-              />
-            ));
-          })}
+          {white === true || white === null
+            ? board.map((bs, j) => {
+                return bs.map((b, e) => (
+                  <BoardSquare
+                    squareData={b}
+                    j={j}
+                    e={e}
+                    activePiece={activePiece}
+                    myTurn={myTurn}
+                    white={white}
+                    key={(j + 1) * (e + 1) * (j + 1)}
+                  />
+                ));
+              })
+            : board
+                .map((bs, j) => {
+                  return bs
+                    .map((b, e) => (
+                      <BoardSquare
+                        squareData={b}
+                        j={j}
+                        e={e}
+                        activePiece={activePiece}
+                        myTurn={myTurn}
+                        white={white}
+                        key={(j + 1) * (e + 1) * (j + 1)}
+                      />
+                    ))
+                    .reverse();
+                })
+                .reverse()}
         </div>
       </div>
     </div>
