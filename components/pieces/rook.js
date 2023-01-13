@@ -142,7 +142,7 @@ const Rook = ({ piece }) => {
     <div>
       <Image
         src={piece.white ? white : black}
-        alt='king'
+        alt='rook'
         layout='intrinsic'
         height={100}
       ></Image>

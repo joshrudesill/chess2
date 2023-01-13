@@ -1,13 +1,15 @@
 import {
   FlagIcon,
   HandThumbUpIcon,
-  TrophyIcon,
-  InformationCircleIcon,
+  HandThumbDownIcon,
 } from "@heroicons/react/20/solid";
 import { Tooltip } from "flowbite-react";
+import { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import socket from "../socket";
+import Chat from "./chat";
 const GameInfo = ({ myTimer, oppTimer }) => {
+  const [drawRequest, setDrawRequest] = useState(false);
   const myTurn = useSelector((state) => state.board.myTurn);
   const startTime = useSelector((state) => state.board.startTime);
   const gameStarted = useSelector((state) => state.app.inGameData.gameStarted);
@@ -16,10 +18,14 @@ const GameInfo = ({ myTimer, oppTimer }) => {
   const ping = useSelector((state) => state.app.ping);
   const oData = useSelector((state) => state.app.inGameData.opponentData);
   const king = useSelector((state) => state.board.kingData.inCheck);
-  const endGameByResignation = () => {
-    socket.emit("endGame", "resignation");
-  };
-
+  const resign = useCallback(() => socket.emit("endGame", "resignation"), []);
+  const draw = useCallback(() => {
+    setDrawRequest(false);
+    socket.emit("endGame", "draw");
+  }, []);
+  useEffect(() => {
+    socket.on("drawRequested", () => setDrawRequest(true));
+  }, []);
   return (
     <div className='lg:w-[30vw] w-11/12 border rounded-md border-neutral-600 divide-neutral-600 shadow-lg flex flex-col divide-y  text-white mx-auto md:mx-0 lg:mt-8 lg:mr-2'>
       <div className='flex justify-between p-2 text-black'>
@@ -84,24 +90,48 @@ const GameInfo = ({ myTimer, oppTimer }) => {
           <div>{king ? "True" : "False"}</div>
         </div>
       </div>
+      <Chat />
       <div className='flex flex-row flex-wrap p-1'>
         <button
           type='button'
           className='inline-flex text-red-700 hover:text-white border border-red-700 hover:bg-red-800 font-medium rounded-lg text-xs px-2 py-2 text-center mx-1 my-2'
-          onClick={endGameByResignation}
+          onClick={resign}
         >
           Resign
           <FlagIcon className='h-4 w-4 text-white ml-2' />
         </button>
-        <Tooltip content='EX' style='light' className='text-xs'>
-          <button
-            type='button'
-            className='inline-flex text-yellow-500 hover:text-white border border-yellow-600 hover:bg-yellow-600 font-medium rounded-lg text-xs px-2 py-2 text-center mx-1 my-2'
-          >
-            Draw
-            <HandThumbUpIcon className='h-4 w-4 text-white ml-2' />
-          </button>
-        </Tooltip>
+        {drawRequest ? (
+          <>
+            <button
+              type='button'
+              className='inline-flex text-yellow-500 hover:text-white border border-yellow-600 hover:bg-yellow-600 font-medium rounded-lg text-xs px-2 py-2 text-center mx-1 my-2'
+              onClick={draw}
+            >
+              Yes
+              <HandThumbUpIcon className='h-4 w-4 text-white ml-2' />
+            </button>
+            <button
+              type='button'
+              className='inline-flex text-yellow-500 hover:text-white border border-yellow-600 hover:bg-yellow-600 font-medium rounded-lg text-xs px-2 py-2 text-center mx-1 my-2'
+              onClick={() => setDrawRequest(false)}
+            >
+              No
+              <HandThumbDownIcon className='h-4 w-4 text-white ml-2' />
+            </button>
+            <p className='my-auto ml-1'>Confirm Draw?</p>
+          </>
+        ) : (
+          <Tooltip content='EX' style='light' className='text-xs'>
+            <button
+              type='button'
+              className='inline-flex text-yellow-500 hover:text-white border border-yellow-600 hover:bg-yellow-600 font-medium rounded-lg text-xs px-2 py-2 text-center mx-1 my-2'
+              onClick={() => socket.emit("requestDraw")}
+            >
+              Draw
+              <HandThumbUpIcon className='h-4 w-4 text-white ml-2' />
+            </button>
+          </Tooltip>
+        )}
       </div>
       <div className='flex p-2'>
         <p className='font-mono text-s lg:text-lg underline '>Variant name</p>

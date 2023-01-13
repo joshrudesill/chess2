@@ -332,7 +332,7 @@ export const boardSlice = createSlice({
         const king = state.position[kingPos[0]][kingPos[1]].piece;
         if (!king.legalMoves.length > 0) {
           if (state.myTurn) {
-            //socket.emit("endGame", "checkmate");
+            socket.emit("endGame", "checkmate");
           }
           console.log(
             state.kingData.white ? "white " : "black ",
