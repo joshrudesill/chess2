@@ -123,6 +123,8 @@ const initialState = {
   },
   firstMove: true,
   myTurn: null,
+  chat: [],
+  // { message: '', sender: '',}
 };
 
 // search all legal moves and remove any not in sqauresToBeBlocked
@@ -131,6 +133,9 @@ export const boardSlice = createSlice({
   name: "board",
   initialState,
   reducers: {
+    addChatMessage: (state, action) => {
+      state.chat.push(action.payload);
+    },
     setTimerOffset: (state, action) => {
       const { offsetW, offsetB } = action.payload;
       state.currentTimerOffset.white = offsetW;
@@ -365,6 +370,7 @@ export const {
   resetPieceState,
   removeLegalMovesFromKing,
   changeKingLocation,
+  addChatMessage,
 } = boardSlice.actions;
 
 export default boardSlice.reducer;

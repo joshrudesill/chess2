@@ -5,10 +5,11 @@ import {
 } from "@heroicons/react/20/solid";
 import { Tooltip } from "flowbite-react";
 import { useCallback, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import socket from "../socket";
 import Chat from "./chat";
 const GameInfo = ({ myTimer, oppTimer }) => {
+  const dispatch = useDispatch();
   const [drawRequest, setDrawRequest] = useState(false);
   const myTurn = useSelector((state) => state.board.myTurn);
   const startTime = useSelector((state) => state.board.startTime);
@@ -18,6 +19,7 @@ const GameInfo = ({ myTimer, oppTimer }) => {
   const ping = useSelector((state) => state.app.ping);
   const oData = useSelector((state) => state.app.inGameData.opponentData);
   const king = useSelector((state) => state.board.kingData.inCheck);
+  const chat = useSelector((state) => state.board.chat);
   const resign = useCallback(() => socket.emit("endGame", "resignation"), []);
   const draw = useCallback(() => {
     setDrawRequest(false);
@@ -90,7 +92,7 @@ const GameInfo = ({ myTimer, oppTimer }) => {
           <div>{king ? "True" : "False"}</div>
         </div>
       </div>
-      <Chat />
+      <Chat chat={chat} />
       <div className='flex flex-row flex-wrap p-1'>
         <button
           type='button'

@@ -11,6 +11,7 @@ import {
   setMyTurn,
   setMoveInTime,
   resetPieceState,
+  addChatMessage,
 } from "../features/board/boardSlice";
 import {
   endGame,
@@ -183,6 +184,9 @@ const Play = () => {
       if (whitelocal.current) {
         oppTimer.resumeTimerWithOffset(0);
       }
+    });
+    socket.on("incomingMessage", (m) => {
+      dispatch(addChatMessage(m));
     });
     socket.on("firstMove", (position) => {
       let offsetW = 0;
