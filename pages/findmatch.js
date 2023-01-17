@@ -20,24 +20,24 @@ const FindMatch = () => {
       socket.auth = { sid };
       socket.connect();
     } else {
-      const un = "testUser";
+      const un = "testUser" + Math.floor(Math.random() * 500).toString();
       socket.auth = { un };
       socket.connect();
     }
+  }, []);
+  useEffect(() => {
     socket.on("connect_error", (err) => {
       if (err.message === "sidInvalid") {
-        const un = "testUser";
+        const un = "testUser" + Math.floor(Math.random() * 500).toString();
         socket.auth = { un };
         socket.connect();
       }
     });
     socket.on("sessionStart", (sid, un, uid, gid) => {
       localStorage.setItem("sessionID", sid);
+      dispatch(setSession({ sid, un, uid, gid }));
       if (gid !== null) {
-        dispatch(setSession({ sid: sid, un: un, uid: uid, gid: gid }));
         router.push("/play");
-      } else {
-        dispatch(setSession({ sid: sid, un: un, uid: uid, gid: gid }));
       }
     });
     socket.on("gameRoomCreated", (gid) => {
@@ -48,6 +48,7 @@ const FindMatch = () => {
       socket.off("connect");
       socket.off("sessionStart");
       socket.off("connect_error");
+      socket.off("gameRoomCreated");
     };
   });
   return (

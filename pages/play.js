@@ -12,6 +12,7 @@ import {
   setMoveInTime,
   resetPieceState,
   addChatMessage,
+  setChatOnReconnect,
 } from "../features/board/boardSlice";
 import {
   endGame,
@@ -53,14 +54,14 @@ const Play = () => {
   const endGameByCheckMate = () => {
     socket.emit("opponentCheckmated");
   };
-  /*useEffect(() => {
+  useEffect(() => {
     pingRef.current = setInterval(() => {
       socket.emit("c2s", dayjs.utc().toISOString());
     }, 5000);
     return () => {
       clearInterval(pingRef.current);
     };
-  }, []);*/
+  });
   useEffect(() => {
     const sid = localStorage.getItem("sessionID");
     if (sid) {
@@ -74,8 +75,8 @@ const Play = () => {
       router.push("/findmatch");
     }
     socket.on("sessionStart", (sid, un, uid, gid) => {
-      if (gid) {
-        dispatch(setSession({ sid, un, uid, gid }));
+      dispatch(setSession({ sid, un, uid, gid }));
+      if (gid && !inGameRoom) {
         socket.emit("joinGameLobby", gid);
       } else {
         router.push("/findmatch");
@@ -91,11 +92,12 @@ const Play = () => {
     });
     socket.on("reconnectingToGame", (g) => {
       dispatch(setFirstMove());
+      dispatch(setChatOnReconnect(g.messages));
       const w = g.players[0].sid === sessionID ? true : false;
       const gameType = g.gameType;
       const opponent = g.players.find((p) => p.sid !== sessionID);
       const opponentData = {
-        username: opponent.username,
+        username: opponent.un,
         connected: opponent.connected,
       };
       dispatch(setWhite(w));
@@ -121,8 +123,8 @@ const Play = () => {
       } else {
         whiteTurn = false;
       }
-      myTimer.initTimer(startTime, 10, () => socket.emit("endGame", "timeout"));
-      oppTimer.initTimer(startTime, 10, () => {});
+      myTimer.initTimer(startTime, 1, () => socket.emit("endGame", "timeout"));
+      oppTimer.initTimer(startTime, 1, () => {});
       const lastMoveTime = dayjs(startTime)
         .utc()
         .add(offsetB + offsetW);
@@ -152,7 +154,6 @@ const Play = () => {
       //set other data and init timers, new method to set and pause timer
       dispatch(setGameStartTime(startTime));
       setInGameRoom(true);
-      dispatch(setInGameData({ gameType, w, startTime, opponentData }));
       whitelocal.current = w;
       dispatch(setGameStarted());
       dispatch(setPosition(g.gameStates.at(-1)));
@@ -164,7 +165,7 @@ const Play = () => {
       const gameType = g.gameType;
       const opponent = g.players.find((p) => p.sid !== sid);
       const opponentData = {
-        username: opponent.username,
+        username: opponent.un,
         connected: opponent.connected,
       };
       dispatch(setWhite(w));
@@ -225,12 +226,12 @@ const Play = () => {
     socket.on("playerReconnected", () => {
       dispatch(setOpponentConnection(true));
     });
-    socket.on("gameEnded", (typeOfEnd) => {
+    socket.on("gameEnded", (result) => {
       dispatch(setMyTurn(false));
       dispatch(endGame());
       myTimer.stopTimer();
       oppTimer.stopTimer();
-      alert(typeOfEnd);
+      alert(`Winner: ${result.winnerID} - won by: ${result.wonBy}`);
     });
 
     socket.on("connect_error", (err) => {
@@ -238,8 +239,21 @@ const Play = () => {
         router.push("/findmatch");
       }
     });
-    return () => {};
-  }, []);
+    return () => {
+      socket.off("c2sr");
+      socket.off("gameEnded");
+      socket.off("playerReconnected");
+      socket.off("playerDisconnect");
+      socket.off("newPosition");
+      socket.off("firstMove");
+      socket.off("incomingMessage");
+      socket.off("gameStartTime");
+      socket.off("gameReadyToStart");
+      socket.off("reconnectingToGame");
+      socket.off("gameRoomJoined");
+      socket.removeAllListeners();
+    };
+  });
 
   useEffect(() => {
     if (myTurn && gameStarted) {

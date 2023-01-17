@@ -136,6 +136,9 @@ export const boardSlice = createSlice({
     addChatMessage: (state, action) => {
       state.chat.push(action.payload);
     },
+    setChatOnReconnect: (state, action) => {
+      state.chat = action.payload;
+    },
     setTimerOffset: (state, action) => {
       const { offsetW, offsetB } = action.payload;
       state.currentTimerOffset.white = offsetW;
@@ -371,6 +374,7 @@ export const {
   removeLegalMovesFromKing,
   changeKingLocation,
   addChatMessage,
+  setChatOnReconnect,
 } = boardSlice.actions;
 
 export default boardSlice.reducer;

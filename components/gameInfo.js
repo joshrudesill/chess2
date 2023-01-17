@@ -14,12 +14,14 @@ const GameInfo = ({ myTimer, oppTimer }) => {
   const myTurn = useSelector((state) => state.board.myTurn);
   const startTime = useSelector((state) => state.board.startTime);
   const gameStarted = useSelector((state) => state.app.inGameData.gameStarted);
+  const session = useSelector((state) => state.app.sessionDetails);
   const cto = useSelector((state) => state.board.currentTimerOffset);
   const white = useSelector((state) => state.board.white);
   const ping = useSelector((state) => state.app.ping);
   const oData = useSelector((state) => state.app.inGameData.opponentData);
   const king = useSelector((state) => state.board.kingData.inCheck);
   const chat = useSelector((state) => state.board.chat);
+  const [debugMode, setDebugMode] = useState(false);
   const resign = useCallback(() => socket.emit("endGame", "resignation"), []);
   const draw = useCallback(() => {
     setDrawRequest(false);
@@ -52,51 +54,76 @@ const GameInfo = ({ myTimer, oppTimer }) => {
         )}
       </div>
       <div className='flex flex-row justify-center gap-x-1 p-3 text-xs'>
-        <p className='font-sans xl:text-lg '>CornMan123</p>
+        <p className='font-sans xl:text-lg '>{session.username}</p>
         <p className='font-mono xl:text-xl grow text-center'>VS</p>
-        <p className='font-sans xl:text-lg'>noobslayer16</p>
+        <p className='font-sans xl:text-lg'>{oData.username}</p>
       </div>
-      <div className='flex grow flex-row flex-wrap content-start text-xs'>
-        <div className='flex bg-neutral-700 w-full p-1 justify-between'>
-          <div>myTurn</div>
-          <div>{myTurn ? "True" : "False"}</div>
-        </div>
-        <div className='flex w-full p-1 justify-between'>
-          <div>StartTime</div>
-          <div>{startTime ? JSON.stringify(startTime) : "Not Set"}</div>
-        </div>
-        <div className='flex bg-neutral-700 w-full p-1 justify-between'>
-          <div>GameStarted</div>
-          <div>{gameStarted ? "True" : "False"}</div>
-        </div>
-        <div className='flex bg-neutral-700 w-full p-1 justify-between'>
-          <div>CTO</div>
-          <div>
-            {cto.white}:{cto.black}
-          </div>
-        </div>
-        <div className='flex bg-neutral-700 w-full p-1 justify-between'>
-          <div>White</div>
-          <div>{white ? "True" : "False"}</div>
-        </div>
-        <div className='flex bg-neutral-700 w-full p-1 justify-between'>
-          <div>Ping</div>
-          <div>{ping}</div>
-        </div>
-        <div className='flex bg-neutral-700 w-full p-1 justify-between'>
-          <div>Opponent Connected</div>
-          <div>{oData?.connected ? "True" : "False"}</div>
-        </div>
-        <div className='flex bg-neutral-700 w-full p-1 justify-between'>
-          <div>King</div>
-          <div>{king ? "True" : "False"}</div>
-        </div>
+      <div className='flex grow flex-row flex-wrap content-start text-xs p-2 gap-3'>
+        {debugMode ? (
+          <>
+            <div className='flex bg-neutral-700 w-full p-1 justify-between'>
+              <div>myTurn</div>
+              <div>{myTurn ? "True" : "False"}</div>
+            </div>
+            <div className='flex w-full p-1 justify-between'>
+              <div>StartTime</div>
+              <div>{startTime ? JSON.stringify(startTime) : "Not Set"}</div>
+            </div>
+            <div className='flex bg-neutral-700 w-full p-1 justify-between'>
+              <div>GameStarted</div>
+              <div>{gameStarted ? "True" : "False"}</div>
+            </div>
+            <div className='flex bg-neutral-700 w-full p-1 justify-between'>
+              <div>CTO</div>
+              <div>
+                {cto.white}:{cto.black}
+              </div>
+            </div>
+            <div className='flex bg-neutral-700 w-full p-1 justify-between'>
+              <div>White</div>
+              <div>{white ? "True" : "False"}</div>
+            </div>
+            <div className='flex bg-neutral-700 w-full p-1 justify-between'>
+              <div>Ping</div>
+              <div>{ping}</div>
+            </div>
+            <div className='flex bg-neutral-700 w-full p-1 justify-between'>
+              <div>Opponent Connected</div>
+              <div>{oData?.connected ? "True" : "False"}</div>
+            </div>
+            <div className='flex bg-neutral-700 w-full p-1 justify-between'>
+              <div>King</div>
+              <div>{king ? "True" : "False"}</div>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className='flex flex-row'>
+              <div className='flex flex-row bg-neutral-500 p-1 rounded-tl-md rounded-bl-md gap-1 '>
+                <p>1.</p>
+                <p>e5</p>
+              </div>
+              <div className=' bg-neutral-800 p-1 rounded-tr-md rounded-br-md gap-1'>
+                <p>2.1s</p>
+              </div>
+            </div>
+            <div className='flex flex-row'>
+              <div className='flex flex-row bg-neutral-500 p-1 rounded-tl-md rounded-bl-md gap-1 '>
+                <p>1.</p>
+                <p>e5</p>
+              </div>
+              <div className=' bg-neutral-800 p-1 rounded-tr-md rounded-br-md gap-1'>
+                <p>2.1s</p>
+              </div>
+            </div>
+          </>
+        )}
       </div>
-      <Chat chat={chat} />
+
       <div className='flex flex-row flex-wrap p-1'>
         <button
           type='button'
-          className='inline-flex text-red-700 hover:text-white border border-red-700 hover:bg-red-800 font-medium rounded-lg text-xs px-2 py-2 text-center mx-1 my-2'
+          className='inline-flex border-2 border-red-700 font-medium rounded-lg text-xs px-2 py-2 text-center mx-1 my-2'
           onClick={resign}
         >
           Resign
@@ -106,7 +133,7 @@ const GameInfo = ({ myTimer, oppTimer }) => {
           <>
             <button
               type='button'
-              className='inline-flex text-yellow-500 hover:text-white border border-yellow-600 hover:bg-yellow-600 font-medium rounded-lg text-xs px-2 py-2 text-center mx-1 my-2'
+              className='inline-flex hover:text-white border-2 border-yellow-500 hover:bg-yellow-600 font-medium rounded-lg text-xs px-2 py-2 text-center mx-1 my-2'
               onClick={draw}
             >
               Yes
@@ -114,7 +141,7 @@ const GameInfo = ({ myTimer, oppTimer }) => {
             </button>
             <button
               type='button'
-              className='inline-flex text-yellow-500 hover:text-white border border-yellow-600 hover:bg-yellow-600 font-medium rounded-lg text-xs px-2 py-2 text-center mx-1 my-2'
+              className='inline-flex hover:text-white border-2 border-yellow-500 hover:bg-yellow-600 font-medium rounded-lg text-xs px-2 py-2 text-center mx-1 my-2'
               onClick={() => setDrawRequest(false)}
             >
               No
@@ -126,7 +153,7 @@ const GameInfo = ({ myTimer, oppTimer }) => {
           <Tooltip content='EX' style='light' className='text-xs'>
             <button
               type='button'
-              className='inline-flex text-yellow-500 hover:text-white border border-yellow-600 hover:bg-yellow-600 font-medium rounded-lg text-xs px-2 py-2 text-center mx-1 my-2'
+              className='inline-flex border-2 border-yellow-500 font-medium rounded-lg text-xs px-2 py-2 text-center mx-1 my-2'
               onClick={() => socket.emit("requestDraw")}
             >
               Draw
@@ -135,6 +162,7 @@ const GameInfo = ({ myTimer, oppTimer }) => {
           </Tooltip>
         )}
       </div>
+      <Chat chat={chat} />
       <div className='flex p-2'>
         <p className='font-mono text-s lg:text-lg underline '>Variant name</p>
       </div>
