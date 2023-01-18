@@ -161,6 +161,12 @@ const GameInfo = ({ myTimer, oppTimer }) => {
             </button>
           </Tooltip>
         )}
+        <button
+          onClick={() => setDebugMode(!debugMode)}
+          className='inline-flex border-2 border-yellow-500 font-medium rounded-lg text-xs px-2 py-2 text-center mx-1 my-2'
+        >
+          Debug Mode
+        </button>
       </div>
       <Chat chat={chat} />
       <div className='flex p-2'>
