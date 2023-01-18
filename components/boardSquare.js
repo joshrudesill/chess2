@@ -16,7 +16,6 @@ import Rook from "./pieces/rook";
 
 const BoardSquare = ({ squareData, j, e, activePiece, myTurn, white }) => {
   const dispatch = useDispatch();
-
   const onMouseDown = () => {
     if (myTurn) {
       if (activePiece === null && squareData.piece !== null) {

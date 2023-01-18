@@ -176,8 +176,75 @@ export const boardSlice = createSlice({
     },
     changePieceAtSquare: (state, action) => {
       state.myTurn = false;
-
       const { x, y } = action.payload;
+      const startingSquare =
+        state.position[state.activePiece.x][state.activePiece.y].an;
+      const endingSquare = state.position[x][y].an;
+      const pieceDesignation =
+        state.activePiece.type === 0
+          ? "K"
+          : state.activePiece.type === 2
+          ? "R"
+          : state.activePiece.type === 3
+          ? "B"
+          : state.activePiece.type === 4
+          ? "N"
+          : state.activePiece.type === 5
+          ? "Q"
+          : "";
+
+      let file = -1;
+      let col = -1;
+      //special checks for pawns
+      if (state.activePiece.type !== 1) {
+        for (const row of state.position) {
+          for (const square of row) {
+            if (
+              square.piece !== null &&
+              square.piece.type === state.activePiece.type &&
+              square.piece.white === state.activePiece.white
+            ) {
+              //check for queen here
+              if (
+                square.piece.legalMoves.some((move) => {
+                  return state.activePiece.legalMoves.some(
+                    (apMove) => apMove.x === move.x && apMove.y === move.y
+                  );
+                })
+              ) {
+                //they share a legal move
+                if (state.activePiece.x === square.piece.x) {
+                  file = square.piece.x;
+                }
+                if (state.activePiece.y === square.piece.y) {
+                  col = square.piece.y;
+                }
+              }
+            }
+          }
+        }
+      }
+      let differentiator = "";
+      if (file !== -1) {
+        differentiator = startingSquare[0];
+      }
+      if (col !== -1) {
+        differentiator += startingSquare[1];
+      }
+      //move to piece logic
+      if (state.kingData.inCheck) {
+        endingSquare += "+";
+      }
+      //
+      const algebraicNotation = `${
+        pieceDesignation === "" ? startingSquare : pieceDesignation
+      }${differentiator}${endingSquare}`;
+      console.log(algebraicNotation);
+      const offsetStart = dayjs(state.moveInTime).utc();
+      var diff = offsetStart.diff();
+      diff = diff / 1000;
+      diff.toFixed(1);
+
       state.position[state.activePiece.x][state.activePiece.y].piece = null;
       state.position[x][y].piece = state.activePiece;
 
@@ -264,6 +331,70 @@ export const boardSlice = createSlice({
       state.myTurn = false;
       const { toBeCaptured } = action.payload;
       const { x, y } = toBeCaptured;
+      const startingSquare =
+        state.position[state.activePiece.x][state.activePiece.y].an;
+      const endingSquare = state.position[x][y].an;
+      const pieceDesignation =
+        state.activePiece.type === 0
+          ? "K"
+          : state.activePiece.type === 2
+          ? "R"
+          : state.activePiece.type === 3
+          ? "B"
+          : state.activePiece.type === 4
+          ? "N"
+          : state.activePiece.type === 5
+          ? "Q"
+          : "";
+
+      let file = -1;
+      let col = -1;
+      //special checks for pawns
+      if (state.activePiece.type !== 1) {
+        for (const row of state.position) {
+          for (const square of row) {
+            if (
+              square.piece !== null &&
+              square.piece.type === state.activePiece.type &&
+              square.piece.white === state.activePiece.white &&
+              square.piece.id !== state.activePiece.id
+            ) {
+              console.log("found partner");
+              if (
+                square.piece.legalMoves.some((move) => {
+                  return state.activePiece.legalMoves.some(
+                    (apMove) => apMove.x === move.x && apMove.y === move.y
+                  );
+                })
+              ) {
+                //they share a legal move
+                if (state.activePiece.x === square.piece.x) {
+                  file = square.piece.x;
+                }
+                if (state.activePiece.y === square.piece.y) {
+                  col = square.piece.y;
+                }
+              }
+            }
+          }
+        }
+      }
+      let differentiator = "";
+      if (file !== -1) {
+        differentiator = startingSquare[0];
+      }
+      if (col !== -1) {
+        differentiator += startingSquare[1];
+      }
+      //move to piece logic
+      if (state.kingData.inCheck) {
+        endingSquare += "+";
+      }
+      //
+      const algebraicNotation = `${
+        pieceDesignation === "" ? startingSquare : pieceDesignation
+      }${differentiator}x${endingSquare}`;
+      console.log(algebraicNotation);
       state.position[state.activePiece.x][state.activePiece.y].piece = null;
       state.position[x][y].piece = state.activePiece;
 

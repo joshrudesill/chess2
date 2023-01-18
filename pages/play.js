@@ -48,12 +48,6 @@ const Play = () => {
   const oppTimer = useTimer();
   const pingRef = useRef(null);
 
-  const endGameByTimeOut = () => {
-    socket.emit("myTimeRanOut");
-  };
-  const endGameByCheckMate = () => {
-    socket.emit("opponentCheckmated");
-  };
   useEffect(() => {
     pingRef.current = setInterval(() => {
       socket.emit("c2s", dayjs.utc().toISOString());
@@ -123,8 +117,8 @@ const Play = () => {
       } else {
         whiteTurn = false;
       }
-      myTimer.initTimer(startTime, 1, () => socket.emit("endGame", "timeout"));
-      oppTimer.initTimer(startTime, 1, () => {});
+      myTimer.initTimer(startTime, 10, () => socket.emit("endGame", "timeout"));
+      oppTimer.initTimer(startTime, 10, () => {});
       const lastMoveTime = dayjs(startTime)
         .utc()
         .add(offsetB + offsetW);
@@ -178,8 +172,8 @@ const Play = () => {
       dispatch(resetPieceState());
     });
     socket.on("gameStartTime", (startTime) => {
-      myTimer.initTimer(startTime, 1, () => socket.emit("endGame", "timeout"));
-      oppTimer.initTimer(startTime, 1, () => {});
+      myTimer.initTimer(startTime, 10, () => socket.emit("endGame", "timeout"));
+      oppTimer.initTimer(startTime, 10, () => {});
       dispatch(setGameStartTime(startTime));
       console.log(white);
       if (whitelocal.current) {
