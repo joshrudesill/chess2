@@ -50,7 +50,7 @@ const Play = () => {
 
   useEffect(() => {
     pingRef.current = setInterval(() => {
-      socket.emit("c2s", dayjs.utc().toISOString());
+      socket.emit("c2s", dayjs().utc().toISOString());
     }, 5000);
     return () => {
       clearInterval(pingRef.current);
@@ -77,7 +77,7 @@ const Play = () => {
       }
     });
     socket.on("c2sr", (t, t2) => {
-      const d = Math.abs(dayjs(t).diff(dayjs(t2).utc()));
+      const d = Math.abs(dayjs(t).utc().diff(dayjs(t2).utc()));
       dispatch(setPing(d));
     });
     socket.on("gameRoomJoined", (gid) => {
