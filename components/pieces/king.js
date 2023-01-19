@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   pinPiece,
@@ -165,17 +165,128 @@ const King = ({ piece }) => {
       dispatch(recheckLegalMoves());
     }
   }, [kingData.inCheck, kingData.white]);
-
+  const boxRef = useRef(null);
   return (
-    <div className='pointer-events-none select-none z-10'>
-      <Image
-        src={piece.white ? white : black}
-        alt='king'
-        layout='intrinsic'
-        height={130}
-        draggable='false'
-        unselectable='true'
-      ></Image>
+    <div
+      className='pointer-events-none select-none z-50 w-[80%] h-[80%] mx-auto my-auto'
+      ref={boxRef}
+    >
+      <svg
+        width={`${boxRef.current?.clientWidth}`}
+        height={`${boxRef.current?.clientHeight}`}
+        viewBox='0 0 162 164'
+        fill='none'
+        xmlns='http://www.w3.org/2000/svg'
+      >
+        {" "}
+        {piece.white ? (
+          <g clip-path='url(#clip0_101_111)'>
+            <path
+              d='M81.3638 29.461V3'
+              stroke='black'
+              stroke-width='5'
+              stroke-linecap='round'
+            />
+            <path
+              d='M69.6138 12.3999H93.1138'
+              stroke='black'
+              stroke-width='5'
+              stroke-linecap='round'
+            />
+            <path
+              fill-rule='evenodd'
+              clip-rule='evenodd'
+              d='M81.3637 92.2999C81.3637 92.2999 102.514 57.05 95.4637 42.95C95.4637 42.95 90.7637 31.2 81.3637 31.2C71.9637 31.2 67.2637 42.95 67.2637 42.95C60.2137 57.05 81.3637 92.2999 81.3637 92.2999Z'
+              fill='white'
+              stroke='black'
+              stroke-width='5'
+            />
+            <path
+              fill-rule='evenodd'
+              clip-rule='evenodd'
+              d='M29.6637 148.7C55.5137 165.15 102.514 165.15 128.364 148.7V115.8C128.364 115.8 170.664 94.6499 156.564 66.4499C137.764 35.8999 93.1137 49.9999 81.3637 85.2499V101.7V85.2499C64.9137 49.9999 20.2637 35.8999 6.16371 66.4499C-7.93629 94.6499 29.6637 113.45 29.6637 113.45V148.7Z'
+              fill='white'
+              stroke='black'
+              stroke-width='5'
+              stroke-linecap='round'
+              stroke-linejoin='round'
+            />
+            <path
+              d='M29.6638 115.8C55.5138 101.7 102.514 101.7 128.364 115.8'
+              stroke='black'
+              stroke-width='5'
+              stroke-linecap='round'
+              stroke-linejoin='round'
+            />
+            <path
+              d='M29.6638 132.25C55.5138 118.15 102.514 118.15 128.364 132.25'
+              stroke='black'
+              stroke-width='5'
+              stroke-linecap='round'
+              stroke-linejoin='round'
+            />
+            <path
+              d='M29.6638 148.7C55.5138 134.6 102.514 134.6 128.364 148.7'
+              stroke='black'
+              stroke-width='5'
+              stroke-linecap='round'
+              stroke-linejoin='round'
+            />
+          </g>
+        ) : (
+          <g clip-path='url(#clip0_101_101)'>
+            <path
+              d='M81.3638 29.461V3'
+              stroke='black'
+              stroke-width='5'
+              stroke-linecap='round'
+            />
+            <path
+              fill-rule='evenodd'
+              clip-rule='evenodd'
+              d='M81.3637 92.2999C81.3637 92.2999 102.514 57.05 95.4637 42.95C95.4637 42.95 90.7637 31.2 81.3637 31.2C71.9637 31.2 67.2637 42.95 67.2637 42.95C60.2137 57.05 81.3637 92.2999 81.3637 92.2999Z'
+              fill='black'
+              stroke='black'
+              stroke-width='5'
+            />
+            <path
+              fill-rule='evenodd'
+              clip-rule='evenodd'
+              d='M29.6637 148.7C55.5137 165.15 102.514 165.15 128.364 148.7V115.8C128.364 115.8 170.664 94.65 156.564 66.45C137.764 35.9 93.1137 50 81.3637 85.25V101.7V85.25C64.9137 50 20.2637 35.9 6.16371 66.45C-7.93629 94.65 29.6637 113.45 29.6637 113.45V148.7Z'
+              fill='black'
+              stroke='black'
+              stroke-width='5'
+              stroke-linecap='round'
+              stroke-linejoin='round'
+            />
+            <path
+              d='M69.6138 12.4H93.1138'
+              stroke='black'
+              stroke-width='5'
+              stroke-linecap='round'
+            />
+            <path
+              d='M126.014 113.45C126.014 113.45 165.964 94.65 154.355 68.095C136.119 40.6 93.1136 59.4 81.3636 89.95L81.4106 99.82L81.3636 89.95C69.6136 59.4 22.1718 40.6 8.4995 68.095C-3.2364 94.65 31.3086 110.395 31.3086 110.395'
+              stroke='white'
+              stroke-width='5'
+              stroke-linecap='round'
+              stroke-linejoin='round'
+            />
+            <path
+              d='M29.6638 115.8C55.5138 101.7 102.514 101.7 128.364 115.8M29.6638 132.25C55.5138 118.15 102.514 118.15 128.364 132.25M29.6638 148.7C55.5138 134.6 102.514 134.6 128.364 148.7'
+              stroke='white'
+              stroke-width='5'
+              stroke-linecap='round'
+              stroke-linejoin='round'
+            />
+          </g>
+        )}
+        <defs>
+          <clipPath id='clip0_101_111'>
+            <rect width='162' height='164' fill='white' />
+          </clipPath>
+        </defs>
+      </svg>
     </div>
   );
 };

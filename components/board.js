@@ -15,12 +15,12 @@ const Board = () => {
     setX(e.screenX);
     setY(e.screenY);
   };
+  // <DraggablePiece x={pieceX} y={pieceY} />
   return (
     <div
       className='flex flex-col md:flex-row justify-center gap-3 mt-8'
       onMouseMove={mouseMove}
     >
-      <DraggablePiece x={pieceX} y={pieceY} />
       <div className='md:shrink w-[100%] md:w-[88vmin] overflow-x-hidden'>
         <div className='grid grid-cols-8 grid-rows-8'>
           {white === true || white === null
