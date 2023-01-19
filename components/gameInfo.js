@@ -29,7 +29,10 @@ const GameInfo = ({ myTimer, oppTimer }) => {
   }, []);
   useEffect(() => {
     socket.on("drawRequested", () => setDrawRequest(true));
-  }, []);
+    return () => {
+      socket.off("drawRequested");
+    };
+  });
   return (
     <div className='lg:w-[30vw] w-11/12 border rounded-md border-neutral-600 divide-neutral-600 shadow-lg flex flex-col divide-y  text-white mx-auto md:mx-0 lg:mt-8 lg:mr-2'>
       <div className='flex justify-between p-2 text-black'>

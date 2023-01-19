@@ -224,12 +224,14 @@ const Queen = ({ piece }) => {
   }, [piece.legalMovesUpdated, whiteKingCalculated, blackKingCalculated]);
 
   return (
-    <div>
+    <div className='pointer-events-none select-none z-10'>
       <Image
         src={piece.white ? white : black}
         alt='king'
         layout='intrinsic'
         height={140}
+        draggable='false'
+        unselectable='true'
       ></Image>
     </div>
   );

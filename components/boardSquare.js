@@ -110,7 +110,7 @@ const BoardSquare = ({ squareData, j, e, activePiece, myTurn, white }) => {
   if (squareData.piece !== null && squareData.piece.type === 2) {
     return (
       <div
-        className={`aspect-square flex justify-center items-center cursor-pointer ${
+        className={`aspect-square flex justify-center items-center cursor-pointer  z-40 relative ${
           j % 2 === 0
             ? e % 2 === 0
               ? "bg-emerald-800"
@@ -130,14 +130,18 @@ const BoardSquare = ({ squareData, j, e, activePiece, myTurn, white }) => {
         onMouseDown={onMouseDown}
         onMouseUp={onMouseUp}
       >
-        <Rook piece={squareData.piece} />
+        <Rook
+          piece={squareData.piece}
+          onMouseDown={onMouseDown}
+          onMouseUp={onMouseUp}
+        />
       </div>
     );
   }
   if (squareData.piece !== null && squareData.piece.type === 1) {
     return (
       <div
-        className={`aspect-square flex justify-center items-center cursor-pointer ${
+        className={`aspect-square flex justify-center items-center cursor-pointer z-40 relative ${
           j % 2 === 0
             ? e % 2 === 0
               ? "bg-emerald-800"
@@ -164,7 +168,7 @@ const BoardSquare = ({ squareData, j, e, activePiece, myTurn, white }) => {
   if (squareData.piece !== null && squareData.piece.type === 0) {
     return (
       <div
-        className={`aspect-square flex justify-center items-center cursor-pointer ${
+        className={`aspect-square flex justify-center items-center cursor-pointer  z-40 relative ${
           j % 2 === 0
             ? e % 2 === 0
               ? "bg-emerald-800"
@@ -191,7 +195,7 @@ const BoardSquare = ({ squareData, j, e, activePiece, myTurn, white }) => {
   if (squareData.piece !== null && squareData.piece.type === 3) {
     return (
       <div
-        className={`aspect-square flex justify-center items-center cursor-pointer ${
+        className={`aspect-square flex justify-center items-center cursor-pointer  z-40 relative ${
           j % 2 === 0
             ? e % 2 === 0
               ? "bg-emerald-800"
@@ -218,7 +222,7 @@ const BoardSquare = ({ squareData, j, e, activePiece, myTurn, white }) => {
   if (squareData.piece !== null && squareData.piece.type === 4) {
     return (
       <div
-        className={`aspect-square flex justify-center items-center cursor-pointer ${
+        className={`aspect-square flex justify-center items-center cursor-pointer  z-40 relative ${
           j % 2 === 0
             ? e % 2 === 0
               ? "bg-emerald-800"
@@ -245,7 +249,7 @@ const BoardSquare = ({ squareData, j, e, activePiece, myTurn, white }) => {
   if (squareData.piece !== null && squareData.piece.type === 5) {
     return (
       <div
-        className={`aspect-square flex justify-center items-center cursor-pointer ${
+        className={`aspect-square flex justify-center items-center cursor-pointer  z-40 relative ${
           j % 2 === 0
             ? e % 2 === 0
               ? "bg-emerald-800"
@@ -272,7 +276,7 @@ const BoardSquare = ({ squareData, j, e, activePiece, myTurn, white }) => {
   if (squareData.piece === null) {
     return (
       <div
-        className={`aspect-square flex justify-center items-center cursor-pointer ${
+        className={`aspect-square flex justify-center items-center cursor-pointer  z-40 relative ${
           j % 2 === 0
             ? e % 2 === 0
               ? "bg-emerald-800"

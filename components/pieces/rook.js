@@ -139,12 +139,14 @@ const Rook = ({ piece }) => {
   }, [piece.legalMovesUpdated, whiteKingCalculated, blackKingCalculated]);
 
   return (
-    <div>
+    <div className='pointer-events-none select-none z-10'>
       <Image
         src={piece.white ? white : black}
         alt='rook'
         layout='intrinsic'
         height={100}
+        draggable='false'
+        unselectable='true'
       ></Image>
     </div>
   );

@@ -92,12 +92,14 @@ const Knight = ({ piece }) => {
   }, [piece.legalMovesUpdated, whiteKingCalculated, blackKingCalculated]);
 
   return (
-    <div>
+    <div className='pointer-events-none select-none z-10'>
       <Image
         src={piece.white ? white : black}
         alt='king'
         layout='intrinsic'
         height={120}
+        draggable='false'
+        unselectable='true'
       ></Image>
     </div>
   );

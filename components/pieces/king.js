@@ -167,12 +167,14 @@ const King = ({ piece }) => {
   }, [kingData.inCheck, kingData.white]);
 
   return (
-    <div>
+    <div className='pointer-events-none select-none z-10'>
       <Image
         src={piece.white ? white : black}
         alt='king'
         layout='intrinsic'
         height={130}
+        draggable='false'
+        unselectable='true'
       ></Image>
     </div>
   );

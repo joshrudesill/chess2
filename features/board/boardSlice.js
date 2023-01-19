@@ -193,8 +193,8 @@ export const boardSlice = createSlice({
           ? "Q"
           : "";
 
-      let file = -1;
-      let col = -1;
+      let file = null;
+      let col = null;
       //special checks for pawns
       if (state.activePiece.type !== 1) {
         for (const row of state.position) {
@@ -202,7 +202,8 @@ export const boardSlice = createSlice({
             if (
               square.piece !== null &&
               square.piece.type === state.activePiece.type &&
-              square.piece.white === state.activePiece.white
+              square.piece.white === state.activePiece.white &&
+              square.piece.id !== state.activePiece.id
             ) {
               //check for queen here
               if (
@@ -212,6 +213,9 @@ export const boardSlice = createSlice({
                   );
                 })
               ) {
+                console.log("legal move shared");
+                console.log(JSON.stringify(square.piece.legalMoves));
+                console.log(JSON.stringify(state.activePiece.legalMoves));
                 //they share a legal move
                 if (state.activePiece.x === square.piece.x) {
                   file = square.piece.x;
@@ -225,10 +229,10 @@ export const boardSlice = createSlice({
         }
       }
       let differentiator = "";
-      if (file !== -1) {
+      if (file) {
         differentiator = startingSquare[0];
       }
-      if (col !== -1) {
+      if (col) {
         differentiator += startingSquare[1];
       }
       //move to piece logic
@@ -236,9 +240,14 @@ export const boardSlice = createSlice({
         endingSquare += "+";
       }
       //
-      const algebraicNotation = `${
-        pieceDesignation === "" ? startingSquare : pieceDesignation
-      }${differentiator}${endingSquare}`;
+      let algebraicNotation = "";
+      if (state.activePiece.type === 1) {
+        algebraicNotation = `${endingSquare}`;
+      } else {
+        algebraicNotation = `${
+          pieceDesignation === "" ? startingSquare : pieceDesignation
+        }${differentiator}${endingSquare}`;
+      }
       console.log(algebraicNotation);
       const offsetStart = dayjs(state.moveInTime).utc();
       var diff = offsetStart.diff();
@@ -391,9 +400,14 @@ export const boardSlice = createSlice({
         endingSquare += "+";
       }
       //
-      const algebraicNotation = `${
-        pieceDesignation === "" ? startingSquare : pieceDesignation
-      }${differentiator}x${endingSquare}`;
+      let algebraicNotation = "";
+      if (state.activePiece.type === 1) {
+        algebraicNotation = `${startingSquare[0]}x${endingSquare}`;
+      } else {
+        algebraicNotation = `${
+          pieceDesignation === "" ? startingSquare : pieceDesignation
+        }${differentiator}x${endingSquare}`;
+      }
       console.log(algebraicNotation);
       state.position[state.activePiece.x][state.activePiece.y].piece = null;
       state.position[x][y].piece = state.activePiece;
