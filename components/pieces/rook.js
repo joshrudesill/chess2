@@ -150,7 +150,6 @@ const Rook = ({ piece }) => {
         fill='none'
         xmlns='http://www.w3.org/2000/svg'
       >
-        {" "}
         {piece.white ? (
           <g clip-path='url(#clip0_101_107)'>
             <path

@@ -13,6 +13,10 @@ import {
   resetPieceState,
   addChatMessage,
   setChatOnReconnect,
+  pushNewNotation,
+  pushMoveTime,
+  setNotationOnReconnnect,
+  setMoveTimesOnReconnect,
 } from "../features/board/boardSlice";
 import {
   endGame,
@@ -87,6 +91,8 @@ const Play = () => {
     socket.on("reconnectingToGame", (g) => {
       dispatch(setFirstMove());
       dispatch(setChatOnReconnect(g.messages));
+      dispatch(setNotationOnReconnnect(g.algebraicNotation));
+      dispatch(setMoveTimesOnReconnect(g.moveTimes));
       const w = g.players[0].sid === sessionID ? true : false;
       const gameType = g.gameType;
       const opponent = g.players.find((p) => p.sid !== sessionID);
@@ -112,10 +118,14 @@ const Play = () => {
 
       const startTime = g.gameStartTime;
       let whiteTurn;
-      if (g.moveTimes.length % 2 !== 0 || g.moveTimes.length === 0) {
+      if (g.moveTimes.length === 0) {
         whiteTurn = true;
       } else {
-        whiteTurn = false;
+        if (g.moveTimes.length % 2 !== 0) {
+          whiteTurn = false;
+        } else {
+          whiteTurn = true;
+        }
       }
       myTimer.initTimer(startTime, 10, () => socket.emit("endGame", "timeout"));
       oppTimer.initTimer(startTime, 10, () => {});
@@ -183,21 +193,24 @@ const Play = () => {
     socket.on("incomingMessage", (m) => {
       dispatch(addChatMessage(m));
     });
-    socket.on("firstMove", (position) => {
+    socket.on("firstMove", (position, notation) => {
       let offsetW = 0;
       let offsetB = 0;
       dispatch(setMoveInTime(dayjs().utc().toISOString()));
+      dispatch(pushMoveTime(0));
       dispatch(setGameStarted());
       dispatch(setFirstMove());
       dispatch(setTimerOffset({ offsetW, offsetB }));
       dispatch(setMyTurn(true));
       dispatch(setPosition(position));
+      dispatch(pushNewNotation(notation));
       dispatch(resetPieceState());
     });
-    socket.on("newPosition", (p, t) => {
+    socket.on("newPosition", (p, t, notation) => {
       dispatch(setGameStarted());
       dispatch(setMoveInTime(dayjs().utc().toISOString()));
       if (t) {
+        dispatch(pushMoveTime(t.at(-1)));
         let offsetW = 0;
         let offsetB = 0;
 
@@ -212,6 +225,7 @@ const Play = () => {
         dispatch(setMyTurn(true));
       }
       dispatch(setPosition(p));
+      dispatch(pushNewNotation(notation));
       dispatch(resetPieceState());
     });
     socket.on("playerDisconnect", () => {

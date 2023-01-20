@@ -14,7 +14,7 @@ import Pawn from "./pieces/pawn";
 import Queen from "./pieces/queen";
 import Rook from "./pieces/rook";
 
-const BoardSquare = ({ squareData, j, e, activePiece, myTurn, white }) => {
+const BoardSquare = ({ squareData, j, e, activePiece, myTurn }) => {
   const dispatch = useDispatch();
   const onMouseDown = () => {
     if (myTurn) {
@@ -235,7 +235,7 @@ const BoardSquare = ({ squareData, j, e, activePiece, myTurn, white }) => {
             ? activePiece.legalMoves.some(
                 (m) => m.x === squareData.x && m.y === squareData.y
               )
-              ? "border-2 border-red-600"
+              ? "bg-red-600"
               : ""
             : ""
         } `}
@@ -289,7 +289,7 @@ const BoardSquare = ({ squareData, j, e, activePiece, myTurn, white }) => {
             ? activePiece.legalMoves.some(
                 (m) => m.x === squareData.x && m.y === squareData.y
               )
-              ? "border-2 border-red-600"
+              ? "bg-red-600"
               : ""
             : ""
         } `}

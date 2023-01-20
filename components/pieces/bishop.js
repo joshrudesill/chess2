@@ -143,7 +143,6 @@ const Bishop = ({ piece }) => {
       className='pointer-events-none select-none z-50 w-[80%] h-[80%] mx-auto my-auto'
       ref={boxRef}
     >
-      {piece.white ? <></> : <></>}
       <svg
         width={`${boxRef.current?.clientWidth}`}
         height={`${boxRef.current?.clientHeight}`}
@@ -151,7 +150,6 @@ const Bishop = ({ piece }) => {
         fill='none'
         xmlns='http://www.w3.org/2000/svg'
       >
-        {" "}
         {piece.white ? (
           <g clip-path='url(#clip0_101_109)'>
             <path

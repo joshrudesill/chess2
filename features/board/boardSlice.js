@@ -125,6 +125,8 @@ const initialState = {
   myTurn: null,
   chat: [],
   // { message: '', sender: '',}
+  notation: [],
+  moveTimes: [],
 };
 
 // search all legal moves and remove any not in sqauresToBeBlocked
@@ -173,6 +175,12 @@ export const boardSlice = createSlice({
           }
         });
       });
+    },
+    pushMoveTime: (state, action) => {
+      state.moveTimes.push(action.payload);
+    },
+    setMoveTimesOnReconnect: (state, action) => {
+      state.moveTimes = action.payload;
     },
     changePieceAtSquare: (state, action) => {
       state.myTurn = false;
@@ -235,10 +243,7 @@ export const boardSlice = createSlice({
       if (col) {
         differentiator += startingSquare[1];
       }
-      //move to piece logic
-      if (state.kingData.inCheck) {
-        endingSquare += "+";
-      }
+
       //
       let algebraicNotation = "";
       if (state.activePiece.type === 1) {
@@ -248,11 +253,12 @@ export const boardSlice = createSlice({
           pieceDesignation === "" ? startingSquare : pieceDesignation
         }${differentiator}${endingSquare}`;
       }
+      state.notation.push(algebraicNotation);
       console.log(algebraicNotation);
       const offsetStart = dayjs(state.moveInTime).utc();
       var diff = offsetStart.diff();
-      diff = diff / 1000;
-      diff.toFixed(1);
+
+      state.moveTimes.push(diff);
 
       state.position[state.activePiece.x][state.activePiece.y].piece = null;
       state.position[x][y].piece = state.activePiece;
@@ -267,13 +273,14 @@ export const boardSlice = createSlice({
       state.kingData = initialState.kingData;
       if (state.firstMove) {
         state.firstMove = false;
-        socket.emit("firstMove", state.position);
+        socket.emit("firstMove", state.position, algebraicNotation);
       } else {
         socket.emit(
           "pieceMove",
           state.position,
           state.startTime,
-          state.moveInTime
+          state.moveInTime,
+          algebraicNotation
         );
       }
     },
@@ -322,7 +329,6 @@ export const boardSlice = createSlice({
       state.position[kingPos[0]][kingPos[1]].piece.legalMoves = newMoves;
     },
     changeKingLocation: (state, action) => {
-      console.log("king location changed");
       const { white, position } = action.payload;
       state.kingLocations[white ? 0 : 1] = position;
     },
@@ -335,6 +341,12 @@ export const boardSlice = createSlice({
     },
     resetActivePiece: (state) => {
       state.activePiece = null;
+    },
+    pushNewNotation: (state, action) => {
+      state.notation.push(action.payload);
+    },
+    setNotationOnReconnnect: (state, action) => {
+      state.notation = action.payload;
     },
     capturePiece: (state, action) => {
       state.myTurn = false;
@@ -368,7 +380,6 @@ export const boardSlice = createSlice({
               square.piece.white === state.activePiece.white &&
               square.piece.id !== state.activePiece.id
             ) {
-              console.log("found partner");
               if (
                 square.piece.legalMoves.some((move) => {
                   return state.activePiece.legalMoves.some(
@@ -396,9 +407,7 @@ export const boardSlice = createSlice({
         differentiator += startingSquare[1];
       }
       //move to piece logic
-      if (state.kingData.inCheck) {
-        endingSquare += "+";
-      }
+
       //
       let algebraicNotation = "";
       if (state.activePiece.type === 1) {
@@ -408,7 +417,12 @@ export const boardSlice = createSlice({
           pieceDesignation === "" ? startingSquare : pieceDesignation
         }${differentiator}x${endingSquare}`;
       }
+      state.notation.push(algebraicNotation);
       console.log(algebraicNotation);
+      const offsetStart = dayjs(state.moveInTime).utc();
+      var diff = offsetStart.diff();
+
+      state.moveTimes.push(diff);
       state.position[state.activePiece.x][state.activePiece.y].piece = null;
       state.position[x][y].piece = state.activePiece;
 
@@ -424,7 +438,8 @@ export const boardSlice = createSlice({
         "pieceMove",
         state.position,
         state.startTime,
-        state.moveInTime
+        state.moveInTime,
+        algebraicNotation
       );
     },
     pinPiece: (state, action) => {
@@ -439,11 +454,7 @@ export const boardSlice = createSlice({
         : (state.blackKingCalculated = true);
     },
     checkKing: (state, action) => {
-      console.log(
-        "checking king ",
-        action.payload.piece.x,
-        action.payload.piece.y
-      );
+      //change last notation to have + on the end
       state.kingData.inCheck = true;
       state.kingData.checkingPiece = action.payload.piece;
       state.kingData.squaresToBeBlocked = action.payload.squares;
@@ -520,6 +531,10 @@ export const {
   changeKingLocation,
   addChatMessage,
   setChatOnReconnect,
+  pushNewNotation,
+  pushMoveTime,
+  setMoveTimesOnReconnect,
+  setNotationOnReconnnect,
 } = boardSlice.actions;
 
 export default boardSlice.reducer;

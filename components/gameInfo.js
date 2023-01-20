@@ -8,6 +8,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import socket from "../socket";
 import Chat from "./chat";
+import Notation from "./notation";
 const GameInfo = ({ myTimer, oppTimer }) => {
   const dispatch = useDispatch();
   const [drawRequest, setDrawRequest] = useState(false);
@@ -100,26 +101,7 @@ const GameInfo = ({ myTimer, oppTimer }) => {
             </div>
           </>
         ) : (
-          <>
-            <div className='flex flex-row'>
-              <div className='flex flex-row bg-neutral-500 p-1 rounded-tl-md rounded-bl-md gap-1 '>
-                <p>1.</p>
-                <p>e5</p>
-              </div>
-              <div className=' bg-neutral-800 p-1 rounded-tr-md rounded-br-md gap-1'>
-                <p>2.1s</p>
-              </div>
-            </div>
-            <div className='flex flex-row'>
-              <div className='flex flex-row bg-neutral-500 p-1 rounded-tl-md rounded-bl-md gap-1 '>
-                <p>1.</p>
-                <p>e5</p>
-              </div>
-              <div className=' bg-neutral-800 p-1 rounded-tr-md rounded-br-md gap-1'>
-                <p>2.1s</p>
-              </div>
-            </div>
-          </>
+          <Notation />
         )}
       </div>
 
