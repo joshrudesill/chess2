@@ -12,51 +12,57 @@ const Board = () => {
   const [pieceX, setX] = useState(0);
   const [pieceY, setY] = useState(0);
   const mouseMove = (e) => {
-    setX(e.screenX);
-    setY(e.screenY);
+    setX(e.pageX);
+    setY(e.pageY);
   };
-  // <DraggablePiece x={pieceX} y={pieceY} />
+  //  <DraggablePiece x={pieceX} y={pieceY} />
   return (
-    <div
-      className='flex flex-col md:flex-row justify-center gap-3 mt-8'
-      onMouseMove={mouseMove}
-    >
-      <div className='md:shrink w-[100%] md:w-[88vmin] overflow-x-hidden'>
-        <div className='grid grid-cols-8 grid-rows-8'>
-          {white === true || white === null
-            ? board.map((bs, j) => {
-                return bs.map((b, e) => (
-                  <BoardSquare
-                    squareData={b}
-                    j={j}
-                    e={e}
-                    activePiece={activePiece}
-                    myTurn={myTurn}
-                    white={white}
-                    key={(j + 1) * (e + 1) * (j + 1)}
-                  />
-                ));
-              })
-            : board
-                .map((bs, j) => {
-                  return bs
-                    .map((b, e) => (
-                      <BoardSquare
-                        squareData={b}
-                        j={j}
-                        e={e}
-                        activePiece={activePiece}
-                        myTurn={myTurn}
-                        white={white}
-                        key={(j + 1) * (e + 1) * (j + 1)}
-                      />
-                    ))
-                    .reverse();
+    <>
+      <div
+        className='flex flex-col md:flex-row justify-center gap-3 mt-8'
+        onMouseMove={mouseMove}
+      >
+        <div className='md:shrink w-[100%] md:w-[88vmin] overflow-x-hidden'>
+          <div className='grid grid-cols-8 grid-rows-8'>
+            {white === true || white === null
+              ? board.map((bs, j) => {
+                  return bs.map((b, e) => (
+                    <BoardSquare
+                      squareData={b}
+                      j={j}
+                      e={e}
+                      x={pieceX}
+                      y={pieceY}
+                      activePiece={activePiece}
+                      myTurn={myTurn}
+                      white={white}
+                      key={(j + 1) * (e + 1) * (j + 1)}
+                    />
+                  ));
                 })
-                .reverse()}
+              : board
+                  .map((bs, j) => {
+                    return bs
+                      .map((b, e) => (
+                        <BoardSquare
+                          squareData={b}
+                          j={j}
+                          e={e}
+                          x={pieceX}
+                          y={pieceY}
+                          activePiece={activePiece}
+                          myTurn={myTurn}
+                          white={white}
+                          key={(j + 1) * (e + 1) * (j + 1)}
+                        />
+                      ))
+                      .reverse();
+                  })
+                  .reverse()}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

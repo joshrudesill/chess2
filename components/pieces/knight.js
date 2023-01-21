@@ -8,7 +8,7 @@ import {
 import Image from "next/image";
 const white = require("../../assets/whiteknight.svg");
 const black = require("../../assets/blackknight.svg");
-const Knight = ({ piece }) => {
+const Knight = ({ piece, x, y }) => {
   const dispatch = useDispatch();
   const board = useSelector((state) => state.board.position);
   const whiteKingCalculated = useSelector(
