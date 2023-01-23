@@ -8,7 +8,15 @@ import {
 import Image from "next/image";
 const white = require("../../assets/whiterook.svg");
 const black = require("../../assets/blackrook.svg");
-const Rook = ({ piece }) => {
+const Rook = ({
+  piece,
+  activePiece,
+  x,
+  y,
+  onMouseDown,
+  onMouseUp,
+  mouseDragging,
+}) => {
   const dispatch = useDispatch();
   const board = useSelector((state) => state.board.position);
   const whiteKingCalculated = useSelector(
@@ -140,185 +148,208 @@ const Rook = ({ piece }) => {
   const boxRef = useRef(null);
   return (
     <div
-      className='pointer-events-none select-none z-50 w-[80%] h-[80%] mx-auto my-auto'
+      className={`select-none cursor-grabbing ${
+        activePiece ? "z-auto pointer-events-none" : "z-50"
+      } w-[80%] h-[80%] mx-auto my-auto"`}
       ref={boxRef}
+      onMouseDown={onMouseDown}
+      onMouseUp={onMouseUp}
     >
-      <svg
-        width={`${boxRef.current?.clientWidth}`}
-        height={`${boxRef.current?.clientHeight}`}
-        viewBox='0 0 133 147'
-        fill='none'
-        xmlns='http://www.w3.org/2000/svg'
+      <div
+        style={
+          activePiece && activePiece.id === piece.id && mouseDragging
+            ? {
+                position: "fixed",
+                left: "0",
+                top: "0",
+                width: `${boxRef.current?.clientWidth}`,
+                height: `${boxRef.current?.clientHeight}`,
+                transform: `translate(${
+                  x - 0.5 * boxRef.current?.clientWidth
+                }px, ${
+                  y - 0.5 * boxRef.current?.clientHeight
+                }px) translateZ(500px)`,
+              }
+            : {}
+        }
       >
-        {piece.white ? (
-          <g clip-path='url(#clip0_101_107)'>
-            <path
-              fill-rule='evenodd'
-              clip-rule='evenodd'
-              d='M3 144H129.9V129.9H3V144Z'
-              fill='white'
-              stroke='black'
-              stroke-width='5'
-              stroke-linejoin='round'
-            />
-            <path
-              fill-rule='evenodd'
-              clip-rule='evenodd'
-              d='M17.1001 129.9V111.1H115.8V129.9H17.1001Z'
-              fill='white'
-              stroke='black'
-              stroke-width='5'
-              stroke-linejoin='round'
-            />
-            <path
-              fill-rule='evenodd'
-              clip-rule='evenodd'
-              d='M12.3999 26.5V3H31.1999V12.4H54.6999V3H78.1999V12.4H101.7V3H120.5V26.5'
-              fill='white'
-            />
-            <path
-              d='M12.3999 26.5V3H31.1999V12.4H54.6999V3H78.1999V12.4H101.7V3H120.5V26.5'
-              stroke='black'
-              stroke-width='5'
-              stroke-linejoin='round'
-            />
-            <path
-              fill-rule='evenodd'
-              clip-rule='evenodd'
-              d='M120.5 26.5L106.4 40.6H26.4999L12.3999 26.5'
-              fill='white'
-            />
-            <path
-              d='M120.5 26.5L106.4 40.6H26.4999L12.3999 26.5'
-              stroke='black'
-              stroke-width='5'
-              stroke-linecap='round'
-              stroke-linejoin='round'
-            />
-            <path
-              fill-rule='evenodd'
-              clip-rule='evenodd'
-              d='M106.4 40.6001V99.3501H26.5V40.6001'
-              fill='white'
-            />
-            <path
-              d='M106.4 40.6001V99.3501H26.5V40.6001'
-              stroke='black'
-              stroke-width='5'
-            />
-            <path
-              fill-rule='evenodd'
-              clip-rule='evenodd'
-              d='M106.4 99.3501L113.45 111.1H19.4502L26.5002 99.3501'
-              fill='white'
-            />
-            <path
-              d='M106.4 99.3501L113.45 111.1H19.4502L26.5002 99.3501'
-              stroke='black'
-              stroke-width='5'
-              stroke-linecap='round'
-              stroke-linejoin='round'
-            />
-            <path
-              d='M12.3999 26.5H120.5'
-              stroke='black'
-              stroke-width='5'
-              stroke-linecap='round'
-            />
-          </g>
-        ) : (
-          <g clip-path='url(#clip0_101_105)'>
-            <path
-              fill-rule='evenodd'
-              clip-rule='evenodd'
-              d='M3 144H129.9V129.9H3V144Z'
-              fill='black'
-              stroke='black'
-              stroke-width='5'
-              stroke-linejoin='round'
-            />
-            <path
-              fill-rule='evenodd'
-              clip-rule='evenodd'
-              d='M19.4502 111.1L26.5002 99.35H106.4L113.45 111.1H19.4502Z'
-              fill='black'
-              stroke='black'
-              stroke-width='5'
-              stroke-linejoin='round'
-            />
-            <path
-              fill-rule='evenodd'
-              clip-rule='evenodd'
-              d='M17.1001 129.9V111.1H115.8V129.9H17.1001Z'
-              fill='black'
-              stroke='black'
-              stroke-width='5'
-              stroke-linejoin='round'
-            />
-            <path
-              fill-rule='evenodd'
-              clip-rule='evenodd'
-              d='M26.5 99.35V38.25H106.4V99.35H26.5Z'
-              fill='black'
-              stroke='black'
-              stroke-width='5'
-            />
-            <path
-              fill-rule='evenodd'
-              clip-rule='evenodd'
-              d='M26.4999 38.25L12.3999 26.5H120.5L106.4 38.25H26.4999Z'
-              fill='black'
-              stroke='black'
-              stroke-width='5'
-              stroke-linejoin='round'
-            />
-            <path
-              fill-rule='evenodd'
-              clip-rule='evenodd'
-              d='M12.3999 26.5V3H31.1999V12.4H54.6999V3H78.1999V12.4H101.7V3H120.5V26.5H12.3999Z'
-              fill='black'
-              stroke='black'
-              stroke-width='5'
-              stroke-linejoin='round'
-            />
-            <path
-              d='M17.1001 127.55H115.8'
-              stroke='white'
-              stroke-width='5'
-              stroke-linecap='round'
-            />
-            <path
-              d='M21.7998 108.75H111.1'
-              stroke='white'
-              stroke-width='5'
-              stroke-linecap='round'
-            />
-            <path
-              d='M26.5 99.35H106.4'
-              stroke='white'
-              stroke-width='5'
-              stroke-linecap='round'
-            />
-            <path
-              d='M26.5 38.25H106.4'
-              stroke='white'
-              stroke-width='5'
-              stroke-linecap='round'
-            />
-            <path
-              d='M12.3999 26.5H120.5'
-              stroke='white'
-              stroke-width='5'
-              stroke-linecap='round'
-            />
-          </g>
-        )}
-        <defs>
-          <clipPath id='clip0_101_107'>
-            <rect width='133' height='147' fill='white' />
-          </clipPath>
-        </defs>
-      </svg>
+        <svg
+          width={`${boxRef.current?.clientWidth}`}
+          height={`${boxRef.current?.clientHeight}`}
+          viewBox='0 0 133 147'
+          fill='none'
+          xmlns='http://www.w3.org/2000/svg'
+        >
+          {piece.white ? (
+            <g clip-path='url(#clip0_101_107)'>
+              <path
+                fill-rule='evenodd'
+                clip-rule='evenodd'
+                d='M3 144H129.9V129.9H3V144Z'
+                fill='white'
+                stroke='black'
+                stroke-width='5'
+                stroke-linejoin='round'
+              />
+              <path
+                fill-rule='evenodd'
+                clip-rule='evenodd'
+                d='M17.1001 129.9V111.1H115.8V129.9H17.1001Z'
+                fill='white'
+                stroke='black'
+                stroke-width='5'
+                stroke-linejoin='round'
+              />
+              <path
+                fill-rule='evenodd'
+                clip-rule='evenodd'
+                d='M12.3999 26.5V3H31.1999V12.4H54.6999V3H78.1999V12.4H101.7V3H120.5V26.5'
+                fill='white'
+              />
+              <path
+                d='M12.3999 26.5V3H31.1999V12.4H54.6999V3H78.1999V12.4H101.7V3H120.5V26.5'
+                stroke='black'
+                stroke-width='5'
+                stroke-linejoin='round'
+              />
+              <path
+                fill-rule='evenodd'
+                clip-rule='evenodd'
+                d='M120.5 26.5L106.4 40.6H26.4999L12.3999 26.5'
+                fill='white'
+              />
+              <path
+                d='M120.5 26.5L106.4 40.6H26.4999L12.3999 26.5'
+                stroke='black'
+                stroke-width='5'
+                stroke-linecap='round'
+                stroke-linejoin='round'
+              />
+              <path
+                fill-rule='evenodd'
+                clip-rule='evenodd'
+                d='M106.4 40.6001V99.3501H26.5V40.6001'
+                fill='white'
+              />
+              <path
+                d='M106.4 40.6001V99.3501H26.5V40.6001'
+                stroke='black'
+                stroke-width='5'
+              />
+              <path
+                fill-rule='evenodd'
+                clip-rule='evenodd'
+                d='M106.4 99.3501L113.45 111.1H19.4502L26.5002 99.3501'
+                fill='white'
+              />
+              <path
+                d='M106.4 99.3501L113.45 111.1H19.4502L26.5002 99.3501'
+                stroke='black'
+                stroke-width='5'
+                stroke-linecap='round'
+                stroke-linejoin='round'
+              />
+              <path
+                d='M12.3999 26.5H120.5'
+                stroke='black'
+                stroke-width='5'
+                stroke-linecap='round'
+              />
+            </g>
+          ) : (
+            <g clip-path='url(#clip0_101_105)'>
+              <path
+                fill-rule='evenodd'
+                clip-rule='evenodd'
+                d='M3 144H129.9V129.9H3V144Z'
+                fill='black'
+                stroke='black'
+                stroke-width='5'
+                stroke-linejoin='round'
+              />
+              <path
+                fill-rule='evenodd'
+                clip-rule='evenodd'
+                d='M19.4502 111.1L26.5002 99.35H106.4L113.45 111.1H19.4502Z'
+                fill='black'
+                stroke='black'
+                stroke-width='5'
+                stroke-linejoin='round'
+              />
+              <path
+                fill-rule='evenodd'
+                clip-rule='evenodd'
+                d='M17.1001 129.9V111.1H115.8V129.9H17.1001Z'
+                fill='black'
+                stroke='black'
+                stroke-width='5'
+                stroke-linejoin='round'
+              />
+              <path
+                fill-rule='evenodd'
+                clip-rule='evenodd'
+                d='M26.5 99.35V38.25H106.4V99.35H26.5Z'
+                fill='black'
+                stroke='black'
+                stroke-width='5'
+              />
+              <path
+                fill-rule='evenodd'
+                clip-rule='evenodd'
+                d='M26.4999 38.25L12.3999 26.5H120.5L106.4 38.25H26.4999Z'
+                fill='black'
+                stroke='black'
+                stroke-width='5'
+                stroke-linejoin='round'
+              />
+              <path
+                fill-rule='evenodd'
+                clip-rule='evenodd'
+                d='M12.3999 26.5V3H31.1999V12.4H54.6999V3H78.1999V12.4H101.7V3H120.5V26.5H12.3999Z'
+                fill='black'
+                stroke='black'
+                stroke-width='5'
+                stroke-linejoin='round'
+              />
+              <path
+                d='M17.1001 127.55H115.8'
+                stroke='white'
+                stroke-width='5'
+                stroke-linecap='round'
+              />
+              <path
+                d='M21.7998 108.75H111.1'
+                stroke='white'
+                stroke-width='5'
+                stroke-linecap='round'
+              />
+              <path
+                d='M26.5 99.35H106.4'
+                stroke='white'
+                stroke-width='5'
+                stroke-linecap='round'
+              />
+              <path
+                d='M26.5 38.25H106.4'
+                stroke='white'
+                stroke-width='5'
+                stroke-linecap='round'
+              />
+              <path
+                d='M12.3999 26.5H120.5'
+                stroke='white'
+                stroke-width='5'
+                stroke-linecap='round'
+              />
+            </g>
+          )}
+          <defs>
+            <clipPath id='clip0_101_107'>
+              <rect width='133' height='147' fill='white' />
+            </clipPath>
+          </defs>
+        </svg>
+      </div>
     </div>
   );
 };

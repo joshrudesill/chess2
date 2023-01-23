@@ -62,7 +62,7 @@ const GameInfo = ({ myTimer, oppTimer }) => {
         <p className='font-mono xl:text-xl grow text-center'>VS</p>
         <p className='font-sans xl:text-lg'>{oData.username}</p>
       </div>
-      <div className='flex grow flex-row flex-wrap content-start text-xs p-2 gap-3'>
+      <div className='flex h-[40%] content-start flex-wrap flex-row text-xs p-2 gap-3 overflow-y-scroll'>
         {debugMode ? (
           <>
             <div className='flex bg-neutral-700 w-full p-1 justify-between'>

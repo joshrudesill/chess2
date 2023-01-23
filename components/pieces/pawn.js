@@ -8,10 +8,17 @@ import {
 import Image from "next/image";
 const white = require("../../assets/whitepawn.svg");
 const black = require("../../assets/blackpawn.svg");
-const Pawn = ({ piece }) => {
+const Pawn = ({
+  piece,
+  activePiece,
+  x,
+  y,
+  onMouseDown,
+  onMouseUp,
+  mouseDragging,
+}) => {
   const dispatch = useDispatch();
   const board = useSelector((state) => state.board.position);
-  const activePiece = useSelector((state) => state.board.activePiece);
   const whiteKingCalculated = useSelector(
     (state) => state.board.whiteKingCalculated
   );
@@ -114,31 +121,54 @@ const Pawn = ({ piece }) => {
   const boxRef = useRef(null);
   return (
     <div
-      className='pointer-events-none select-none z-50 w-[80%] h-[80%] mx-auto my-auto'
+      className={`select-none cursor-grabbing ${
+        activePiece ? "z-auto pointer-events-none" : "z-50"
+      } w-[80%] h-[80%] mx-auto my-auto"`}
       ref={boxRef}
+      onMouseDown={onMouseDown}
+      onMouseUp={onMouseUp}
     >
-      <svg
-        width={`${boxRef.current?.clientWidth}`}
-        height={`${boxRef.current?.clientHeight}`}
-        viewBox='0 0 114 149'
-        fill='none'
-        xmlns='http://www.w3.org/2000/svg'
+      <div
+        style={
+          activePiece && activePiece.id === piece.id && mouseDragging
+            ? {
+                position: "fixed",
+                left: "0",
+                top: "0",
+                width: `${boxRef.current?.clientWidth}`,
+                height: `${boxRef.current?.clientHeight}`,
+                transform: `translate(${
+                  x - 0.5 * boxRef.current?.clientWidth
+                }px, ${
+                  y - 0.5 * boxRef.current?.clientHeight
+                }px) translateZ(500px)`,
+              }
+            : {}
+        }
       >
-        <g clip-path='url(#clip0_101_106)'>
-          <path
-            d='M57.05 3C46.663 3 38.25 11.413 38.25 21.8C38.25 25.983 39.613 29.837 41.916 32.986C32.751 38.25 26.5 48.073 26.5 59.4C26.5 68.941 30.918 77.448 37.827 83.041C23.727 88.023 3 109.126 3 146.35H111.1C111.1 109.126 90.373 88.023 76.273 83.041C83.182 77.448 87.6 68.941 87.6 59.4C87.6 48.073 81.349 38.25 72.184 32.986C74.487 29.837 75.85 25.983 75.85 21.8C75.85 11.413 67.437 3 57.05 3Z'
-            fill={`${piece.white ? "white" : "black"}`}
-            stroke='black'
-            stroke-width='5'
-            stroke-linecap='round'
-          />
-        </g>
-        <defs>
-          <clipPath id='clip0_101_106'>
-            <rect width='114' height='149' fill='white' />
-          </clipPath>
-        </defs>
-      </svg>
+        <svg
+          width={`${boxRef.current?.clientWidth}`}
+          height={`${boxRef.current?.clientHeight}`}
+          viewBox='0 0 114 149'
+          fill='none'
+          xmlns='http://www.w3.org/2000/svg'
+        >
+          <g clip-path='url(#clip0_101_106)'>
+            <path
+              d='M57.05 3C46.663 3 38.25 11.413 38.25 21.8C38.25 25.983 39.613 29.837 41.916 32.986C32.751 38.25 26.5 48.073 26.5 59.4C26.5 68.941 30.918 77.448 37.827 83.041C23.727 88.023 3 109.126 3 146.35H111.1C111.1 109.126 90.373 88.023 76.273 83.041C83.182 77.448 87.6 68.941 87.6 59.4C87.6 48.073 81.349 38.25 72.184 32.986C74.487 29.837 75.85 25.983 75.85 21.8C75.85 11.413 67.437 3 57.05 3Z'
+              fill={`${piece.white ? "white" : "black"}`}
+              stroke='black'
+              stroke-width='5'
+              stroke-linecap='round'
+            />
+          </g>
+          <defs>
+            <clipPath id='clip0_101_106'>
+              <rect width='114' height='149' fill='white' />
+            </clipPath>
+          </defs>
+        </svg>
+      </div>
     </div>
   );
 };

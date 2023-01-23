@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addChatMessage } from "../features/board/boardSlice";
 import socket from "../socket";
@@ -10,7 +10,11 @@ const Chat = ({ chat }) => {
   const session = useSelector((state) => state.app.sessionDetails);
   const gameStarted = useSelector((state) => state.app.inGameData.gameStarted);
   const sendMessage = () => {
-    if (message.length > 0) {
+    console.log("sm1");
+    console.log(message.length);
+    console.log(messageTimeout);
+    if (message.length > 0 && !messageTimeout) {
+      console.log("sm");
       setMessageTimeout(true);
       dispatch(
         addChatMessage({
@@ -29,8 +33,9 @@ const Chat = ({ chat }) => {
       }, 1000);
     }
   };
+
   return (
-    <div className='h-64 flex flex-col'>
+    <div className=' flex flex-col grow'>
       <div className='grow p-2 overflow-scroll overflow-x-hidden flex flex-col-reverse'>
         <div className='flex flex-col text-xs flex-wrap gap-2 '>
           {chat.map((c, i) => (
@@ -56,6 +61,11 @@ const Chat = ({ chat }) => {
           value={message}
           disabled={!gameStarted}
           maxLength={255}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              sendMessage();
+            }
+          }}
         ></input>
         <button
           onClick={sendMessage}

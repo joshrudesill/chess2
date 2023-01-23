@@ -127,6 +127,7 @@ const initialState = {
   // { message: '', sender: '',}
   notation: [],
   moveTimes: [],
+  mouseDragging: false,
 };
 
 // search all legal moves and remove any not in sqauresToBeBlocked
@@ -140,6 +141,9 @@ export const boardSlice = createSlice({
     },
     setChatOnReconnect: (state, action) => {
       state.chat = action.payload;
+    },
+    setMouseDragging: (state, action) => {
+      state.mouseDragging = action.payload;
     },
     setTimerOffset: (state, action) => {
       const { offsetW, offsetB } = action.payload;
@@ -535,6 +539,7 @@ export const {
   pushMoveTime,
   setMoveTimesOnReconnect,
   setNotationOnReconnnect,
+  setMouseDragging,
 } = boardSlice.actions;
 
 export default boardSlice.reducer;

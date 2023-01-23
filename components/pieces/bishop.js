@@ -8,7 +8,15 @@ import {
 import Image from "next/image";
 const white = require("../../assets/whitebishop.svg");
 const black = require("../../assets/blackbishop.svg");
-const Bishop = ({ piece, activePiece, x, y }) => {
+const Bishop = ({
+  piece,
+  activePiece,
+  x,
+  y,
+  onMouseDown,
+  onMouseUp,
+  mouseDragging,
+}) => {
   const dispatch = useDispatch();
   const board = useSelector((state) => state.board.position);
   const whiteKingCalculated = useSelector(
@@ -141,14 +149,16 @@ const Bishop = ({ piece, activePiece, x, y }) => {
   //copy what was done here to other pieces
   return (
     <div
-      className={`pointer-events-none select-none ${
-        activePiece ? "z-auto" : "z-50"
+      className={`select-none cursor-grabbing ${
+        activePiece ? "z-auto pointer-events-none" : "z-50"
       } w-[80%] h-[80%] mx-auto my-auto"`}
       ref={boxRef}
+      onMouseDown={onMouseDown}
+      onMouseUp={onMouseUp}
     >
       <div
         style={
-          activePiece && activePiece.id === piece.id
+          activePiece && activePiece.id === piece.id && mouseDragging
             ? {
                 position: "fixed",
                 left: "0",
