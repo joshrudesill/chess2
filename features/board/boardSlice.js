@@ -128,6 +128,8 @@ const initialState = {
   notation: [],
   moveTimes: [],
   mouseDragging: false,
+  lastMove: [],
+  takenPieces: [], // {white, type}
 };
 
 // search all legal moves and remove any not in sqauresToBeBlocked
@@ -138,6 +140,13 @@ export const boardSlice = createSlice({
   reducers: {
     addChatMessage: (state, action) => {
       state.chat.push(action.payload);
+    },
+    pushTakenPiece: (state, action) => {
+      const { white, type } = action.payload;
+      state.takenPieces.push({ white, type });
+    },
+    setTakenPiecesOnReconnect: (state, action) => {
+      state.takenPieces = action.payload;
     },
     setChatOnReconnect: (state, action) => {
       state.chat = action.payload;
@@ -192,6 +201,8 @@ export const boardSlice = createSlice({
       const startingSquare =
         state.position[state.activePiece.x][state.activePiece.y].an;
       const endingSquare = state.position[x][y].an;
+      const lastMove = [state.activePiece.x, state.activePiece.y, x, y];
+      state.lastMove = lastMove;
       const pieceDesignation =
         state.activePiece.type === 0
           ? "K"
@@ -258,7 +269,6 @@ export const boardSlice = createSlice({
         }${differentiator}${endingSquare}`;
       }
       state.notation.push(algebraicNotation);
-      console.log(algebraicNotation);
       const offsetStart = dayjs(state.moveInTime).utc();
       var diff = offsetStart.diff();
 
@@ -277,16 +287,21 @@ export const boardSlice = createSlice({
       state.kingData = initialState.kingData;
       if (state.firstMove) {
         state.firstMove = false;
-        socket.emit("firstMove", state.position, algebraicNotation);
+        socket.emit("firstMove", state.position, algebraicNotation, lastMove);
       } else {
         socket.emit(
           "pieceMove",
           state.position,
           state.startTime,
           state.moveInTime,
-          algebraicNotation
+          algebraicNotation,
+          lastMove,
+          null
         );
       }
+    },
+    setLastMove: (state, action) => {
+      state.lastMove = action.payload;
     },
     resetPieceState: (state) => {
       state.whiteKingCalculated = false;
@@ -355,10 +370,16 @@ export const boardSlice = createSlice({
     capturePiece: (state, action) => {
       state.myTurn = false;
       const { toBeCaptured } = action.payload;
+      state.takenPieces.push({
+        white: toBeCaptured.white,
+        type: toBeCaptured.type,
+      });
       const { x, y } = toBeCaptured;
       const startingSquare =
         state.position[state.activePiece.x][state.activePiece.y].an;
       const endingSquare = state.position[x][y].an;
+      const lastMove = [state.activePiece.x, state.activePiece.y, x, y];
+      state.lastMove = lastMove;
       const pieceDesignation =
         state.activePiece.type === 0
           ? "K"
@@ -443,7 +464,9 @@ export const boardSlice = createSlice({
         state.position,
         state.startTime,
         state.moveInTime,
-        algebraicNotation
+        algebraicNotation,
+        lastMove,
+        { white: toBeCaptured.white, type: toBeCaptured.type }
       );
     },
     pinPiece: (state, action) => {
@@ -540,6 +563,9 @@ export const {
   setMoveTimesOnReconnect,
   setNotationOnReconnnect,
   setMouseDragging,
+  setLastMove,
+  pushTakenPiece,
+  setTakenPiecesOnReconnect,
 } = boardSlice.actions;
 
 export default boardSlice.reducer;

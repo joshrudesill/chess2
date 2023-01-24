@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import socket from "../socket";
 import Chat from "./chat";
 import Notation from "./notation";
+import TakenPiece from "./takenPiece";
 const GameInfo = ({ myTimer, oppTimer }) => {
   const dispatch = useDispatch();
   const [drawRequest, setDrawRequest] = useState(false);
@@ -22,6 +23,7 @@ const GameInfo = ({ myTimer, oppTimer }) => {
   const oData = useSelector((state) => state.app.inGameData.opponentData);
   const king = useSelector((state) => state.board.kingData.inCheck);
   const chat = useSelector((state) => state.board.chat);
+  const takenPieces = useSelector((state) => state.board.takenPieces);
   const [debugMode, setDebugMode] = useState(false);
   const resign = useCallback(() => socket.emit("endGame", "resignation"), []);
   const draw = useCallback(() => {
@@ -57,10 +59,32 @@ const GameInfo = ({ myTimer, oppTimer }) => {
           </>
         )}
       </div>
-      <div className='flex flex-row justify-center gap-x-1 p-3 text-xs'>
-        <p className='font-sans xl:text-lg '>{session.username}</p>
-        <p className='font-mono xl:text-xl grow text-center'>VS</p>
-        <p className='font-sans xl:text-lg'>{oData.username}</p>
+      <div className='flex flex-col p-2'>
+        <div className='flex flex-row justify-center text-xs'>
+          <p className='font-sans xl:text-lg '>{session.username}</p>
+          <p className='font-mono xl:text-xl grow text-center'>VS</p>
+          <p className='font-sans xl:text-lg'>{oData.username}</p>
+        </div>
+        <div className='flex flex-row justify-between text-xs'>
+          <div>
+            {takenPieces.length > 0 ? (
+              takenPieces.map((t) => {
+                if (t.white !== white && white !== null) {
+                  return <TakenPiece white={t.white} type={t.type} />;
+                }
+              })
+            ) : (
+              <div style={{ height: "15px" }}></div>
+            )}
+          </div>
+          <div>
+            {takenPieces.map((t) => {
+              if (t.white === white && white !== null) {
+                return <TakenPiece white={t.white} type={t.type} />;
+              }
+            })}
+          </div>
+        </div>
       </div>
       <div className='flex h-[40%] content-start flex-wrap flex-row text-xs p-2 gap-3 overflow-y-scroll'>
         {debugMode ? (

@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   changePieceAtSquare,
@@ -25,6 +25,7 @@ const BoardSquare = ({
   activePiece,
   myTurn,
   mouseDragging,
+  lastMove,
 }) => {
   const dispatch = useDispatch();
   const onMouseDown = () => {
@@ -141,27 +142,37 @@ const BoardSquare = ({
     4 - Knight
     5 - Queen
 */
+  const [highlighted, setHighlighted] = useState(false);
+  useEffect(() => {
+    if (
+      lastMove &&
+      lastMove[0] === squareData.x &&
+      lastMove[1] === squareData.y
+    ) {
+      setHighlighted(true);
+    } else if (
+      lastMove &&
+      lastMove[2] === squareData.x &&
+      lastMove[3] === squareData.y
+    ) {
+      setHighlighted(true);
+    } else {
+      setHighlighted(false);
+    }
+  }, [lastMove]);
   const boxRef = useRef(null);
-  if (squareData.piece !== null && squareData.piece.type === 2) {
+  if (squareData.piece !== null) {
     return (
       <div
         ref={boxRef}
-        className={`aspect-square flex justify-center items-center   cursor-grab z-auto ${
+        className={`aspect-square flex justify-center items-center cursor-grab z-auto ${
           j % 2 === 0
             ? e % 2 === 0
-              ? "bg-emerald-800"
-              : "bg-stone-400"
+              ? `${highlighted ? "bg-amber-400" : "bg-emerald-800"}`
+              : `${highlighted ? "bg-amber-300" : "bg-stone-400"}`
             : e % 2 !== 0
-            ? "bg-emerald-800 "
-            : "bg-stone-400"
-        } ${
-          activePiece
-            ? activePiece.legalMoves.some(
-                (m) => m.x === squareData.x && m.y === squareData.y
-              )
-              ? "border-2 border-red-600"
-              : ""
-            : ""
+            ? `${highlighted ? "bg-amber-400" : "bg-emerald-800"}`
+            : `${highlighted ? "bg-amber-300" : "bg-stone-400"}`
         } `}
         onMouseDown={onMouseDown}
         onMouseUp={onMouseUp}
@@ -184,310 +195,100 @@ const BoardSquare = ({
         ) : (
           <></>
         )}
-        <Rook
-          piece={squareData.piece}
-          activePiece={activePiece}
-          x={x}
-          y={y}
-          mouseDragging={mouseDragging}
-          onMouseDown={onMouseDown}
-          onMouseUp={onMouseUp}
-        />
-      </div>
-    );
-  }
-  if (squareData.piece !== null && squareData.piece.type === 1) {
-    return (
-      <div
-        ref={boxRef}
-        className={`aspect-square flex justify-center items-center cursor-grab z-auto ${
-          j % 2 === 0
-            ? e % 2 === 0
-              ? "bg-emerald-800"
-              : "bg-stone-400"
-            : e % 2 !== 0
-            ? "bg-emerald-800 "
-            : "bg-stone-400"
-        }  `}
-        onMouseDown={onMouseDown}
-        onMouseUp={onMouseUp}
-      >
-        {activePiece ? (
-          activePiece.legalMoves.some(
-            (m) => m.x === squareData.x && m.y === squareData.y
-          ) ? (
-            <div
-              className='opacity-50 rounded-full absolute z-50 border-8 border-black'
-              style={{
-                height: `${boxRef.current?.clientHeight * 0.95}px`,
-                width: `${boxRef.current?.clientHeight * 0.95}px`,
-                border: `${boxRef.current?.clientHeight * 0.1}px solid black`,
-              }}
-            ></div>
-          ) : (
-            <></>
-          )
-        ) : (
-          <></>
-        )}
-        <Pawn
-          piece={squareData.piece}
-          activePiece={activePiece}
-          x={x}
-          y={y}
-          mouseDragging={mouseDragging}
-          onMouseDown={onMouseDown}
-          onMouseUp={onMouseUp}
-        />
-      </div>
-    );
-  }
-  if (squareData.piece !== null && squareData.piece.type === 0) {
-    return (
-      <div
-        ref={boxRef}
-        className={`aspect-square flex justify-center items-center cursor-grab z-auto ${
-          j % 2 === 0
-            ? e % 2 === 0
-              ? "bg-emerald-800"
-              : "bg-stone-400"
-            : e % 2 !== 0
-            ? "bg-emerald-800 "
-            : "bg-stone-400"
-        } ${
-          activePiece
-            ? activePiece.legalMoves.some(
-                (m) => m.x === squareData.x && m.y === squareData.y
-              )
-              ? "border-2 border-red-600"
-              : ""
-            : ""
-        } `}
-        onMouseDown={onMouseDown}
-        onMouseUp={onMouseUp}
-      >
-        {activePiece ? (
-          activePiece.legalMoves.some(
-            (m) => m.x === squareData.x && m.y === squareData.y
-          ) ? (
-            <div
-              className='opacity-50 rounded-full absolute z-50 border-8 border-black'
-              style={{
-                height: `${boxRef.current?.clientHeight * 0.95}px`,
-                width: `${boxRef.current?.clientHeight * 0.95}px`,
-                border: `${boxRef.current?.clientHeight * 0.1}px solid black`,
-              }}
-            ></div>
-          ) : (
-            <></>
-          )
-        ) : (
-          <></>
-        )}
-        <King
-          piece={squareData.piece}
-          activePiece={activePiece}
-          x={x}
-          y={y}
-          mouseDragging={mouseDragging}
-          onMouseDown={onMouseDown}
-          onMouseUp={onMouseUp}
-        />
-      </div>
-    );
-  }
-  if (squareData.piece !== null && squareData.piece.type === 3) {
-    return (
-      <div
-        ref={boxRef}
-        className={`aspect-square flex justify-center items-center cursor-grab z-auto ${
-          j % 2 === 0
-            ? e % 2 === 0
-              ? "bg-emerald-800"
-              : "bg-stone-400"
-            : e % 2 !== 0
-            ? "bg-emerald-800 "
-            : "bg-stone-400"
-        } ${
-          activePiece
-            ? activePiece.legalMoves.some(
-                (m) => m.x === squareData.x && m.y === squareData.y
-              )
-              ? "border-2 border-red-600"
-              : ""
-            : ""
-        } `}
-        onMouseDown={onMouseDown}
-        onMouseUp={onMouseUp}
-      >
-        {" "}
-        {activePiece ? (
-          activePiece.legalMoves.some(
-            (m) => m.x === squareData.x && m.y === squareData.y
-          ) ? (
-            <div
-              className='opacity-50 rounded-full absolute z-50 border-8 border-black'
-              style={{
-                height: `${boxRef.current?.clientHeight * 0.95}px`,
-                width: `${boxRef.current?.clientHeight * 0.95}px`,
-                border: `${boxRef.current?.clientHeight * 0.1}px solid black`,
-              }}
-            ></div>
-          ) : (
-            <></>
-          )
-        ) : (
-          <></>
-        )}
-        <Bishop
-          piece={squareData.piece}
-          activePiece={activePiece}
-          x={x}
-          y={y}
-          mouseDragging={mouseDragging}
-          onMouseDown={onMouseDown}
-          onMouseUp={onMouseUp}
-        />
-      </div>
-    );
-  }
-  if (squareData.piece !== null && squareData.piece.type === 4) {
-    return (
-      <div
-        ref={boxRef}
-        className={`aspect-square flex justify-center items-center      cursor-grab z-auto ${
-          j % 2 === 0
-            ? e % 2 === 0
-              ? "bg-emerald-800"
-              : "bg-stone-400"
-            : e % 2 !== 0
-            ? "bg-emerald-800 "
-            : "bg-stone-400"
-        }  `}
-        onMouseDown={onMouseDown}
-        onMouseUp={onMouseUp}
-      >
-        {activePiece ? (
-          activePiece.legalMoves.some(
-            (m) => m.x === squareData.x && m.y === squareData.y
-          ) ? (
-            <div
-              className='opacity-50 rounded-full absolute z-50 border-8 border-black'
-              style={{
-                height: `${boxRef.current?.clientHeight * 0.95}px`,
-                width: `${boxRef.current?.clientHeight * 0.95}px`,
-                border: `${boxRef.current?.clientHeight * 0.1}px solid black`,
-              }}
-            ></div>
-          ) : (
-            <></>
-          )
-        ) : (
-          <></>
-        )}
-        <Knight
-          piece={squareData.piece}
-          activePiece={activePiece}
-          x={x}
-          y={y}
-          mouseDragging={mouseDragging}
-          onMouseDown={onMouseDown}
-          onMouseUp={onMouseUp}
-        />
-      </div>
-    );
-  }
-  if (squareData.piece !== null && squareData.piece.type === 5) {
-    return (
-      <div
-        ref={boxRef}
-        className={`aspect-square flex justify-center items-center cursor-grab z-auto ${
-          j % 2 === 0
-            ? e % 2 === 0
-              ? "bg-emerald-800"
-              : "bg-stone-400"
-            : e % 2 !== 0
-            ? "bg-emerald-800 "
-            : "bg-stone-400"
-        } ${
-          activePiece
-            ? activePiece.legalMoves.some(
-                (m) => m.x === squareData.x && m.y === squareData.y
-              )
-              ? "border-2 border-red-600"
-              : ""
-            : ""
-        } `}
-        onMouseDown={onMouseDown}
-        onMouseUp={onMouseUp}
-      >
-        {activePiece ? (
-          activePiece.legalMoves.some(
-            (m) => m.x === squareData.x && m.y === squareData.y
-          ) ? (
-            <div
-              className='opacity-50 rounded-full absolute z-50 border-8 border-black'
-              style={{
-                height: `${boxRef.current?.clientHeight * 0.95}px`,
-                width: `${boxRef.current?.clientHeight * 0.95}px`,
-                border: `${boxRef.current?.clientHeight * 0.1}px solid black`,
-              }}
-            ></div>
-          ) : (
-            <></>
-          )
-        ) : (
-          <></>
-        )}
-        <Queen
-          piece={squareData.piece}
-          activePiece={activePiece}
-          x={x}
-          y={y}
-          mouseDragging={mouseDragging}
-          onMouseDown={onMouseDown}
-          onMouseUp={onMouseUp}
-        />
-      </div>
-    );
-  }
-  if (squareData.piece === null) {
-    return (
-      <div
-        className={`aspect-square flex justify-center items-center cursor-grab z-auto ${
-          j % 2 === 0
-            ? e % 2 === 0
-              ? "bg-emerald-800"
-              : "bg-stone-400"
-            : e % 2 !== 0
-            ? "bg-emerald-800 "
-            : "bg-stone-400"
-        } ${
-          activePiece
-            ? activePiece.legalMoves.some(
-                (m) => m.x === squareData.x && m.y === squareData.y
-              )
-              ? "bg-red-600"
-              : ""
-            : ""
-        } `}
-        onMouseDown={onMouseDown}
-        onMouseUp={onMouseUp}
-      >
-        {activePiece ? (
-          activePiece.legalMoves.some(
-            (m) => m.x === squareData.x && m.y === squareData.y
-          ) ? (
-            <div className='h-[40%] w-[40%] bg-zinc-900 opacity-50 rounded-full '></div>
-          ) : (
-            <></>
-          )
+        {squareData.piece.type === 0 ? (
+          <King
+            piece={squareData.piece}
+            activePiece={activePiece}
+            x={x}
+            y={y}
+            mouseDragging={mouseDragging}
+            onMouseDown={onMouseDown}
+            onMouseUp={onMouseUp}
+          />
+        ) : squareData.piece.type === 1 ? (
+          <Pawn
+            piece={squareData.piece}
+            activePiece={activePiece}
+            x={x}
+            y={y}
+            mouseDragging={mouseDragging}
+            onMouseDown={onMouseDown}
+            onMouseUp={onMouseUp}
+          />
+        ) : squareData.piece.type === 2 ? (
+          <Rook
+            piece={squareData.piece}
+            activePiece={activePiece}
+            x={x}
+            y={y}
+            mouseDragging={mouseDragging}
+            onMouseDown={onMouseDown}
+            onMouseUp={onMouseUp}
+          />
+        ) : squareData.piece.type === 3 ? (
+          <Bishop
+            piece={squareData.piece}
+            activePiece={activePiece}
+            x={x}
+            y={y}
+            mouseDragging={mouseDragging}
+            onMouseDown={onMouseDown}
+            onMouseUp={onMouseUp}
+          />
+        ) : squareData.piece.type === 4 ? (
+          <Knight
+            piece={squareData.piece}
+            activePiece={activePiece}
+            x={x}
+            y={y}
+            mouseDragging={mouseDragging}
+            onMouseDown={onMouseDown}
+            onMouseUp={onMouseUp}
+          />
+        ) : squareData.piece.type === 5 ? (
+          <Queen
+            piece={squareData.piece}
+            activePiece={activePiece}
+            x={x}
+            y={y}
+            mouseDragging={mouseDragging}
+            onMouseDown={onMouseDown}
+            onMouseUp={onMouseUp}
+          />
         ) : (
           <></>
         )}
       </div>
     );
   }
+
+  return (
+    <div
+      className={`aspect-square flex justify-center items-center cursor-grab z-auto ${
+        j % 2 === 0
+          ? e % 2 === 0
+            ? `${highlighted ? "bg-amber-400" : "bg-emerald-800"}`
+            : `${highlighted ? "bg-amber-300" : "bg-stone-400"}`
+          : e % 2 !== 0
+          ? `${highlighted ? "bg-amber-400" : "bg-emerald-800"}`
+          : `${highlighted ? "bg-amber-300" : "bg-stone-400"}`
+      }`}
+      onMouseDown={onMouseDown}
+      onMouseUp={onMouseUp}
+    >
+      {activePiece ? (
+        activePiece.legalMoves.some(
+          (m) => m.x === squareData.x && m.y === squareData.y
+        ) ? (
+          <div className='h-[40%] w-[40%] bg-zinc-900 opacity-50 rounded-full '></div>
+        ) : (
+          <></>
+        )
+      ) : (
+        <></>
+      )}
+    </div>
+  );
 };
 
 export default BoardSquare;

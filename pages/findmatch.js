@@ -2,6 +2,10 @@ import { Router, useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setGame, setSession } from "../features/app/appSlice";
+import {
+  addChatMessage,
+  setChatOnReconnect,
+} from "../features/board/boardSlice";
 import socket from "../socket";
 
 const FindMatch = () => {
@@ -40,8 +44,9 @@ const FindMatch = () => {
         router.push("/play");
       }
     });
-    socket.on("gameRoomCreated", (gid) => {
+    socket.on("gameRoomCreated", (gid, messages) => {
       dispatch(setGame(gid));
+      dispatch(setChatOnReconnect(messages));
       router.push("/play");
     });
     return () => {

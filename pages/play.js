@@ -17,6 +17,9 @@ import {
   pushMoveTime,
   setNotationOnReconnnect,
   setMoveTimesOnReconnect,
+  setLastMove,
+  pushTakenPiece,
+  setTakenPiecesOnReconnect,
 } from "../features/board/boardSlice";
 import {
   endGame,
@@ -64,6 +67,7 @@ const Play = () => {
     const sid = localStorage.getItem("sessionID");
     if (sid) {
       if (!inGameRoom && gameID) {
+        console.log("2");
         socket.emit("joinGameLobby", gameID);
       }
       socket.auth = { sid };
@@ -72,9 +76,12 @@ const Play = () => {
     } else {
       router.push("/findmatch");
     }
+  }, []);
+  useEffect(() => {
     socket.on("sessionStart", (sid, un, uid, gid) => {
       dispatch(setSession({ sid, un, uid, gid }));
       if (gid && !inGameRoom) {
+        console.log("1");
         socket.emit("joinGameLobby", gid);
       } else {
         router.push("/findmatch");
@@ -84,15 +91,18 @@ const Play = () => {
       const d = Math.abs(dayjs(t).diff(dayjs(t2).utc()));
       dispatch(setPing(d));
     });
-    socket.on("gameRoomJoined", (gid) => {
+    socket.on("gameRoomJoined", (gid, messages) => {
       setInGameRoom(true);
+      dispatch(setChatOnReconnect(messages));
       socket.emit("readyToPlay", gid);
     });
     socket.on("reconnectingToGame", (g) => {
+      setInGameRoom(true);
       dispatch(setFirstMove());
       dispatch(setChatOnReconnect(g.messages));
       dispatch(setNotationOnReconnnect(g.algebraicNotation));
       dispatch(setMoveTimesOnReconnect(g.moveTimes));
+      dispatch(setTakenPiecesOnReconnect(g.capturedPieces));
       const w = g.players[0].sid === sessionID ? true : false;
       const gameType = g.gameType;
       const opponent = g.players.find((p) => p.sid !== sessionID);
@@ -164,6 +174,7 @@ const Play = () => {
       dispatch(resetPieceState());
     });
     socket.on("gameReadyToStart", (g) => {
+      dispatch(setChatOnReconnect(g.messages));
       const sid = localStorage.getItem("sessionID");
       const w = g.players[0].sid === sid ? true : false;
       const gameType = g.gameType;
@@ -193,11 +204,12 @@ const Play = () => {
     socket.on("incomingMessage", (m) => {
       dispatch(addChatMessage(m));
     });
-    socket.on("firstMove", (position, notation) => {
+    socket.on("firstMove", (position, notation, lastMove) => {
       let offsetW = 0;
       let offsetB = 0;
       dispatch(setMoveInTime(dayjs().utc().toISOString()));
       dispatch(pushMoveTime(0));
+      dispatch(setLastMove(lastMove));
       dispatch(setGameStarted());
       dispatch(setFirstMove());
       dispatch(setTimerOffset({ offsetW, offsetB }));
@@ -206,9 +218,15 @@ const Play = () => {
       dispatch(pushNewNotation(notation));
       dispatch(resetPieceState());
     });
-    socket.on("newPosition", (p, t, notation) => {
+    socket.on("newPosition", (p, t, notation, lastMove, captured) => {
       dispatch(setGameStarted());
       dispatch(setMoveInTime(dayjs().utc().toISOString()));
+      dispatch(setLastMove(lastMove));
+      if (captured !== null) {
+        dispatch(
+          pushTakenPiece({ white: captured.white, type: captured.type })
+        );
+      }
       if (t) {
         dispatch(pushMoveTime(t.at(-1)));
         let offsetW = 0;
@@ -228,12 +246,15 @@ const Play = () => {
       dispatch(pushNewNotation(notation));
       dispatch(resetPieceState());
     });
-    socket.on("playerDisconnect", () => {
+    socket.on("playerDisconnect", (messages) => {
       dispatch(setOpponentConnection(false));
+      dispatch(setChatOnReconnect(messages));
     });
-    socket.on("playerReconnected", () => {
+    socket.on("playerReconnected", (messages) => {
       dispatch(setOpponentConnection(true));
+      dispatch(setChatOnReconnect(messages));
     });
+
     socket.on("gameEnded", (result) => {
       dispatch(setMyTurn(false));
       dispatch(endGame());

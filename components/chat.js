@@ -35,10 +35,10 @@ const Chat = ({ chat }) => {
   };
 
   return (
-    <div className=' flex flex-col grow'>
+    <div className=' flex flex-col h-72 h-md-64'>
       <div className='grow p-2 overflow-scroll overflow-x-hidden flex flex-col-reverse'>
         <div className='flex flex-col text-xs flex-wrap gap-2 '>
-          {chat.map((c, i) => (
+          {chat?.map((c, i) => (
             <span key={i + 500} className='break-all'>
               {c.sender.sessionID === session.sessionID ? (
                 <span className='font-bold text-yellow-400 mr-1'>
