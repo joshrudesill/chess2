@@ -66,22 +66,18 @@ const GameInfo = ({ myTimer, oppTimer }) => {
             <p className='font-mono xl:text-xl grow text-center'>VS</p>
             <p className='font-sans xl:text-lg'>{oData.username}</p>
           </div>
-          <div className='flex flex-row justify-between text-xs my-auto'>
+          <div className='flex flex-row justify-between text-xs my-auto h-[50%]'>
             <div>
-              {takenPieces.length > 0 ? (
-                takenPieces.map((t) => {
-                  if (t.white !== white && white !== null) {
-                    return <TakenPiece white={t.white} type={t.type} />;
-                  }
-                })
-              ) : (
-                <div style={{ height: "15px" }}></div>
-              )}
+              {takenPieces?.map((t, i) => {
+                if (t.white !== white && white !== null) {
+                  return <TakenPiece key={i} white={t.white} type={t.type} />;
+                }
+              })}
             </div>
             <div>
-              {takenPieces.map((t) => {
+              {takenPieces.map((t, i) => {
                 if (t.white === white && white !== null) {
-                  return <TakenPiece white={t.white} type={t.type} />;
+                  return <TakenPiece key={i} white={t.white} type={t.type} />;
                 }
               })}
             </div>

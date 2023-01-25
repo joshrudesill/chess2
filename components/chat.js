@@ -44,6 +44,11 @@ const Chat = ({ chat }) => {
                 <span className='font-bold text-yellow-400 mr-1'>
                   {`${c.sender.username}:`}
                 </span>
+              ) : c.sender.sessionID === "0000" &&
+                c.sender.username === "SYSTEM" ? (
+                <span className='font-semibold text-blue-500 mr-1'>
+                  {`${c.sender.username}:`}
+                </span>
               ) : (
                 <span className='font-bold text-white mr-1'>
                   {`${c.sender.username}:`}

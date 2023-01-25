@@ -6,7 +6,7 @@ const Notation = () => {
   return (
     <>
       {notation?.map((n, i) => (
-        <div className='flex flex-row'>
+        <div key={`${n}${i}`} className='flex flex-row'>
           <div className='flex flex-row bg-neutral-500 p-1 rounded-tl-md rounded-bl-md gap-1 '>
             <p>{`${i + 1}.`}</p>
             <p>{`${n}`}</p>

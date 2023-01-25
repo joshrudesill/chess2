@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 const whiteking = require("../assets/whiteking.svg");
 const blackking = require("../assets/blackking.svg");
 const whitequeen = require("../assets/whitequeen.svg");
@@ -39,14 +39,19 @@ const TakenPiece = ({ white, type }) => {
       if (type === 5) setSrc(blackqueen);
     }
   }, [white, type]);
+  const boxRef = useRef(null);
   return (
-    <>
+    <div ref={boxRef} className='h-full'>
       {src ? (
-        <Image src={src} height={25} width={25} />
+        <Image
+          src={src}
+          height={boxRef.current.clientHeight * 0.9}
+          width={boxRef.current.clientHeight * 0.9}
+        />
       ) : (
         <div style={{ height: "15px" }}></div>
       )}
-    </>
+    </div>
   );
 };
 export default TakenPiece;
