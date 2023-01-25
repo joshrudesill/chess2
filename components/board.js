@@ -3,7 +3,7 @@ import BoardSquare from "./boardSquare";
 import DraggablePiece from "./draggablePiece";
 import { useEffect, useRef, useState } from "react";
 import { resetActivePiece } from "../features/board/boardSlice";
-const Board = () => {
+const Board = ({ play }) => {
   const board = useSelector((state) => state.board.position);
   const activePiece = useSelector((state) => state.board.activePiece);
   const myTurn = useSelector((state) => state.board.myTurn);
@@ -31,6 +31,7 @@ const Board = () => {
               ? board.map((bs, j) => {
                   return bs.map((b, e) => (
                     <BoardSquare
+                      play={play} //use callback
                       squareData={b}
                       j={j}
                       e={e}
@@ -50,6 +51,7 @@ const Board = () => {
                     return bs
                       .map((b, e) => (
                         <BoardSquare
+                          play={play}
                           squareData={b}
                           j={j}
                           e={e}

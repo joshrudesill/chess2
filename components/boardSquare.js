@@ -1,5 +1,6 @@
 import { memo, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import useSound from "use-sound";
 import {
   changePieceAtSquare,
   setActivePiece,
@@ -26,8 +27,10 @@ const BoardSquare = ({
   myTurn,
   mouseDragging,
   lastMove,
+  play,
 }) => {
   const dispatch = useDispatch();
+
   const onMouseDown = () => {
     if (myTurn) {
       if (activePiece === null && squareData.piece !== null) {
@@ -42,6 +45,7 @@ const BoardSquare = ({
             return false;
           })
         ) {
+          play();
           dispatch(changePieceAtSquare(squareData));
           dispatch(setMouseDragging(false));
           dispatch(resetPieceState());
@@ -67,6 +71,7 @@ const BoardSquare = ({
             return false;
           })
         ) {
+          play();
           dispatch(capturePiece({ toBeCaptured: squareData.piece }));
           dispatch(setMouseDragging(false));
           dispatch(resetPieceState());
@@ -99,6 +104,7 @@ const BoardSquare = ({
               return false;
             })
           ) {
+            play();
             dispatch(changePieceAtSquare(squareData));
 
             dispatch(resetPieceState());
@@ -118,15 +124,13 @@ const BoardSquare = ({
               return false;
             })
           ) {
-            console.log("capturing");
+            play();
             dispatch(capturePiece({ toBeCaptured: squareData.piece }));
             dispatch(resetPieceState());
           } else {
-            console.log("not capturing");
             dispatch(resetActivePiece());
           }
         } else {
-          console.log("else");
           dispatch(resetActivePiece());
         }
       }

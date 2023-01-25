@@ -34,10 +34,10 @@ import socket from "../socket";
 import Sidebar from "../components/sidebar";
 import GameInfo from "../components/gameInfo";
 import useTimer from "../util/usetimer";
+import useSound from "use-sound";
 const dayjs = require("dayjs");
 var utc = require("dayjs/plugin/utc");
 dayjs.extend(utc);
-
 const Play = () => {
   const a = Array.from(Array(8).keys());
   const dispatch = useDispatch();
@@ -54,6 +54,7 @@ const Play = () => {
   const myTimer = useTimer();
   const oppTimer = useTimer();
   const pingRef = useRef(null);
+  const [play] = useSound("/move.mp3");
 
   useEffect(() => {
     pingRef.current = setInterval(() => {
@@ -219,6 +220,7 @@ const Play = () => {
       dispatch(resetPieceState());
     });
     socket.on("newPosition", (p, t, notation, lastMove, captured) => {
+      play();
       dispatch(setGameStarted());
       dispatch(setMoveInTime(dayjs().utc().toISOString()));
       dispatch(setLastMove(lastMove));
@@ -311,7 +313,7 @@ const Play = () => {
     <div className='flex flex-row gap-5 overflow-x-hidden'>
       <Sidebar />
       <div className='flex w-[85vmin] md:w-max mx-auto md:mx-0 flex-col lg:flex-row gap-3 md:ml-48 overflow-x-hidden'>
-        <Board />
+        <Board play={play} />
         <GameInfo myTimer={myTimer} oppTimer={oppTimer} />
       </div>
     </div>
