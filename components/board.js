@@ -10,13 +10,13 @@ const Board = () => {
   const mouseDragging = useSelector((state) => state.board.mouseDragging);
   const white = useSelector((state) => state.board.white);
   const lastMove = useSelector((state) => state.board.lastMove);
-  const a = Array.from(Array(8).keys());
-  const dispatch = useDispatch();
   const [pieceX, setX] = useState(0);
   const [pieceY, setY] = useState(0);
   const mouseMove = (e) => {
-    setX(e.pageX);
-    setY(e.pageY);
+    if (mouseDragging) {
+      setX(e.pageX);
+      setY(e.pageY);
+    }
   };
   //  <DraggablePiece x={pieceX} y={pieceY} /> onMouseLeave={() => dispatch(resetActivePiece())}
   return (

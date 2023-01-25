@@ -20,7 +20,8 @@
     "react-redux": "^8.0.4",
     "reselect": "^4.1.7",
     "sass": "^1.55.0",
-    "socket.io-client": "^4.5.3"
+    "socket.io-client": "^4.5.3",
+    "use-sound": "^4.0.1"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.13",

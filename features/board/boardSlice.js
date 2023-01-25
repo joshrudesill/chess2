@@ -128,7 +128,7 @@ const initialState = {
   notation: [],
   moveTimes: [],
   mouseDragging: false,
-  lastMove: [],
+  lastMove: [-1, -1, -1, -1],
   takenPieces: [], // {white, type}
 };
 

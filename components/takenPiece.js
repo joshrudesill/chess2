@@ -42,7 +42,7 @@ const TakenPiece = ({ white, type }) => {
   return (
     <>
       {src ? (
-        <Image src={src} height={20} width={20} />
+        <Image src={src} height={25} width={25} />
       ) : (
         <div style={{ height: "15px" }}></div>
       )}

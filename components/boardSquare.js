@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   changePieceAtSquare,
@@ -159,7 +159,7 @@ const BoardSquare = ({
     } else {
       setHighlighted(false);
     }
-  }, [lastMove]);
+  }, [...lastMove]);
   const boxRef = useRef(null);
   if (squareData.piece !== null) {
     return (
