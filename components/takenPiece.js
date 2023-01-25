@@ -20,7 +20,7 @@ const whiterook = require("../assets/whiterook.svg");
     4 - Knight
     5 - Queen
 */
-const TakenPiece = ({ white, type }) => {
+const TakenPiece = ({ white, type, height }) => {
   const [src, setSrc] = useState(null);
   useEffect(() => {
     if (white) {
@@ -39,19 +39,15 @@ const TakenPiece = ({ white, type }) => {
       if (type === 5) setSrc(blackqueen);
     }
   }, [white, type]);
-  const boxRef = useRef(null);
+
   return (
-    <div ref={boxRef} className='h-full'>
+    <>
       {src ? (
-        <Image
-          src={src}
-          height={boxRef.current.clientHeight * 0.9}
-          width={boxRef.current.clientHeight * 0.9}
-        />
+        <Image src={src} height={height * 0.9} width={height * 0.9} />
       ) : (
-        <div style={{ height: "15px" }}></div>
+        <></>
       )}
-    </div>
+    </>
   );
 };
 export default TakenPiece;

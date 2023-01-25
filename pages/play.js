@@ -62,7 +62,7 @@ const Play = () => {
     return () => {
       clearInterval(pingRef.current);
     };
-  });
+  }, []);
   useEffect(() => {
     const sid = localStorage.getItem("sessionID");
     if (sid) {

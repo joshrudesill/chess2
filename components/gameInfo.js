@@ -4,7 +4,7 @@ import {
   HandThumbDownIcon,
 } from "@heroicons/react/20/solid";
 import { Tooltip } from "flowbite-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import socket from "../socket";
 import Chat from "./chat";
@@ -36,6 +36,7 @@ const GameInfo = ({ myTimer, oppTimer }) => {
       socket.off("drawRequested");
     };
   });
+  const boxRef = useRef(null);
   return (
     <div className='lg:w-[30vw] w-11/12 md:h-[88vmin] border rounded-md border-neutral-600 divide-neutral-600 shadow-lg flex flex-col divide-y text-white mx-auto md:mx-0 lg:mt-8 lg:mr-2'>
       <div className='grid grid-flow-row grid-rows-6 h-3/5 2xl:h-7/12 divide-neutral-600 divide-y'>
@@ -66,18 +67,35 @@ const GameInfo = ({ myTimer, oppTimer }) => {
             <p className='font-mono xl:text-xl grow text-center'>VS</p>
             <p className='font-sans xl:text-lg'>{oData.username}</p>
           </div>
-          <div className='flex flex-row justify-between text-xs my-auto h-[50%]'>
+          <div
+            className='flex flex-row justify-between text-xs my-auto h-[50%]'
+            ref={boxRef}
+          >
             <div>
               {takenPieces?.map((t, i) => {
                 if (t.white !== white && white !== null) {
-                  return <TakenPiece key={i} white={t.white} type={t.type} />;
+                  return (
+                    <TakenPiece
+                      key={i}
+                      white={t.white}
+                      type={t.type}
+                      height={boxRef.current.clientHeight}
+                    />
+                  );
                 }
               })}
             </div>
             <div>
               {takenPieces.map((t, i) => {
                 if (t.white === white && white !== null) {
-                  return <TakenPiece key={i} white={t.white} type={t.type} />;
+                  return (
+                    <TakenPiece
+                      key={i}
+                      white={t.white}
+                      type={t.type}
+                      height={boxRef.current.clientHeight}
+                    />
+                  );
                 }
               })}
             </div>
