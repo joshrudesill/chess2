@@ -2,15 +2,25 @@ import { useSelector } from "react-redux";
 import BoardSquare from "./boardSquare";
 import { useState } from "react";
 const Board = ({ play }) => {
-  const { board, activePiece, myTurn, mouseDragging, white, lastMove } =
-    useSelector((state) => ({
-      board: state.board.position,
-      activePiece: state.board.activePiece,
-      myTurn: state.board.myTurn,
-      mouseDragging: state.board.mouseDragging,
-      white: state.board.white,
-      lastMove: state.board.lastMove,
-    }));
+  const {
+    board,
+    activePiece,
+    myTurn,
+    mouseDragging,
+    white,
+    lastMove,
+    blackKingCanCastle,
+    whiteKingCanCastle,
+  } = useSelector((state) => ({
+    board: state.board.position,
+    activePiece: state.board.activePiece,
+    myTurn: state.board.myTurn,
+    mouseDragging: state.board.mouseDragging,
+    white: state.board.white,
+    lastMove: state.board.lastMove,
+    whiteKingCanCastle: state.board.whiteKingCanCastle,
+    blackKingCanCastle: state.board.blackKingCanCastle,
+  }));
   const [pieceX, setX] = useState(0);
   const [pieceY, setY] = useState(0);
   const mouseMove = (e) => {
@@ -41,6 +51,8 @@ const Board = ({ play }) => {
                       white={white}
                       mouseDragging={mouseDragging}
                       lastMove={lastMove}
+                      whiteKingCanCastle={whiteKingCanCastle}
+                      blackKingCanCastle={blackKingCanCastle}
                       key={(j + 1) * (e + 1) * (j + 1)}
                     />
                   ));
@@ -61,6 +73,8 @@ const Board = ({ play }) => {
                           white={white}
                           mouseDragging={mouseDragging}
                           lastMove={lastMove}
+                          whiteKingCanCastle={whiteKingCanCastle}
+                          blackKingCanCastle={blackKingCanCastle}
                           key={(j + 1) * (e + 1) * (j + 1)}
                         />
                       ))

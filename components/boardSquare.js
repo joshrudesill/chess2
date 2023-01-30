@@ -8,6 +8,7 @@ import {
   resetPieceState,
   resetActivePiece,
   setMouseDragging,
+  castleKing,
 } from "../features/board/boardSlice";
 import Bishop from "./pieces/bishop";
 import King from "./pieces/king";
@@ -23,10 +24,12 @@ const BoardSquare = ({
   x,
   y,
   activePiece,
-  myTurn,
-  mouseDragging,
   lastMove,
+  mouseDragging,
+  myTurn,
   play,
+  whiteKingCanCastle,
+  blackKingCanCastle,
 }) => {
   const dispatch = useDispatch();
 
@@ -44,10 +47,39 @@ const BoardSquare = ({
             return false;
           })
         ) {
+          if (activePiece.type === 0) {
+            //check for king then for castle move
+            if (activePiece.white) {
+              if (whiteKingCanCastle[0] || whiteKingCanCastle[1]) {
+                if (whiteKingCanCastle[0] && x === 7 && y === 2) {
+                  //castle
+                } else if (whiteKingCanCastle[1] && x === 7 && y === 6) {
+                  //castle
+                }
+              } else {
+                dispatch(changePieceAtSquare(squareData));
+                dispatch(setMouseDragging(false));
+                dispatch(resetPieceState());
+              }
+            } else {
+              if (blackKingCanCastle[0] || blackKingCanCastle[1]) {
+                if (blackKingCanCastle[0] && x === 7 && y === 2) {
+                  //castle
+                } else if (blackKingCanCastle[1] && x === 7 && y === 6) {
+                  //castle
+                }
+              } else {
+                dispatch(changePieceAtSquare(squareData));
+                dispatch(setMouseDragging(false));
+                dispatch(resetPieceState());
+              }
+            }
+          } else {
+            dispatch(changePieceAtSquare(squareData));
+            dispatch(setMouseDragging(false));
+            dispatch(resetPieceState());
+          }
           play();
-          dispatch(changePieceAtSquare(squareData));
-          dispatch(setMouseDragging(false));
-          dispatch(resetPieceState());
         } else {
           dispatch(resetActivePiece());
         }
@@ -102,10 +134,43 @@ const BoardSquare = ({
               return false;
             })
           ) {
+            if (activePiece.type === 0) {
+              //check for king then for castle move
+              if (activePiece.white) {
+                if (whiteKingCanCastle[0] || whiteKingCanCastle[1]) {
+                  if (whiteKingCanCastle[0] && x === 7 && y === 2) {
+                    //castle
+                    dispatch(castleKing({ white: true, short: false }));
+                  } else if (whiteKingCanCastle[1] && x === 7 && y === 6) {
+                    //castle
+                    dispatch(castleKing({ white: true, short: false }));
+                  }
+                } else {
+                  dispatch(changePieceAtSquare(squareData));
+                  dispatch(setMouseDragging(false));
+                  dispatch(resetPieceState());
+                }
+              } else {
+                if (blackKingCanCastle[0] || blackKingCanCastle[1]) {
+                  if (blackKingCanCastle[0] && x === 7 && y === 2) {
+                    //castle
+                    dispatch(castleKing({ white: false, short: false }));
+                  } else if (blackKingCanCastle[1] && x === 7 && y === 6) {
+                    //castle
+                    dispatch(castleKing({ white: false, short: false }));
+                  }
+                } else {
+                  dispatch(changePieceAtSquare(squareData));
+                  dispatch(setMouseDragging(false));
+                  dispatch(resetPieceState());
+                }
+              }
+            } else {
+              dispatch(changePieceAtSquare(squareData));
+              dispatch(setMouseDragging(false));
+              dispatch(resetPieceState());
+            }
             play();
-            dispatch(changePieceAtSquare(squareData));
-
-            dispatch(resetPieceState());
           } else {
             dispatch(resetActivePiece());
           }

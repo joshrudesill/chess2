@@ -152,6 +152,66 @@ export const boardSlice = createSlice({
         state.blackKingCanCastle[short ? 0 : 1] = canCastle;
       }
     },
+    castleKing: (state, action) => {
+      const { white, short } = action.payload;
+      state.myTurn = false;
+      let rookLocation, algebraicNotation, kingLocation;
+      if (white) {
+        kingLocation = [7, 4];
+        if (short) {
+          rookId = [7, 7];
+          algebraicNotation = "O-O";
+        } else {
+          rookId = [7, 0];
+          algebraicNotation = "O-O-O";
+        }
+      } else {
+        kingLocation = [0, 4];
+        if (short) {
+          rookId = [0, 0];
+          algebraicNotation = "O-O";
+        } else {
+          rookId = [0, 7];
+          algebraicNotation = "O-O-O";
+        }
+      }
+      //move rook
+      //move king
+      state.notation.push(algebraicNotation);
+      const offsetStart = dayjs(state.moveInTime).utc();
+      var diff = offsetStart.diff();
+
+      state.moveTimes.push(diff);
+      const king = state.position[kingLocation[0]][kingLocation[1]].piece;
+      const rook = state.position[rookLocation[0]][rookLocation[1]].piece;
+      state.position[white ? 7 : 0][short ? 6 : 2].piece = king;
+      state.position[white ? 7 : 0][short ? 5 : 3].piece = rook;
+
+      state.position[white ? 7 : 0][short ? 6 : 2].piece.x = white ? 7 : 0;
+      state.position[white ? 7 : 0][short ? 6 : 2].piece.y = short ? 6 : 2;
+      state.position[white ? 7 : 0][short ? 5 : 3].piece.x = white ? 7 : 0;
+      state.position[white ? 7 : 0][short ? 5 : 3].piece.y = short ? 5 : 3;
+
+      state.position[white ? 7 : 0][short ? 6 : 2].piece.hasMoved = true;
+      state.position[white ? 7 : 0][short ? 5 : 3].piece.hasMoved = true;
+
+      state.position[kingLocation[0]][kingLocation[1]].piece = null;
+      state.position[rookLocation[0]][rookLocation[1]].piece = null;
+
+      state.activePiece = null;
+
+      state.kingData = initialState.kingData;
+
+      socket.emit(
+        "pieceMove",
+        state.position,
+        state.startTime,
+        state.moveInTime,
+        algebraicNotation,
+        lastMove,
+        null
+      );
+    },
     pushTakenPiece: (state, action) => {
       const { white, type } = action.payload;
       state.takenPieces.push({ white, type });
@@ -247,9 +307,6 @@ export const boardSlice = createSlice({
                   );
                 })
               ) {
-                console.log("legal move shared");
-                console.log(JSON.stringify(square.piece.legalMoves));
-                console.log(JSON.stringify(state.activePiece.legalMoves));
                 //they share a legal move
                 if (state.activePiece.x === square.piece.x) {
                   file = square.piece.x;
@@ -342,7 +399,6 @@ export const boardSlice = createSlice({
               ];
             }
             if (state.whiteKingCanCastle[1]) {
-              console.log("dasdfasdf");
               state.position[piece.x][piece.y].piece.legalMoves = [
                 { x: 7, y: 6 },
                 ...moves,
@@ -624,6 +680,7 @@ export const {
   pushTakenPiece,
   setTakenPiecesOnReconnect,
   setKingCanCastle,
+  castleKing,
 } = boardSlice.actions;
 
 export default boardSlice.reducer;
