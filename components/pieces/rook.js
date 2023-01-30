@@ -4,10 +4,8 @@ import {
   setLegalMoves,
   checkKing,
   removeLegalMovesFromKing,
+  setKingCanCastle,
 } from "../../features/board/boardSlice";
-import Image from "next/image";
-const white = require("../../assets/whiterook.svg");
-const black = require("../../assets/blackrook.svg");
 const Rook = ({
   piece,
   activePiece,
@@ -18,12 +16,12 @@ const Rook = ({
   mouseDragging,
 }) => {
   const dispatch = useDispatch();
-  const board = useSelector((state) => state.board.position);
-  const whiteKingCalculated = useSelector(
-    (state) => state.board.whiteKingCalculated
-  );
-  const blackKingCalculated = useSelector(
-    (state) => state.board.blackKingCalculated
+  const { board, whiteKingCalculated, blackKingCalculated } = useSelector(
+    (state) => ({
+      board: state.board.position,
+      whiteKingCalculated: state.board.whiteKingCalculated,
+      blackKingCalculated: state.board.blackKingCalculated,
+    })
   );
 
   const calculateLegalMoves = () => {
@@ -126,7 +124,64 @@ const Rook = ({
         j += 1;
       }
     }
-
+    const castleRow = piece.white ? 0 : 7;
+    for (const { x, y } of legalMoves) {
+      if (x === castleRow) {
+        if (y === 2 || y === 3) {
+          dispatch(
+            setKingCanCastle({
+              white: !piece.white,
+              canCastle: false,
+              short: false,
+            })
+          );
+        } else if (y === 5 || y === 6) {
+          dispatch(
+            setKingCanCastle({
+              white: !piece.white,
+              canCastle: false,
+              short: true,
+            })
+          );
+        }
+      }
+    }
+    //hacky
+    if (piece.hasMoved) {
+      if (piece.id === 18) {
+        dispatch(
+          setKingCanCastle({
+            white: false,
+            canCastle: false,
+            short: false,
+          })
+        );
+      } else if (piece.id === 11) {
+        dispatch(
+          setKingCanCastle({
+            white: false,
+            canCastle: false,
+            short: true,
+          })
+        );
+      } else if (piece.id === 1) {
+        dispatch(
+          setKingCanCastle({
+            white: true,
+            canCastle: false,
+            short: false,
+          })
+        );
+      } else if (piece.id === 8) {
+        dispatch(
+          setKingCanCastle({
+            white: true,
+            canCastle: false,
+            short: true,
+          })
+        );
+      }
+    }
     dispatch(setLegalMoves({ piece: piece, moves: legalMoves }));
     dispatch(
       removeLegalMovesFromKing({

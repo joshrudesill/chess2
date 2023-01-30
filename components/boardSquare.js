@@ -1,12 +1,11 @@
-import { memo, useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useDispatch } from "react-redux";
 import useSound from "use-sound";
 import {
   changePieceAtSquare,
   setActivePiece,
   capturePiece,
   resetPieceState,
-  setFirstMove,
   resetActivePiece,
   setMouseDragging,
 } from "../features/board/boardSlice";
@@ -84,7 +83,6 @@ const BoardSquare = ({
 
   const onMouseUp = () => {
     if (myTurn) {
-      console.log("mouse up");
       dispatch(setMouseDragging(false));
       if (
         activePiece !== null &&
@@ -147,6 +145,7 @@ const BoardSquare = ({
     5 - Queen
 */
   const [highlighted, setHighlighted] = useState(false);
+
   useEffect(() => {
     if (
       lastMove &&
@@ -172,11 +171,11 @@ const BoardSquare = ({
         className={`aspect-square flex justify-center items-center cursor-grab z-auto ${
           j % 2 === 0
             ? e % 2 === 0
-              ? `${highlighted ? "bg-amber-400" : "bg-emerald-800"}`
-              : `${highlighted ? "bg-amber-300" : "bg-stone-400"}`
+              ? `${highlighted ? "bg-amber-300" : "bg-stone-400"}`
+              : `${highlighted ? "bg-amber-400" : "bg-emerald-800"}`
             : e % 2 !== 0
-            ? `${highlighted ? "bg-amber-400" : "bg-emerald-800"}`
-            : `${highlighted ? "bg-amber-300" : "bg-stone-400"}`
+            ? `${highlighted ? "bg-amber-300" : "bg-stone-400"}`
+            : `${highlighted ? "bg-amber-400" : "bg-emerald-800"}`
         } `}
         onMouseDown={onMouseDown}
         onMouseUp={onMouseUp}
@@ -271,11 +270,11 @@ const BoardSquare = ({
       className={`aspect-square flex justify-center items-center cursor-grab z-auto ${
         j % 2 === 0
           ? e % 2 === 0
-            ? `${highlighted ? "bg-amber-400" : "bg-emerald-800"}`
-            : `${highlighted ? "bg-amber-300" : "bg-stone-400"}`
+            ? `${highlighted ? "bg-amber-300" : "bg-stone-400"}`
+            : `${highlighted ? "bg-amber-400" : "bg-emerald-800"}`
           : e % 2 !== 0
-          ? `${highlighted ? "bg-amber-400" : "bg-emerald-800"}`
-          : `${highlighted ? "bg-amber-300" : "bg-stone-400"}`
+          ? `${highlighted ? "bg-amber-300" : "bg-stone-400"}`
+          : `${highlighted ? "bg-amber-400" : "bg-emerald-800"}`
       }`}
       onMouseDown={onMouseDown}
       onMouseUp={onMouseUp}

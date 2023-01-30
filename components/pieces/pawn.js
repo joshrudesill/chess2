@@ -5,9 +5,6 @@ import {
   removeLegalMovesFromKing,
   checkKing,
 } from "../../features/board/boardSlice";
-import Image from "next/image";
-const white = require("../../assets/whitepawn.svg");
-const black = require("../../assets/blackpawn.svg");
 const Pawn = ({
   piece,
   activePiece,
@@ -18,12 +15,12 @@ const Pawn = ({
   mouseDragging,
 }) => {
   const dispatch = useDispatch();
-  const board = useSelector((state) => state.board.position);
-  const whiteKingCalculated = useSelector(
-    (state) => state.board.whiteKingCalculated
-  );
-  const blackKingCalculated = useSelector(
-    (state) => state.board.blackKingCalculated
+  const { board, whiteKingCalculated, blackKingCalculated } = useSelector(
+    (state) => ({
+      board: state.board.position,
+      whiteKingCalculated: state.board.whiteKingCalculated,
+      blackKingCalculated: state.board.blackKingCalculated,
+    })
   );
 
   const calculateLegalMoves = () => {
@@ -104,7 +101,7 @@ const Pawn = ({
           );
         }
       }
-
+      //king castling stuff
       dispatch(setLegalMoves({ piece: piece, moves: legalMoves }));
     }
   };

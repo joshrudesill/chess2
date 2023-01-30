@@ -6,10 +6,8 @@ import {
   setKingCalculated,
   recheckLegalMoves,
   changeKingLocation,
+  setKingCanCastle,
 } from "../../features/board/boardSlice";
-import Image from "next/image";
-const white = require("../../assets/whiteking.svg");
-const black = require("../../assets/blackking.svg");
 const King = ({
   piece,
   activePiece,
@@ -20,8 +18,10 @@ const King = ({
   mouseDragging,
 }) => {
   const dispatch = useDispatch();
-  const board = useSelector((state) => state.board.position);
-  const kingData = useSelector((state) => state.board.kingData);
+  const { board, kingData } = useSelector((state) => ({
+    board: state.board.position,
+    kingData: state.board.kingData,
+  }));
   useEffect(() => {
     dispatch(
       changeKingLocation({
@@ -157,7 +157,44 @@ const King = ({
         j++;
       }
     }
-
+    if (piece.hasMoved) {
+      dispatch(
+        setKingCanCastle({ white: piece.white, canCastle: false, short: false })
+      );
+      dispatch(
+        setKingCanCastle({ white: piece.white, canCastle: false, short: true })
+      );
+    } else {
+      console.log("piece hasnt moved");
+      if (
+        board[piece.x][piece.y - 1].piece !== null ||
+        board[piece.x][piece.y - 2].piece !== null
+      ) {
+        console.log("piece blocking");
+        // cant castle
+        dispatch(
+          setKingCanCastle({
+            white: piece.white,
+            canCastle: false,
+            short: false,
+          })
+        );
+      }
+      if (
+        board[piece.x][piece.y + 1].piece !== null ||
+        board[piece.x][piece.y + 2].piece !== null
+      ) {
+        console.log("piece blocking");
+        // cant castle
+        dispatch(
+          setKingCanCastle({
+            white: piece.white,
+            canCastle: false,
+            short: true,
+          })
+        );
+      }
+    }
     dispatch(setLegalMoves({ piece: piece, moves: legalMoves }));
     dispatch(setKingCalculated(piece.white));
   };

@@ -12,8 +12,10 @@ const FindMatch = () => {
   const dispatch = useDispatch();
   const router = useRouter();
   const [players, setPlayers] = useState(0);
-  const sessionID = useSelector((state) => state.app.sessionDetails.sessionID);
-  const gameID = useSelector((state) => state.app.sessionDetails.gameID);
+  const { sessionID, gameID } = useSelector((state) => ({
+    sessionID: state.app.sessionDetails.sessionID,
+    gameID: state.app.sessionDetails.gameID,
+  }));
   const joinQueue = () => {
     socket.emit("joinQueue");
   };

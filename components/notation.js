@@ -1,8 +1,10 @@
 import { useSelector } from "react-redux";
 
 const Notation = () => {
-  const notation = useSelector((state) => state.board.notation);
-  const moveTimes = useSelector((state) => state.board.moveTimes);
+  const { notation, moveTimes } = useSelector((state) => ({
+    notation: state.board.notation,
+    moveTimes: state.board.moveTimes,
+  }));
   return (
     <>
       {notation?.map((n, i) => (

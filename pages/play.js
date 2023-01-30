@@ -44,13 +44,19 @@ const Play = () => {
   const router = useRouter();
   const [inGameRoom, setInGameRoom] = useState(false);
   const whitelocal = useRef(null);
-  const gameID = useSelector((state) => state.app.sessionDetails.gameID);
-  const sessionID = useSelector((state) => state.app.sessionDetails.sessionID);
-  const gameStarted = useSelector((state) => state.app.inGameData.gameStarted);
-  const startTime = useSelector((state) => state.board.startTime);
-  const timerOffset = useSelector((state) => state.board.currentTimerOffset);
-  const myTurn = useSelector((state) => state.board.myTurn);
-  const white = useSelector((state) => state.board.white);
+
+  const { gameID, sessionID, gameStarted } = useSelector((state) => ({
+    gameID: state.app.sessionDetails.gameID,
+    sessionID: state.app.sessionDetails.sessionID,
+    gameStarted: state.app.inGameData.gameStarted,
+  }));
+
+  const { startTime, timerOffset, myTurn, white } = useSelector((state) => ({
+    startTime: state.board.startTime,
+    timerOffset: state.board.currentTimerOffset,
+    myTurn: state.board.myTurn,
+    white: state.board.white,
+  }));
   const myTimer = useTimer();
   const oppTimer = useTimer();
   const pingRef = useRef(null);

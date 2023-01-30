@@ -104,6 +104,8 @@ const initialState = {
   activePiece: null,
   whiteKingCalculated: false,
   blackKingCalculated: false,
+  whiteKingCanCastle: [true, true],
+  blackKingCanCastle: [true, true],
   kingLocations: [
     { x: 0, y: 0 },
     { x: 0, y: 0 },
@@ -140,6 +142,15 @@ export const boardSlice = createSlice({
   reducers: {
     addChatMessage: (state, action) => {
       state.chat.push(action.payload);
+    },
+    setKingCanCastle: (state, action) => {
+      console.log("setting");
+      const { white, canCastle, short } = action.payload;
+      if (white) {
+        state.whiteKingCanCastle[short ? 1 : 0] = canCastle;
+      } else {
+        state.blackKingCanCastle[short ? 0 : 1] = canCastle;
+      }
     },
     pushTakenPiece: (state, action) => {
       const { white, type } = action.payload;
@@ -306,6 +317,8 @@ export const boardSlice = createSlice({
     resetPieceState: (state) => {
       state.whiteKingCalculated = false;
       state.blackKingCalculated = false;
+      state.whiteKingCanCastle = [true, true];
+      state.blackKingCanCastle = [true, true];
       state.position.forEach((r) => {
         r.forEach((s) => {
           if (s.piece !== null) {
@@ -319,7 +332,46 @@ export const boardSlice = createSlice({
     setLegalMoves: (state, action) => {
       const { piece, moves } = action.payload;
       state.position[piece.x][piece.y].piece.legalMovesUpdated = true;
-      state.position[piece.x][piece.y].piece.legalMoves = moves;
+      if (piece.type === 0) {
+        if (piece.white) {
+          if (state.whiteKingCanCastle[0] || state.whiteKingCanCastle[1]) {
+            if (state.whiteKingCanCastle[0]) {
+              state.position[piece.x][piece.y].piece.legalMoves = [
+                { x: 7, y: 2 },
+                ...moves,
+              ];
+            }
+            if (state.whiteKingCanCastle[1]) {
+              console.log("dasdfasdf");
+              state.position[piece.x][piece.y].piece.legalMoves = [
+                { x: 7, y: 6 },
+                ...moves,
+              ];
+            }
+          } else {
+            state.position[piece.x][piece.y].piece.legalMoves = moves;
+          }
+        } else {
+          if (state.blackKingCanCastle[0] || state.blackKingCanCastle[1]) {
+            if (state.blackKingCanCastle[0]) {
+              state.position[piece.x][piece.y].piece.legalMoves = [
+                { x: 0, y: 2 },
+                ...moves,
+              ];
+            }
+            if (state.blackKingCanCastle[1]) {
+              state.position[piece.x][piece.y].piece.legalMoves = [
+                { x: 0, y: 6 },
+                ...moves,
+              ];
+            }
+          } else {
+            state.position[piece.x][piece.y].piece.legalMoves = moves;
+          }
+        }
+      } else {
+        state.position[piece.x][piece.y].piece.legalMoves = moves;
+      }
     },
     removeLegalMovesFromKing: (state, action) => {
       const { white, moves } = action.payload;
@@ -486,6 +538,11 @@ export const boardSlice = createSlice({
       state.kingData.checkingPiece = action.payload.piece;
       state.kingData.squaresToBeBlocked = action.payload.squares;
       state.kingData.white = !action.payload.piece.white;
+      if (action.payload.piece.white) {
+        state.blackKingCanCastle = [false, false];
+      } else {
+        state.whiteKingCanCastle = [false, false];
+      }
     },
     recheckLegalMoves: (state) => {
       const foundOneLegalMove = false;
@@ -566,6 +623,7 @@ export const {
   setLastMove,
   pushTakenPiece,
   setTakenPiecesOnReconnect,
+  setKingCanCastle,
 } = boardSlice.actions;
 
 export default boardSlice.reducer;

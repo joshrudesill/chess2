@@ -1,22 +1,21 @@
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import BoardSquare from "./boardSquare";
-import DraggablePiece from "./draggablePiece";
-import { useEffect, useRef, useState } from "react";
-import { resetActivePiece } from "../features/board/boardSlice";
+import { useState } from "react";
 const Board = ({ play }) => {
-  const board = useSelector((state) => state.board.position);
-  const activePiece = useSelector((state) => state.board.activePiece);
-  const myTurn = useSelector((state) => state.board.myTurn);
-  const mouseDragging = useSelector((state) => state.board.mouseDragging);
-  const white = useSelector((state) => state.board.white);
-  const lastMove = useSelector((state) => state.board.lastMove);
+  const { board, activePiece, myTurn, mouseDragging, white, lastMove } =
+    useSelector((state) => ({
+      board: state.board.position,
+      activePiece: state.board.activePiece,
+      myTurn: state.board.myTurn,
+      mouseDragging: state.board.mouseDragging,
+      white: state.board.white,
+      lastMove: state.board.lastMove,
+    }));
   const [pieceX, setX] = useState(0);
   const [pieceY, setY] = useState(0);
   const mouseMove = (e) => {
-    if (mouseDragging) {
-      setX(e.pageX);
-      setY(e.pageY);
-    }
+    setX(e.pageX);
+    setY(e.pageY);
   };
   //  <DraggablePiece x={pieceX} y={pieceY} /> onMouseLeave={() => dispatch(resetActivePiece())}
   return (

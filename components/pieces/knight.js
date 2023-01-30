@@ -4,10 +4,8 @@ import {
   checkKing,
   removeLegalMovesFromKing,
   setLegalMoves,
+  setKingCanCastle,
 } from "../../features/board/boardSlice";
-import Image from "next/image";
-const white = require("../../assets/whiteknight.svg");
-const black = require("../../assets/blackknight.svg");
 const Knight = ({
   piece,
   activePiece,
@@ -18,13 +16,12 @@ const Knight = ({
   mouseDragging,
 }) => {
   const dispatch = useDispatch();
-  const [hightlightSelf, setHighlightSelf] = useState(false);
-  const board = useSelector((state) => state.board.position);
-  const whiteKingCalculated = useSelector(
-    (state) => state.board.whiteKingCalculated
-  );
-  const blackKingCalculated = useSelector(
-    (state) => state.board.blackKingCalculated
+  const { board, whiteKingCalculated, blackKingCalculated } = useSelector(
+    (state) => ({
+      board: state.board.position,
+      whiteKingCalculated: state.board.whiteKingCalculated,
+      blackKingCalculated: state.board.blackKingCalculated,
+    })
   );
 
   const calculateLegalMoves = () => {
@@ -80,7 +77,28 @@ const Knight = ({
         }
       });
     }
-
+    const castleRow = piece.white ? 0 : 7;
+    for (const { x, y } of legalMoves) {
+      if (x === castleRow) {
+        if (y === 2 || y === 3) {
+          dispatch(
+            setKingCanCastle({
+              white: !piece.white,
+              canCastle: false,
+              short: false,
+            })
+          );
+        } else if (y === 5 || y === 6) {
+          dispatch(
+            setKingCanCastle({
+              white: !piece.white,
+              canCastle: false,
+              short: true,
+            })
+          );
+        }
+      }
+    }
     dispatch(setLegalMoves({ piece: piece, moves: legalMoves }));
     dispatch(
       removeLegalMovesFromKing({

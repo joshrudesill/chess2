@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 const whiteking = require("../assets/whiteking.svg");
 const blackking = require("../assets/blackking.svg");
 const whitequeen = require("../assets/whitequeen.svg");
