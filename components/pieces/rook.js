@@ -127,7 +127,7 @@ const Rook = ({
     const castleRow = piece.white ? 0 : 7;
     for (const { x, y } of legalMoves) {
       if (x === castleRow) {
-        if (y === 2 || y === 3) {
+        if (y === 1 || y === 2) {
           dispatch(
             setKingCanCastle({
               white: !piece.white,
@@ -148,6 +148,7 @@ const Rook = ({
     }
     //hacky
     if (piece.hasMoved) {
+      console.log("rook mvoed");
       if (piece.id === 18) {
         dispatch(
           setKingCanCastle({

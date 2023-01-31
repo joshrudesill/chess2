@@ -144,12 +144,39 @@ export const boardSlice = createSlice({
       state.chat.push(action.payload);
     },
     setKingCanCastle: (state, action) => {
-      console.log("setting");
       const { white, canCastle, short } = action.payload;
+      if (!white && short) {
+        console.log("setting cant");
+      }
       if (white) {
         state.whiteKingCanCastle[short ? 1 : 0] = canCastle;
       } else {
-        state.blackKingCanCastle[short ? 0 : 1] = canCastle;
+        state.blackKingCanCastle[short ? 1 : 0] = canCastle;
+      }
+      if (
+        state.position[state.kingLocations[white ? 0 : 1].x][
+          state.kingLocations[white ? 0 : 1].y
+        ].piece.hasMoved === false
+      ) {
+        const indexToRemove = state.position[
+          state.kingLocations[white ? 0 : 1].x
+        ][state.kingLocations[white ? 0 : 1].y].piece.legalMoves.findIndex(
+          (e) => {
+            if (e.x === white ? 7 : 0 && e.y === short ? 2 : 6) {
+              return e;
+            }
+          }
+        );
+        if (indexToRemove !== -1) {
+          const newMoves =
+            state.position[state.kingLocations[white ? 0 : 1].x][
+              state.kingLocations[white ? 0 : 1].y
+            ].piece.legalMoves;
+          newMoves.splice(indexToRemove, 1);
+          state.position[state.kingLocations[white ? 0 : 1].x][
+            state.kingLocations[white ? 0 : 1].y
+          ].piece.legalMoves = newMoves;
+        }
       }
     },
     castleKing: (state, action) => {
@@ -159,19 +186,19 @@ export const boardSlice = createSlice({
       if (white) {
         kingLocation = [7, 4];
         if (short) {
-          rookId = [7, 7];
+          rookLocation = [7, 7];
           algebraicNotation = "O-O";
         } else {
-          rookId = [7, 0];
+          rookLocation = [7, 0];
           algebraicNotation = "O-O-O";
         }
       } else {
         kingLocation = [0, 4];
         if (short) {
-          rookId = [0, 0];
+          rookLocation = [0, 0];
           algebraicNotation = "O-O";
         } else {
-          rookId = [0, 7];
+          rookLocation = [0, 7];
           algebraicNotation = "O-O-O";
         }
       }
@@ -182,6 +209,13 @@ export const boardSlice = createSlice({
       var diff = offsetStart.diff();
 
       state.moveTimes.push(diff);
+      const lastMove = [
+        kingLocation[0],
+        kingLocation[1],
+        white ? 7 : 0,
+        short ? 6 : 2,
+      ];
+      state.lastMove = lastMove;
       const king = state.position[kingLocation[0]][kingLocation[1]].piece;
       const rook = state.position[rookLocation[0]][rookLocation[1]].piece;
       state.position[white ? 7 : 0][short ? 6 : 2].piece = king;

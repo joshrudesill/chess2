@@ -62,14 +62,14 @@ const Play = () => {
   const pingRef = useRef(null);
   const [play] = useSound("/move.mp3");
 
-  useEffect(() => {
+  /*useEffect(() => {
     pingRef.current = setInterval(() => {
       socket.emit("c2s", dayjs().utc().toISOString());
     }, 5000);
     return () => {
       clearInterval(pingRef.current);
     };
-  }, []);
+  }, []);*/
   useEffect(() => {
     const sid = localStorage.getItem("sessionID");
     if (sid) {

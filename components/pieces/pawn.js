@@ -4,6 +4,7 @@ import {
   setLegalMoves,
   removeLegalMovesFromKing,
   checkKing,
+  setKingCanCastle,
 } from "../../features/board/boardSlice";
 const Pawn = ({
   piece,
@@ -58,6 +59,32 @@ const Pawn = ({
               })
             );
           } else {
+            if (
+              (piece.white && piece.x + xDirection === 0) ||
+              (!piece.white && piece.x + xDirection === 7)
+            ) {
+              const yCap = piece.y + 1;
+              if (yCap === 5 || yCap === 6) {
+                //
+                dispatch(
+                  setKingCanCastle({
+                    white: !piece.white,
+                    canCastle: false,
+                    short: true,
+                  })
+                );
+              }
+              if (yCap === 2 || yCap === 3) {
+                //
+                dispatch(
+                  setKingCanCastle({
+                    white: !piece.white,
+                    canCastle: false,
+                    short: false,
+                  })
+                );
+              }
+            }
             legalMoves.push({ x: piece.x + xDirection, y: piece.y + 1 });
           }
         } else if (
@@ -85,9 +112,34 @@ const Pawn = ({
               })
             );
           } else {
+            if (
+              (piece.white && piece.x + xDirection === 0) ||
+              (!piece.white && piece.x + xDirection === 7)
+            ) {
+              const yCap = piece.y - 1;
+              if (yCap === 5 || yCap === 6) {
+                //
+                dispatch(
+                  setKingCanCastle({
+                    white: !piece.white,
+                    canCastle: false,
+                    short: true,
+                  })
+                );
+              }
+              if (yCap === 2 || yCap === 3) {
+                //
+                dispatch(
+                  setKingCanCastle({
+                    white: !piece.white,
+                    canCastle: false,
+                    short: false,
+                  })
+                );
+              }
+            }
             legalMoves.push({ x: piece.x + xDirection, y: piece.y - 1 });
           }
-          legalMoves.push({ x: piece.x + xDirection, y: piece.y - 1 });
         } else if (
           board[piece.x + xDirection][piece.y - 1].piece !== null &&
           board[piece.x + xDirection][piece.y - 1].piece.white === piece.white

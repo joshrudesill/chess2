@@ -16,7 +16,7 @@ import Knight from "./pieces/knight";
 import Pawn from "./pieces/pawn";
 import Queen from "./pieces/queen";
 import Rook from "./pieces/rook";
-
+//REBUILD SERVER
 const BoardSquare = ({
   squareData,
   j,
@@ -49,32 +49,59 @@ const BoardSquare = ({
         ) {
           if (activePiece.type === 0) {
             //check for king then for castle move
+            console.log("w1");
             if (activePiece.white) {
+              console.log("w2");
               if (whiteKingCanCastle[0] || whiteKingCanCastle[1]) {
-                if (whiteKingCanCastle[0] && x === 7 && y === 2) {
+                console.log("w3");
+                console.log(x, y);
+                if (whiteKingCanCastle[0] && j === 7 && e === 2) {
                   //castle
-                } else if (whiteKingCanCastle[1] && x === 7 && y === 6) {
+                  console.log("w4");
+                  dispatch(castleKing({ white: true, short: false }));
+                } else if (whiteKingCanCastle[1] && j === 7 && e === 6) {
                   //castle
+                  console.log("w5");
+                  dispatch(castleKing({ white: true, short: true }));
+                } else {
+                  console.log("w6");
+                  dispatch(changePieceAtSquare(squareData));
+                  dispatch(setMouseDragging(false));
+                  dispatch(resetPieceState());
                 }
               } else {
+                console.log("w6");
                 dispatch(changePieceAtSquare(squareData));
                 dispatch(setMouseDragging(false));
                 dispatch(resetPieceState());
               }
             } else {
+              console.log("b1");
               if (blackKingCanCastle[0] || blackKingCanCastle[1]) {
-                if (blackKingCanCastle[0] && x === 7 && y === 2) {
+                console.log("b2");
+                if (blackKingCanCastle[0] && j === 0 && e === 2) {
                   //castle
-                } else if (blackKingCanCastle[1] && x === 7 && y === 6) {
+                  console.log("b3");
+                  dispatch(castleKing({ white: false, short: false }));
+                } else if (blackKingCanCastle[1] && j === 0 && e === 6) {
                   //castle
+                  console.log("b3");
+                  dispatch(castleKing({ white: false, short: true }));
+                } else {
+                  console.log("b4");
+                  dispatch(changePieceAtSquare(squareData));
+                  dispatch(setMouseDragging(false));
+                  dispatch(resetPieceState());
                 }
               } else {
+                console.log("w6");
                 dispatch(changePieceAtSquare(squareData));
                 dispatch(setMouseDragging(false));
                 dispatch(resetPieceState());
               }
             }
           } else {
+            console.log("b5");
             dispatch(changePieceAtSquare(squareData));
             dispatch(setMouseDragging(false));
             dispatch(resetPieceState());
@@ -136,36 +163,59 @@ const BoardSquare = ({
           ) {
             if (activePiece.type === 0) {
               //check for king then for castle move
+              console.log("w1");
               if (activePiece.white) {
+                console.log("w2");
                 if (whiteKingCanCastle[0] || whiteKingCanCastle[1]) {
-                  if (whiteKingCanCastle[0] && x === 7 && y === 2) {
+                  console.log("w3");
+                  console.log(x, y);
+                  if (whiteKingCanCastle[0] && j === 7 && e === 2) {
                     //castle
+                    console.log("w4");
                     dispatch(castleKing({ white: true, short: false }));
-                  } else if (whiteKingCanCastle[1] && x === 7 && y === 6) {
+                  } else if (whiteKingCanCastle[1] && j === 7 && e === 6) {
                     //castle
-                    dispatch(castleKing({ white: true, short: false }));
+                    console.log("w5");
+                    dispatch(castleKing({ white: true, short: true }));
+                  } else {
+                    console.log("w6");
+                    dispatch(changePieceAtSquare(squareData));
+                    dispatch(setMouseDragging(false));
+                    dispatch(resetPieceState());
                   }
                 } else {
+                  console.log("w6");
                   dispatch(changePieceAtSquare(squareData));
                   dispatch(setMouseDragging(false));
                   dispatch(resetPieceState());
                 }
               } else {
+                console.log("b1");
                 if (blackKingCanCastle[0] || blackKingCanCastle[1]) {
-                  if (blackKingCanCastle[0] && x === 7 && y === 2) {
+                  console.log("b2");
+                  if (blackKingCanCastle[0] && j === 0 && e === 2) {
                     //castle
+                    console.log("b3");
                     dispatch(castleKing({ white: false, short: false }));
-                  } else if (blackKingCanCastle[1] && x === 7 && y === 6) {
+                  } else if (blackKingCanCastle[1] && j === 0 && e === 6) {
                     //castle
-                    dispatch(castleKing({ white: false, short: false }));
+                    console.log("b3");
+                    dispatch(castleKing({ white: false, short: true }));
+                  } else {
+                    console.log("b4");
+                    dispatch(changePieceAtSquare(squareData));
+                    dispatch(setMouseDragging(false));
+                    dispatch(resetPieceState());
                   }
                 } else {
+                  console.log("w6");
                   dispatch(changePieceAtSquare(squareData));
                   dispatch(setMouseDragging(false));
                   dispatch(resetPieceState());
                 }
               }
             } else {
+              console.log("b5");
               dispatch(changePieceAtSquare(squareData));
               dispatch(setMouseDragging(false));
               dispatch(resetPieceState());
