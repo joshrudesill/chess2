@@ -206,7 +206,7 @@ const Rook = ({
     <div
       className={`select-none cursor-grabbing ${
         activePiece ? "z-auto pointer-events-none" : "z-50"
-      } w-[80%] h-[80%] mx-auto my-auto"`}
+      } w-[70%] h-[70%] mx-auto my-auto"`}
       ref={boxRef}
       onMouseDown={onMouseDown}
       onMouseUp={onMouseUp}
