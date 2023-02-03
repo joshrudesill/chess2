@@ -31,11 +31,12 @@ const BoardSquare = ({
   play,
   whiteKingCanCastle,
   blackKingCanCastle,
+  promotionOpen,
 }) => {
   const dispatch = useDispatch();
 
   const onMouseDown = () => {
-    if (myTurn) {
+    if (myTurn && !promotionOpen) {
       if (activePiece === null && squareData.piece !== null) {
         dispatch(setMouseDragging(true));
         dispatch(setActivePiece(squareData.piece));
@@ -142,7 +143,7 @@ const BoardSquare = ({
   };
 
   const onMouseUp = () => {
-    if (myTurn) {
+    if (myTurn && !promotionOpen) {
       dispatch(setMouseDragging(false));
       if (
         activePiece !== null &&

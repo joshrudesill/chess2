@@ -45,13 +45,13 @@ const Pawn = ({
         }
       }
 
-      if (y + 1 <= 7 && y - 1 >= 0) {
+      if (y + 1 <= 7 || y - 1 >= 0) {
         //Capturing
         if (
-          board[piece.x + xDirection][piece.y + 1].piece !== null &&
-          board[piece.x + xDirection][piece.y + 1].piece.white !== piece.white
+          board[piece.x + xDirection][piece.y + 1]?.piece !== null &&
+          board[piece.x + xDirection][piece.y + 1]?.piece.white !== piece.white
         ) {
-          if (board[piece.x + xDirection][piece.y + 1].piece.type === 0) {
+          if (board[piece.x + xDirection][piece.y + 1]?.piece.type === 0) {
             dispatch(
               checkKing({
                 piece: piece,
@@ -88,8 +88,8 @@ const Pawn = ({
             legalMoves.push({ x: piece.x + xDirection, y: piece.y + 1 });
           }
         } else if (
-          board[piece.x + xDirection][piece.y + 1].piece !== null &&
-          board[piece.x + xDirection][piece.y + 1].piece.white === piece.white
+          board[piece.x + xDirection][piece.y + 1]?.piece !== null &&
+          board[piece.x + xDirection][piece.y + 1]?.piece.white === piece.white
         ) {
           //protect
           dispatch(
@@ -101,10 +101,10 @@ const Pawn = ({
         }
 
         if (
-          board[piece.x + xDirection][piece.y - 1].piece !== null &&
-          board[piece.x + xDirection][piece.y - 1].piece.white !== piece.white
+          board[piece.x + xDirection][piece.y - 1]?.piece !== null &&
+          board[piece.x + xDirection][piece.y - 1]?.piece.white !== piece.white
         ) {
-          if (board[piece.x + xDirection][piece.y - 1].piece.type === 0) {
+          if (board[piece.x + xDirection][piece.y - 1]?.piece.type === 0) {
             dispatch(
               checkKing({
                 piece: piece,
@@ -141,8 +141,8 @@ const Pawn = ({
             legalMoves.push({ x: piece.x + xDirection, y: piece.y - 1 });
           }
         } else if (
-          board[piece.x + xDirection][piece.y - 1].piece !== null &&
-          board[piece.x + xDirection][piece.y - 1].piece.white === piece.white
+          board[piece.x + xDirection][piece.y - 1]?.piece !== null &&
+          board[piece.x + xDirection][piece.y - 1]?.piece.white === piece.white
         ) {
           //protect
           dispatch(

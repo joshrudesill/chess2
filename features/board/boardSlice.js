@@ -132,6 +132,8 @@ const initialState = {
   mouseDragging: false,
   lastMove: [-1, -1, -1, -1],
   takenPieces: [], // {white, type}
+  promotionCapture: null,
+  promotionOpen: false,
 };
 
 // search all legal moves and remove any not in sqauresToBeBlocked
@@ -300,106 +302,140 @@ export const boardSlice = createSlice({
     setMoveTimesOnReconnect: (state, action) => {
       state.moveTimes = action.payload;
     },
-    changePieceAtSquare: (state, action) => {
+    transformPieceOnPromotion: (state, action) => {
+      const { x, y, pieceType } = action.payload;
+      console.log("tranform");
+      console.log(x, y);
+      console.log(pieceType);
       state.myTurn = false;
+      //change type 6 at square to new type, add notation, movetimes, reset stuff, then send
+      state.position[x][y].piece.type = pieceType;
+      const designations = ["K", "", "R", "B", "N", "Q"];
+      const pieceDesignation = designations[pieceType];
+      const notation = `${state.position[x][y].an}${pieceDesignation}`;
+      state.notation.push(notation);
+      const offsetStart = dayjs(state.moveInTime).utc();
+      var diff = offsetStart.diff();
+
+      state.moveTimes.push(diff);
+      state.promotionOpen = false;
+      socket.emit(
+        "pieceMove",
+        state.position,
+        state.startTime,
+        state.moveInTime,
+        notation,
+        state.lastMove,
+        state.promotionCapture
+      );
+      state.promotionCapture = null;
+    },
+    changePieceAtSquare: (state, action) => {
+      //if pawn and x is 7 or 0 move pawn then transform piece type, dont send, have dialog bool true, reset active piece here
       const { x, y } = action.payload;
-      const startingSquare =
-        state.position[state.activePiece.x][state.activePiece.y].an;
-      const endingSquare = state.position[x][y].an;
       const lastMove = [state.activePiece.x, state.activePiece.y, x, y];
       state.lastMove = lastMove;
-      const pieceDesignation =
-        state.activePiece.type === 0
-          ? "K"
-          : state.activePiece.type === 2
-          ? "R"
-          : state.activePiece.type === 3
-          ? "B"
-          : state.activePiece.type === 4
-          ? "N"
-          : state.activePiece.type === 5
-          ? "Q"
-          : "";
+      if (state.activePiece.type === 1 && (x === 0 || x === 7)) {
+        state.promotionOpen = true;
+        state.position[state.activePiece.x][state.activePiece.y].piece = null;
+        state.position[x][y].piece = state.activePiece;
 
-      let file = null;
-      let col = null;
-      //special checks for pawns
-      if (state.activePiece.type !== 1) {
-        for (const row of state.position) {
-          for (const square of row) {
-            if (
-              square.piece !== null &&
-              square.piece.type === state.activePiece.type &&
-              square.piece.white === state.activePiece.white &&
-              square.piece.id !== state.activePiece.id
-            ) {
-              //check for queen here
+        state.position[x][y].piece.x = x;
+        state.position[x][y].piece.y = y;
+        state.position[x][y].piece.type = 6;
+
+        state.position[x][y].piece.hasMoved = true;
+
+        state.activePiece = null;
+      } else {
+        state.myTurn = false;
+        const startingSquare =
+          state.position[state.activePiece.x][state.activePiece.y].an;
+        const endingSquare = state.position[x][y].an;
+
+        const designations = ["K", "", "R", "B", "N", "Q"];
+        const pieceDesignation = designations[state.activePiece.type];
+
+        let file = null;
+        let col = null;
+        //special checks for pawns
+        if (state.activePiece.type !== 1) {
+          for (const row of state.position) {
+            for (const square of row) {
               if (
-                square.piece.legalMoves.some((move) => {
-                  return state.activePiece.legalMoves.some(
-                    (apMove) => apMove.x === move.x && apMove.y === move.y
-                  );
-                })
+                square.piece !== null &&
+                square.piece.type === state.activePiece.type &&
+                square.piece.white === state.activePiece.white &&
+                square.piece.id !== state.activePiece.id
               ) {
-                //they share a legal move
-                if (state.activePiece.x === square.piece.x) {
-                  file = square.piece.x;
-                }
-                if (state.activePiece.y === square.piece.y) {
-                  col = square.piece.y;
+                //check for queen here
+                if (
+                  square.piece.legalMoves.some((move) => {
+                    return state.activePiece.legalMoves.some(
+                      (apMove) => apMove.x === move.x && apMove.y === move.y
+                    );
+                  })
+                ) {
+                  //they share a legal move
+                  if (state.activePiece.x === square.piece.x) {
+                    file = square.piece.x;
+                  }
+                  if (state.activePiece.y === square.piece.y) {
+                    col = square.piece.y;
+                  }
                 }
               }
             }
           }
         }
-      }
-      let differentiator = "";
-      if (file) {
-        differentiator = startingSquare[0];
-      }
-      if (col) {
-        differentiator += startingSquare[1];
-      }
+        let differentiator = "";
+        if (file) {
+          differentiator = startingSquare[0];
+        }
+        if (col) {
+          differentiator += startingSquare[1];
+        }
 
-      //
-      let algebraicNotation = "";
-      if (state.activePiece.type === 1) {
-        algebraicNotation = `${endingSquare}`;
-      } else {
-        algebraicNotation = `${
-          pieceDesignation === "" ? startingSquare : pieceDesignation
-        }${differentiator}${endingSquare}`;
-      }
-      state.notation.push(algebraicNotation);
-      const offsetStart = dayjs(state.moveInTime).utc();
-      var diff = offsetStart.diff();
+        //
+        let algebraicNotation = "";
+        if (state.activePiece.type === 1) {
+          algebraicNotation = `${endingSquare}`;
+        } else {
+          algebraicNotation = `${
+            pieceDesignation === "" ? startingSquare : pieceDesignation
+          }${differentiator}${endingSquare}`;
+        }
+        state.notation.push(algebraicNotation);
+        const offsetStart = dayjs(state.moveInTime).utc();
+        var diff = offsetStart.diff();
 
-      state.moveTimes.push(diff);
+        state.moveTimes.push(diff);
 
-      state.position[state.activePiece.x][state.activePiece.y].piece = null;
-      state.position[x][y].piece = state.activePiece;
+        state.position[state.activePiece.x][state.activePiece.y].piece = null;
+        state.position[x][y].piece = state.activePiece;
 
-      state.position[x][y].piece.x = x;
-      state.position[x][y].piece.y = y;
+        state.position[x][y].piece.x = x;
+        state.position[x][y].piece.y = y;
 
-      state.position[x][y].piece.hasMoved = true;
+        state.position[x][y].piece.hasMoved = true;
 
-      state.activePiece = null;
+        state.activePiece = null;
 
-      state.kingData = initialState.kingData;
-      if (state.firstMove) {
-        state.firstMove = false;
-        socket.emit("firstMove", state.position, algebraicNotation, lastMove);
-      } else {
-        socket.emit(
-          "pieceMove",
-          state.position,
-          state.startTime,
-          state.moveInTime,
-          algebraicNotation,
-          lastMove,
-          null
-        );
+        state.kingData = initialState.kingData;
+        if (state.firstMove) {
+          state.firstMove = false;
+          socket.emit("firstMove", state.position, algebraicNotation, lastMove);
+        } else {
+          socket.emit(
+            "pieceMove",
+            state.position,
+            state.startTime,
+            state.moveInTime,
+            algebraicNotation,
+            lastMove,
+            null
+          );
+        }
       }
     },
     setLastMove: (state, action) => {
@@ -517,99 +553,115 @@ export const boardSlice = createSlice({
         type: toBeCaptured.type,
       });
       const { x, y } = toBeCaptured;
-      const startingSquare =
-        state.position[state.activePiece.x][state.activePiece.y].an;
-      const endingSquare = state.position[x][y].an;
       const lastMove = [state.activePiece.x, state.activePiece.y, x, y];
       state.lastMove = lastMove;
-      const pieceDesignation =
-        state.activePiece.type === 0
-          ? "K"
-          : state.activePiece.type === 2
-          ? "R"
-          : state.activePiece.type === 3
-          ? "B"
-          : state.activePiece.type === 4
-          ? "N"
-          : state.activePiece.type === 5
-          ? "Q"
-          : "";
+      if (state.activePiece.type === 1 && (x === 0 || x === 7)) {
+        state.promotionOpen = true;
+        state.position[state.activePiece.x][state.activePiece.y].piece = null;
+        state.position[x][y].piece = state.activePiece;
 
-      let file = -1;
-      let col = -1;
-      //special checks for pawns
-      if (state.activePiece.type !== 1) {
-        for (const row of state.position) {
-          for (const square of row) {
-            if (
-              square.piece !== null &&
-              square.piece.type === state.activePiece.type &&
-              square.piece.white === state.activePiece.white &&
-              square.piece.id !== state.activePiece.id
-            ) {
+        state.position[x][y].piece.x = x;
+        state.position[x][y].piece.y = y;
+        state.position[x][y].piece.type = 6;
+
+        state.position[x][y].piece.hasMoved = true;
+        state.promotionCapture = toBeCaptured;
+
+        state.activePiece = null;
+      } else {
+        const startingSquare =
+          state.position[state.activePiece.x][state.activePiece.y].an;
+        const endingSquare = state.position[x][y].an;
+        const lastMove = [state.activePiece.x, state.activePiece.y, x, y];
+        state.lastMove = lastMove;
+        const pieceDesignation =
+          state.activePiece.type === 0
+            ? "K"
+            : state.activePiece.type === 2
+            ? "R"
+            : state.activePiece.type === 3
+            ? "B"
+            : state.activePiece.type === 4
+            ? "N"
+            : state.activePiece.type === 5
+            ? "Q"
+            : "";
+
+        let file = -1;
+        let col = -1;
+        //special checks for pawns
+        if (state.activePiece.type !== 1) {
+          for (const row of state.position) {
+            for (const square of row) {
               if (
-                square.piece.legalMoves.some((move) => {
-                  return state.activePiece.legalMoves.some(
-                    (apMove) => apMove.x === move.x && apMove.y === move.y
-                  );
-                })
+                square.piece !== null &&
+                square.piece.type === state.activePiece.type &&
+                square.piece.white === state.activePiece.white &&
+                square.piece.id !== state.activePiece.id
               ) {
-                //they share a legal move
-                if (state.activePiece.x === square.piece.x) {
-                  file = square.piece.x;
-                }
-                if (state.activePiece.y === square.piece.y) {
-                  col = square.piece.y;
+                if (
+                  square.piece.legalMoves.some((move) => {
+                    return state.activePiece.legalMoves.some(
+                      (apMove) => apMove.x === move.x && apMove.y === move.y
+                    );
+                  })
+                ) {
+                  //they share a legal move
+                  if (state.activePiece.x === square.piece.x) {
+                    file = square.piece.x;
+                  }
+                  if (state.activePiece.y === square.piece.y) {
+                    col = square.piece.y;
+                  }
                 }
               }
             }
           }
         }
+        let differentiator = "";
+        if (file !== -1) {
+          differentiator = startingSquare[0];
+        }
+        if (col !== -1) {
+          differentiator += startingSquare[1];
+        }
+        //move to piece logic
+
+        //
+        let algebraicNotation = "";
+        if (state.activePiece.type === 1) {
+          algebraicNotation = `${startingSquare[0]}x${endingSquare}`;
+        } else {
+          algebraicNotation = `${
+            pieceDesignation === "" ? startingSquare : pieceDesignation
+          }${differentiator}x${endingSquare}`;
+        }
+        state.notation.push(algebraicNotation);
+        const offsetStart = dayjs(state.moveInTime).utc();
+        var diff = offsetStart.diff();
+
+        state.moveTimes.push(diff);
+        state.position[state.activePiece.x][state.activePiece.y].piece = null;
+        state.position[x][y].piece = state.activePiece;
+
+        state.position[x][y].piece.x = x;
+        state.position[x][y].piece.y = y;
+
+        state.position[x][y].piece.hasMoved = true;
+
+        state.activePiece = null;
+
+        state.kingData = initialState.kingData;
+        socket.emit(
+          "pieceMove",
+          state.position,
+          state.startTime,
+          state.moveInTime,
+          algebraicNotation,
+          lastMove,
+          { white: toBeCaptured.white, type: toBeCaptured.type }
+        );
       }
-      let differentiator = "";
-      if (file !== -1) {
-        differentiator = startingSquare[0];
-      }
-      if (col !== -1) {
-        differentiator += startingSquare[1];
-      }
-      //move to piece logic
-
-      //
-      let algebraicNotation = "";
-      if (state.activePiece.type === 1) {
-        algebraicNotation = `${startingSquare[0]}x${endingSquare}`;
-      } else {
-        algebraicNotation = `${
-          pieceDesignation === "" ? startingSquare : pieceDesignation
-        }${differentiator}x${endingSquare}`;
-      }
-      state.notation.push(algebraicNotation);
-      console.log(algebraicNotation);
-      const offsetStart = dayjs(state.moveInTime).utc();
-      var diff = offsetStart.diff();
-
-      state.moveTimes.push(diff);
-      state.position[state.activePiece.x][state.activePiece.y].piece = null;
-      state.position[x][y].piece = state.activePiece;
-
-      state.position[x][y].piece.x = x;
-      state.position[x][y].piece.y = y;
-
-      state.position[x][y].piece.hasMoved = true;
-
-      state.activePiece = null;
-
-      state.kingData = initialState.kingData;
-      socket.emit(
-        "pieceMove",
-        state.position,
-        state.startTime,
-        state.moveInTime,
-        algebraicNotation,
-        lastMove,
-        { white: toBeCaptured.white, type: toBeCaptured.type }
-      );
     },
     pinPiece: (state, action) => {
       const { piece, direction } = action.payload;
@@ -715,6 +767,7 @@ export const {
   setTakenPiecesOnReconnect,
   setKingCanCastle,
   castleKing,
+  transformPieceOnPromotion,
 } = boardSlice.actions;
 
 export default boardSlice.reducer;

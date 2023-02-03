@@ -1,12 +1,35 @@
-import { useRef } from "react";
+import { useCallback, useRef } from "react";
+import { useDispatch } from "react-redux";
+import {
+  resetPieceState,
+  transformPieceOnPromotion,
+} from "../../features/board/boardSlice";
 
 const PiecePromoter = ({ piece }) => {
   const boxRef = useRef(null);
+  const dispatch = useDispatch();
+  const dispatchPiecePromotion = (t) => {
+    dispatch(
+      transformPieceOnPromotion({
+        x: piece.x,
+        y: piece.y,
+        pieceType: t,
+      })
+    );
+    dispatch(resetPieceState());
+  };
   return (
     <div className='z-[60] w-full h-full'>
       <div className='h-[400%] bg-slate-300 shadow-2xl'>
-        <div className='h-[25%] w-full flex justify-center'>
-          <div className='h-[80%] w-[80%] mx-auto my-auto' ref={boxRef}>
+        <div
+          className='h-[25%] w-full flex justify-center'
+          onClick={() => dispatchPiecePromotion(5)}
+        >
+          <div
+            className='h-[80%] w-[80%] mx-auto my-auto'
+            ref={boxRef}
+            onClick={() => dispatchPiecePromotion(5)}
+          >
             <svg
               width={`${boxRef.current?.clientWidth}`}
               height={`${boxRef.current?.clientHeight}`}
@@ -183,8 +206,14 @@ const PiecePromoter = ({ piece }) => {
             </svg>
           </div>
         </div>
-        <div className='h-[25%] w-full flex justify-center'>
-          <div className='h-[70%] w-[80%] mx-auto my-auto'>
+        <div
+          className='h-[25%] w-full flex justify-center'
+          onClick={() => dispatchPiecePromotion(2)}
+        >
+          <div
+            className='h-[70%] w-[80%] mx-auto my-auto'
+            onClick={() => dispatchPiecePromotion(2)}
+          >
             <svg
               width={`${boxRef.current?.clientWidth}`}
               height={`${boxRef.current?.clientHeight}`}
@@ -363,8 +392,14 @@ const PiecePromoter = ({ piece }) => {
             </svg>
           </div>
         </div>
-        <div className='h-[25%] w-full flex justify-center'>
-          <div className='h-[80%] w-[80%] mx-auto my-auto'>
+        <div
+          className='h-[25%] w-full flex justify-center'
+          onClick={() => dispatchPiecePromotion(3)}
+        >
+          <div
+            className='h-[80%] w-[80%] mx-auto my-auto'
+            onClick={() => dispatchPiecePromotion(3)}
+          >
             <svg
               width={`${boxRef.current?.clientWidth}`}
               height={`${boxRef.current?.clientHeight}`}
@@ -453,8 +488,14 @@ const PiecePromoter = ({ piece }) => {
             </svg>
           </div>
         </div>
-        <div className='h-[25%] w-full flex justify-center'>
-          <div className='h-[80%] w-[80%] mx-auto my-auto'>
+        <div
+          className='h-[25%] w-full flex justify-center'
+          onClick={() => dispatchPiecePromotion(4)}
+        >
+          <div
+            className='h-[80%] w-[80%] mx-auto my-auto'
+            onClick={() => dispatchPiecePromotion(4)}
+          >
             <svg
               width={`${boxRef.current?.clientWidth}`}
               height={`${boxRef.current?.clientHeight}`}

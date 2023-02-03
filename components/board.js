@@ -11,6 +11,7 @@ const Board = ({ play }) => {
     lastMove,
     blackKingCanCastle,
     whiteKingCanCastle,
+    promotionOpen,
   } = useSelector((state) => ({
     board: state.board.position,
     activePiece: state.board.activePiece,
@@ -20,6 +21,7 @@ const Board = ({ play }) => {
     lastMove: state.board.lastMove,
     whiteKingCanCastle: state.board.whiteKingCanCastle,
     blackKingCanCastle: state.board.blackKingCanCastle,
+    promotionOpen: state.board.promotionOpen,
   }));
   const [pieceX, setX] = useState(0);
   const [pieceY, setY] = useState(0);
@@ -53,6 +55,7 @@ const Board = ({ play }) => {
                       lastMove={lastMove}
                       whiteKingCanCastle={whiteKingCanCastle}
                       blackKingCanCastle={blackKingCanCastle}
+                      promotionOpen={promotionOpen}
                       key={(j + 1) * (e + 1) * (j + 1)}
                     />
                   ));
@@ -75,6 +78,7 @@ const Board = ({ play }) => {
                           lastMove={lastMove}
                           whiteKingCanCastle={whiteKingCanCastle}
                           blackKingCanCastle={blackKingCanCastle}
+                          promotionOpen={promotionOpen}
                           key={(j + 1) * (e + 1) * (j + 1)}
                         />
                       ))
