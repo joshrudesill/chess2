@@ -165,12 +165,10 @@ const King = ({
         setKingCanCastle({ white: piece.white, canCastle: false, short: true })
       );
     } else {
-      console.log("piece hasnt moved");
       if (
         board[piece.x][piece.y - 1].piece !== null ||
         board[piece.x][piece.y - 2].piece !== null
       ) {
-        console.log("piece blocking");
         // cant castle
         dispatch(
           setKingCanCastle({
@@ -184,7 +182,6 @@ const King = ({
         board[piece.x][piece.y + 1].piece !== null ||
         board[piece.x][piece.y + 2].piece !== null
       ) {
-        console.log("piece blocking");
         // cant castle
         dispatch(
           setKingCanCastle({

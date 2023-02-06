@@ -20,6 +20,7 @@ import {
   setLastMove,
   pushTakenPiece,
   setTakenPiecesOnReconnect,
+  setEnPassant,
 } from "../features/board/boardSlice";
 import {
   endGame,
@@ -177,6 +178,13 @@ const Play = () => {
       setInGameRoom(true);
       whitelocal.current = w;
       dispatch(setGameStarted());
+      const lastMove = g.lastMove.at(-1);
+      if (g.gameStates.at(-1)[lastMove[2]][lastMove[3]].piece?.type === 1) {
+        const xDiff = lastMove[0] - lastMove[2];
+        if (Math.abs(xDiff) === 2) {
+          dispatch(setEnPassant({ lastMove }));
+        }
+      }
       dispatch(setPosition(g.gameStates.at(-1)));
       dispatch(resetPieceState());
     });
@@ -249,6 +257,12 @@ const Play = () => {
         });
         dispatch(setTimerOffset({ offsetW, offsetB }));
         dispatch(setMyTurn(true));
+      }
+      if (p[lastMove[2]][lastMove[3]].piece?.type === 1) {
+        const xDiff = lastMove[0] - lastMove[2];
+        if (Math.abs(xDiff) === 2) {
+          dispatch(setEnPassant({ lastMove }));
+        }
       }
       dispatch(setPosition(p));
       dispatch(pushNewNotation(notation));

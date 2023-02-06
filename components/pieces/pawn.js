@@ -16,13 +16,13 @@ const Pawn = ({
   mouseDragging,
 }) => {
   const dispatch = useDispatch();
-  const { board, whiteKingCalculated, blackKingCalculated } = useSelector(
-    (state) => ({
+  const { board, whiteKingCalculated, blackKingCalculated, enPassant } =
+    useSelector((state) => ({
       board: state.board.position,
       whiteKingCalculated: state.board.whiteKingCalculated,
       blackKingCalculated: state.board.blackKingCalculated,
-    })
-  );
+      enPassant: state.board.enPassant,
+    }));
 
   const calculateLegalMoves = () => {
     var legalMoves = [];
@@ -153,7 +153,23 @@ const Pawn = ({
           );
         }
       }
-      //king castling stuff
+
+      //en passant
+      if (
+        (piece.x === 4 || piece.x === 3) &&
+        enPassant.possible &&
+        enPassant.white !== piece.white
+      ) {
+        console.log("cep");
+        const x = enPassant.attackSquare[0];
+        const y = enPassant.attackSquare[1];
+        if (
+          piece.x + xDirection === x &&
+          (piece.y + 1 === y || piece.y - 1 === y)
+        ) {
+          legalMoves.push({ x: x, y: y });
+        }
+      }
       dispatch(setLegalMoves({ piece: piece, moves: legalMoves }));
     }
   };

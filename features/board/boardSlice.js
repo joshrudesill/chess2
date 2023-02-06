@@ -134,6 +134,12 @@ const initialState = {
   takenPieces: [], // {white, type}
   promotionCapture: null,
   promotionOpen: false,
+  enPassant: {
+    possible: false,
+    white: null,
+    pawnLocation: [],
+    attackSquare: [],
+  },
 };
 
 // search all legal moves and remove any not in sqauresToBeBlocked
@@ -147,9 +153,7 @@ export const boardSlice = createSlice({
     },
     setKingCanCastle: (state, action) => {
       const { white, canCastle, short } = action.payload;
-      if (!white && short) {
-        console.log("setting cant");
-      }
+
       if (white) {
         state.whiteKingCanCastle[short ? 1 : 0] = canCastle;
       } else {
@@ -197,10 +201,10 @@ export const boardSlice = createSlice({
       } else {
         kingLocation = [0, 4];
         if (short) {
-          rookLocation = [0, 0];
+          rookLocation = [0, 7];
           algebraicNotation = "O-O";
         } else {
-          rookLocation = [0, 7];
+          rookLocation = [0, 0];
           algebraicNotation = "O-O-O";
         }
       }
@@ -304,9 +308,6 @@ export const boardSlice = createSlice({
     },
     transformPieceOnPromotion: (state, action) => {
       const { x, y, pieceType } = action.payload;
-      console.log("tranform");
-      console.log(x, y);
-      console.log(pieceType);
       state.myTurn = false;
       //change type 6 at square to new type, add notation, movetimes, reset stuff, then send
       state.position[x][y].piece.type = pieceType;
@@ -330,11 +331,21 @@ export const boardSlice = createSlice({
       );
       state.promotionCapture = null;
     },
+    setEnPassant: (state, action) => {
+      const { lastMove } = action.payload;
+      state.enPassant = {
+        possible: true,
+        pawnLocation: [lastMove[2], lastMove[3]],
+        attackSquare: [lastMove[2] > lastMove[0] ? 2 : 5, lastMove[3]],
+        white: !state.white,
+      };
+    },
     changePieceAtSquare: (state, action) => {
       //if pawn and x is 7 or 0 move pawn then transform piece type, dont send, have dialog bool true, reset active piece here
       const { x, y } = action.payload;
       const lastMove = [state.activePiece.x, state.activePiece.y, x, y];
       state.lastMove = lastMove;
+      state.enPassant = initialState.enPassant;
       if (state.activePiece.type === 1 && (x === 0 || x === 7)) {
         state.promotionOpen = true;
         state.position[state.activePiece.x][state.activePiece.y].piece = null;
@@ -349,6 +360,17 @@ export const boardSlice = createSlice({
         state.activePiece = null;
       } else {
         state.myTurn = false;
+        if (
+          (lastMove[0] === 1 && lastMove[2] === 3) ||
+          (lastMove[0] === 6 && lastMove[2] === 4)
+        ) {
+          state.enPassant = {
+            possible: true,
+            white: state.activePiece.white,
+            pawnLocation: [lastMove[2], lastMove[3]],
+            attackSquare: [lastMove[0] === 1 ? 2 : 5, lastMove[3]],
+          };
+        }
         const startingSquare =
           state.position[state.activePiece.x][state.activePiece.y].an;
         const endingSquare = state.position[x][y].an;
@@ -547,7 +569,8 @@ export const boardSlice = createSlice({
     },
     capturePiece: (state, action) => {
       state.myTurn = false;
-      const { toBeCaptured } = action.payload;
+      state.enPassant = initialState.enPassant;
+      const { toBeCaptured, enPassant } = action.payload;
       state.takenPieces.push({
         white: toBeCaptured.white,
         type: toBeCaptured.type,
@@ -642,12 +665,23 @@ export const boardSlice = createSlice({
 
         state.moveTimes.push(diff);
         state.position[state.activePiece.x][state.activePiece.y].piece = null;
-        state.position[x][y].piece = state.activePiece;
+        if (enPassant) {
+          const newX = toBeCaptured.white ? 5 : 2;
+          state.position[x][y].piece = null;
+          state.position[newX][y].piece = state.activePiece;
 
-        state.position[x][y].piece.x = x;
-        state.position[x][y].piece.y = y;
+          state.position[newX][y].piece.x = newX;
+          state.position[newX][y].piece.y = y;
 
-        state.position[x][y].piece.hasMoved = true;
+          state.position[newX][y].piece.hasMoved = true;
+        } else {
+          state.position[x][y].piece = state.activePiece;
+
+          state.position[x][y].piece.x = x;
+          state.position[x][y].piece.y = y;
+
+          state.position[x][y].piece.hasMoved = true;
+        }
 
         state.activePiece = null;
 
@@ -768,6 +802,7 @@ export const {
   setKingCanCastle,
   castleKing,
   transformPieceOnPromotion,
+  setEnPassant,
 } = boardSlice.actions;
 
 export default boardSlice.reducer;

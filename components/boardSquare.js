@@ -32,6 +32,7 @@ const BoardSquare = ({
   whiteKingCanCastle,
   blackKingCanCastle,
   promotionOpen,
+  enPassant,
 }) => {
   const dispatch = useDispatch();
 
@@ -51,62 +52,69 @@ const BoardSquare = ({
         ) {
           if (activePiece.type === 0) {
             //check for king then for castle move
-            console.log("w1");
             if (activePiece.white) {
-              console.log("w2");
               if (whiteKingCanCastle[0] || whiteKingCanCastle[1]) {
-                console.log("w3");
-                console.log(x, y);
                 if (whiteKingCanCastle[0] && j === 7 && e === 2) {
                   //castle
-                  console.log("w4");
                   dispatch(castleKing({ white: true, short: false }));
                 } else if (whiteKingCanCastle[1] && j === 7 && e === 6) {
                   //castle
-                  console.log("w5");
                   dispatch(castleKing({ white: true, short: true }));
                 } else {
-                  console.log("w6");
                   dispatch(changePieceAtSquare(squareData));
                   dispatch(setMouseDragging(false));
                   dispatch(resetPieceState());
                 }
               } else {
-                console.log("w6");
                 dispatch(changePieceAtSquare(squareData));
                 dispatch(setMouseDragging(false));
                 dispatch(resetPieceState());
               }
             } else {
-              console.log("b1");
               if (blackKingCanCastle[0] || blackKingCanCastle[1]) {
-                console.log("b2");
                 if (blackKingCanCastle[0] && j === 0 && e === 2) {
                   //castle
-                  console.log("b3");
                   dispatch(castleKing({ white: false, short: false }));
                 } else if (blackKingCanCastle[1] && j === 0 && e === 6) {
                   //castle
-                  console.log("b3");
                   dispatch(castleKing({ white: false, short: true }));
                 } else {
-                  console.log("b4");
                   dispatch(changePieceAtSquare(squareData));
                   dispatch(setMouseDragging(false));
                   dispatch(resetPieceState());
                 }
               } else {
-                console.log("w6");
                 dispatch(changePieceAtSquare(squareData));
                 dispatch(setMouseDragging(false));
                 dispatch(resetPieceState());
               }
             }
           } else {
-            console.log("b5");
-            dispatch(changePieceAtSquare(squareData));
-            dispatch(setMouseDragging(false));
-            dispatch(resetPieceState());
+            if (
+              activePiece.type === 1 &&
+              enPassant.possible === true &&
+              enPassant.attackSquare[0] === j &&
+              enPassant.attackSquare[1] === e &&
+              activePiece.white !== enPassant.white
+            ) {
+              console.log("1");
+              dispatch(
+                capturePiece({
+                  toBeCaptured: {
+                    x: enPassant.pawnLocation[0],
+                    y: enPassant.pawnLocation[1],
+                    type: 1,
+                    white: enPassant.white,
+                  },
+                  enPassant: true,
+                })
+              );
+            } else {
+              console.log("2");
+              dispatch(changePieceAtSquare(squareData));
+              dispatch(setMouseDragging(false));
+              dispatch(resetPieceState());
+            }
           }
           play();
         } else {
@@ -132,7 +140,9 @@ const BoardSquare = ({
           })
         ) {
           play();
-          dispatch(capturePiece({ toBeCaptured: squareData.piece }));
+          dispatch(
+            capturePiece({ toBeCaptured: squareData.piece, enPassant: false })
+          );
           dispatch(setMouseDragging(false));
           dispatch(resetPieceState());
         } else {
@@ -203,9 +213,31 @@ const BoardSquare = ({
                 }
               }
             } else {
-              dispatch(changePieceAtSquare(squareData));
-              dispatch(setMouseDragging(false));
-              dispatch(resetPieceState());
+              if (
+                activePiece.type === 1 &&
+                enPassant.possible === true &&
+                enPassant.attackSquare[0] === j &&
+                enPassant.attackSquare[1] === e &&
+                activePiece.white !== enPassant.white
+              ) {
+                console.log("3");
+                dispatch(
+                  capturePiece({
+                    toBeCaptured: {
+                      x: enPassant.pawnLocation[0],
+                      y: enPassant.pawnLocation[1],
+                      type: 1,
+                      white: enPassant.white,
+                    },
+                    enPassant: true,
+                  })
+                );
+              } else {
+                console.log("4");
+                dispatch(changePieceAtSquare(squareData));
+                dispatch(setMouseDragging(false));
+                dispatch(resetPieceState());
+              }
             }
             play();
           } else {
@@ -225,7 +257,9 @@ const BoardSquare = ({
             })
           ) {
             play();
-            dispatch(capturePiece({ toBeCaptured: squareData.piece }));
+            dispatch(
+              capturePiece({ toBeCaptured: squareData.piece, enPassant: false })
+            );
             dispatch(resetPieceState());
           } else {
             dispatch(resetActivePiece());
