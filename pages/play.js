@@ -40,7 +40,6 @@ const dayjs = require("dayjs");
 var utc = require("dayjs/plugin/utc");
 dayjs.extend(utc);
 const Play = () => {
-  const a = Array.from(Array(8).keys());
   const dispatch = useDispatch();
   const router = useRouter();
   const [inGameRoom, setInGameRoom] = useState(false);
@@ -63,19 +62,18 @@ const Play = () => {
   const pingRef = useRef(null);
   const [play] = useSound("/move.mp3");
 
-  /*useEffect(() => {
+  useEffect(() => {
     pingRef.current = setInterval(() => {
       socket.emit("c2s", dayjs().utc().toISOString());
     }, 5000);
     return () => {
       clearInterval(pingRef.current);
     };
-  }, []);*/
+  }, []);
   useEffect(() => {
     const sid = localStorage.getItem("sessionID");
     if (sid) {
       if (!inGameRoom && gameID) {
-        console.log("2");
         socket.emit("joinGameLobby", gameID);
       }
       socket.auth = { sid };
@@ -89,7 +87,6 @@ const Play = () => {
     socket.on("sessionStart", (sid, un, uid, gid) => {
       dispatch(setSession({ sid, un, uid, gid }));
       if (gid && !inGameRoom) {
-        console.log("1");
         socket.emit("joinGameLobby", gid);
       } else {
         router.push("/findmatch");
@@ -131,7 +128,6 @@ const Play = () => {
         }
       });
       dispatch(setTimerOffset({ offsetW, offsetB }));
-      console.log(offsetW, offsetB);
       //game started
 
       const startTime = g.gameStartTime;
@@ -211,7 +207,6 @@ const Play = () => {
       myTimer.initTimer(startTime, 10, () => socket.emit("endGame", "timeout"));
       oppTimer.initTimer(startTime, 10, () => {});
       dispatch(setGameStartTime(startTime));
-      console.log(white);
       if (whitelocal.current) {
         oppTimer.resumeTimerWithOffset(0);
       }
@@ -302,6 +297,7 @@ const Play = () => {
       socket.off("gameReadyToStart");
       socket.off("reconnectingToGame");
       socket.off("gameRoomJoined");
+      socket.off("gameEnded");
       socket.removeAllListeners();
     };
   });

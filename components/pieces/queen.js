@@ -221,7 +221,6 @@ const Queen = ({
             })
           );
         } else if (y === 5 || y === 6) {
-          console.log("king cant");
           dispatch(
             setKingCanCastle({
               white: !piece.white,

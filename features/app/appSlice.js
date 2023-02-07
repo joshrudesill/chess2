@@ -25,7 +25,6 @@ export const appSlice = createSlice({
   reducers: {
     setSession: (state, action) => {
       const { sid, uid, un, gid } = action.payload;
-      console.log(sid, " setting");
       state.sessionDetails.sessionID = sid;
       state.sessionDetails.userID = uid;
       state.sessionDetails.username = un;

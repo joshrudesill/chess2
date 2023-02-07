@@ -160,7 +160,6 @@ const Pawn = ({
         enPassant.possible &&
         enPassant.white !== piece.white
       ) {
-        console.log("cep");
         const x = enPassant.attackSquare[0];
         const y = enPassant.attackSquare[1];
         if (

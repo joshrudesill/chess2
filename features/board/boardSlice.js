@@ -758,10 +758,6 @@ export const boardSlice = createSlice({
           if (state.myTurn) {
             socket.emit("endGame", "checkmate");
           }
-          console.log(
-            state.kingData.white ? "white " : "black ",
-            "king checkmated"
-          );
         }
       }
     },

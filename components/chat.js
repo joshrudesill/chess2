@@ -10,11 +10,7 @@ const Chat = ({ chat }) => {
   const session = useSelector((state) => state.app.sessionDetails);
   const gameStarted = useSelector((state) => state.app.inGameData.gameStarted);
   const sendMessage = () => {
-    console.log("sm1");
-    console.log(message.length);
-    console.log(messageTimeout);
     if (message.length > 0 && !messageTimeout) {
-      console.log("sm");
       setMessageTimeout(true);
       dispatch(
         addChatMessage({

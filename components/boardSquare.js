@@ -97,7 +97,6 @@ const BoardSquare = ({
               enPassant.attackSquare[1] === e &&
               activePiece.white !== enPassant.white
             ) {
-              console.log("1");
               dispatch(
                 capturePiece({
                   toBeCaptured: {
@@ -110,7 +109,6 @@ const BoardSquare = ({
                 })
               );
             } else {
-              console.log("2");
               dispatch(changePieceAtSquare(squareData));
               dispatch(setMouseDragging(false));
               dispatch(resetPieceState());
@@ -220,7 +218,6 @@ const BoardSquare = ({
                 enPassant.attackSquare[1] === e &&
                 activePiece.white !== enPassant.white
               ) {
-                console.log("3");
                 dispatch(
                   capturePiece({
                     toBeCaptured: {
@@ -233,7 +230,6 @@ const BoardSquare = ({
                   })
                 );
               } else {
-                console.log("4");
                 dispatch(changePieceAtSquare(squareData));
                 dispatch(setMouseDragging(false));
                 dispatch(resetPieceState());

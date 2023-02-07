@@ -1,17 +1,13 @@
-import { Router, useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setGame, setSession } from "../features/app/appSlice";
-import {
-  addChatMessage,
-  setChatOnReconnect,
-} from "../features/board/boardSlice";
+import { setChatOnReconnect } from "../features/board/boardSlice";
 import socket from "../socket";
 
 const FindMatch = () => {
   const dispatch = useDispatch();
   const router = useRouter();
-  const [players, setPlayers] = useState(0);
   const { sessionID, gameID } = useSelector((state) => ({
     sessionID: state.app.sessionDetails.sessionID,
     gameID: state.app.sessionDetails.gameID,
