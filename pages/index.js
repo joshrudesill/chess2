@@ -5,13 +5,8 @@ import {
   CodeReviewIcon,
   LogIcon,
 } from "@primer/octicons-react";
-import dayjs from "dayjs";
 import Image from "next/image";
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import Board from "../components/board";
 import Sidebar from "../components/sidebar";
-import useTimer from "../util/usetimer";
 const logo = require("../assets/Frame2.svg");
 export default function Home() {
   return (
@@ -47,6 +42,9 @@ export default function Home() {
                   in queue
                   <MagnifyingGlassCircleIcon className='h-6 w-6 text-lime-600 my-auto ml-1 animate-pulse' />
                 </div>
+                <div className='text-white text-sm rounded-md border border-lime-700 p-1 flex flex-row my-auto select-none'>
+                  Players Online: 5
+                </div>
               </div>
             </div>
             <div className='flex flex-row gap-3 rounded-3xl border-neutral-800'>
@@ -69,6 +67,7 @@ export default function Home() {
                   alt='chess2logo'
                   layout='fill'
                   objectFit='contain'
+                  loading='lazy'
                 ></Image>
               </div>
             </div>
