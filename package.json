@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.0.13",
+    "@primer/octicons-react": "^17.11.1",
     "@reduxjs/toolkit": "^1.8.6",
     "dayjs": "^1.11.6",
     "flowbite": "^1.5.4",
