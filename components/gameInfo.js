@@ -148,7 +148,7 @@ const GameInfo = ({ myTimer, oppTimer }) => {
         <div className='flex flex-row flex-wrap row-span-1 '>
           <button
             type='button'
-            className='inline-flex border-2 border-red-700 font-medium rounded-lg text-xs px-2 text-center mx-1 h-5/6 xl:h-2/3 my-auto place-items-center'
+            className='inline-flex border-b-4 border-red-800 bg-red-600 hover:bg-red-700 font-medium rounded-lg text-xs px-2 text-center mx-1 h-5/6 xl:h-2/3 my-auto place-items-center'
             onClick={resign}
           >
             Resign
@@ -158,7 +158,7 @@ const GameInfo = ({ myTimer, oppTimer }) => {
             <>
               <button
                 type='button'
-                className='inline-flex border-2 border-yellow-400 font-medium rounded-lg text-xs px-2 text-center mx-1 h-5/6 xl:h-2/3 my-auto place-items-center'
+                className='inline-flex border-b-4 border-teal-700 bg-teal-500 hover:bg-teal-600 font-medium rounded-lg text-xs px-2 text-center mx-1 h-5/6 xl:h-2/3 my-auto place-items-center'
                 onClick={draw}
               >
                 Yes
@@ -166,7 +166,7 @@ const GameInfo = ({ myTimer, oppTimer }) => {
               </button>
               <button
                 type='button'
-                className='inline-flex border-2 border-yellow-400 font-medium rounded-lg text-xs px-2 text-center mx-1h-5/6 xl:h-2/3 my-auto place-items-center'
+                className='inline-flex border-b-4 border-amber-700 bg-amber-500 hover:bg-amber-600 font-medium rounded-lg text-xs px-2 text-center mx-1h-5/6 xl:h-2/3 my-auto place-items-center'
                 onClick={() => setDrawRequest(false)}
               >
                 No
@@ -177,7 +177,7 @@ const GameInfo = ({ myTimer, oppTimer }) => {
           ) : (
             <button
               type='button'
-              className='inline-flex border-2 border-yellow-400 font-medium rounded-lg text-xs px-2 text-center mx-1 h-5/6 xl:h-2/3 my-auto place-items-center'
+              className='inline-flex border-b-4 border-yellow-600 bg-yellow-400 hover:bg-yellow-500 font-medium rounded-lg text-xs px-2 text-center mx-1 h-5/6 xl:h-2/3 my-auto place-items-center'
               onClick={() => socket.emit("requestDraw")}
             >
               Draw

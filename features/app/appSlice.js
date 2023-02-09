@@ -44,7 +44,7 @@ export const appSlice = createSlice({
       state.inGameData.gameStarted = true;
     },
     endGame: (state) => {
-      state.inGameData.gameStarted = true;
+      state.inGameData.gameStarted = false;
       state.inGameData.myTurn = false;
       state.sessionDetails.gameID = null;
       state.inGameData = initialState.inGameData;

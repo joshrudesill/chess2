@@ -8,11 +8,74 @@ import {
 import Image from "next/image";
 import Sidebar from "../components/sidebar";
 const logo = require("../assets/Frame2.svg");
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { setGame, setSession } from "../features/app/appSlice";
+import { setChatOnReconnect } from "../features/board/boardSlice";
+import socket from "../socket";
 export default function Home() {
+  const dispatch = useDispatch();
+  const router = useRouter();
+  const [inQueue, setInQueue] = useState(false);
+  const [awaitingQueue, setAwaitingInQueue] = useState(false);
+  const { sessionID, gameID } = useSelector((state) => ({
+    sessionID: state.app.sessionDetails.sessionID,
+    gameID: state.app.sessionDetails.gameID,
+  }));
+  const joinQueue = () => {
+    if (!awaitingQueue) {
+      socket.emit("joinQueue");
+      setAwaitingInQueue(true);
+    }
+  };
+
+  useEffect(() => {
+    const sid = localStorage.getItem("sessionID");
+    if (sid) {
+      socket.auth = { sid };
+      socket.connect();
+    } else {
+      const un = "testUser" + Math.floor(Math.random() * 500).toString();
+      socket.auth = { un };
+      socket.connect();
+    }
+  }, []);
+  useEffect(() => {
+    socket.on("connect_error", (err) => {
+      if (err.message === "sidInvalid") {
+        const un = "testUser" + Math.floor(Math.random() * 500).toString();
+        socket.auth = { un };
+        socket.connect();
+      }
+    });
+    socket.on("queueJoined", () => {
+      //
+      setAwaitingInQueue(false);
+      setInQueue(true);
+    });
+    socket.on("sessionStart", (sid, un, uid, gid) => {
+      localStorage.setItem("sessionID", sid);
+      dispatch(setSession({ sid, un, uid, gid }));
+      if (gid !== null) {
+        router.push("/play");
+      }
+    });
+    socket.on("gameRoomCreated", (gid, messages) => {
+      dispatch(setGame(gid));
+      dispatch(setChatOnReconnect(messages));
+      router.push("/play");
+    });
+    return () => {
+      socket.off("connect");
+      socket.off("sessionStart");
+      socket.off("connect_error");
+      socket.off("gameRoomCreated");
+    };
+  });
   return (
     <>
       <div className='flex flex-row w-screen h-screen'>
-        <Sidebar />
         <div className='flex justify-center h-full grow'>
           <div className='flex rounded-md flex-col gap-5 my-auto h-min w-min p-3'>
             <div className='flex flex-row items-center gap-3 border-b border-neutral-600 pb-1'>
@@ -30,21 +93,33 @@ export default function Home() {
                 </div>
               </div>
               <div>
-                <button
-                  className='rounded-md bg-lime-600 py-2 px-4 text-lg font-bold text-white border-b-4 border-lime-700 tracking-wider hover:bg-lime-500'
-                  select-none
-                >
-                  Play
-                </button>
+                {inQueue ? (
+                  <button
+                    className='rounded-md bg-red-600 py-2 px-4 text-lg font-bold text-white border-b-4 border-red-800 tracking-wider hover:bg-red-500 active:translate-y-1 active:border-0'
+                    onClick={() => joinQueue()}
+                  >
+                    Leave Queue
+                  </button>
+                ) : (
+                  <button
+                    className='rounded-md bg-lime-600 py-2 px-4 text-lg font-bold text-white border-b-4 border-lime-700 tracking-wider hover:bg-lime-500 active:translate-y-1 active:border-0'
+                    onClick={() => joinQueue()}
+                  >
+                    {awaitingQueue ? "Joining.." : "Play"}
+                  </button>
+                )}
               </div>
               <div className='grow flex justify-end'>
-                <div className='text-white rounded-md border border-lime-700 p-1 flex flex-row text-lg pl-2 select-none'>
-                  in queue
-                  <MagnifyingGlassCircleIcon className='h-6 w-6 text-lime-600 my-auto ml-1 animate-pulse' />
-                </div>
-                <div className='text-white text-sm rounded-md border border-lime-700 p-1 flex flex-row my-auto select-none'>
-                  Players Online: 5
-                </div>
+                {inQueue ? (
+                  <div className='text-white rounded-md border border-lime-700 p-1 flex flex-row text-lg pl-2 select-none'>
+                    in queue
+                    <MagnifyingGlassCircleIcon className='h-6 w-6 text-lime-600 my-auto ml-1 animate-pulse' />
+                  </div>
+                ) : (
+                  <div className='text-white text-sm rounded-md border border-lime-700 border-b-4 py-1 px-2 flex flex-row my-auto select-none'>
+                    Players Online: 5
+                  </div>
+                )}
               </div>
             </div>
             <div className='flex flex-row gap-3 rounded-3xl border-neutral-800'>

@@ -71,7 +71,7 @@ const Chat = ({ chat }) => {
         <button
           onClick={sendMessage}
           disabled={message.length < 1 || !gameStarted || messageTimeout}
-          className=' rounded-tl-md bg-blue-600 flex px-5 py-2'
+          className=' rounded-tl-md bg-teal-600 flex px-5 py-2'
         >
           Send
         </button>

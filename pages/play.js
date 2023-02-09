@@ -80,7 +80,7 @@ const Play = () => {
 
       socket.connect();
     } else {
-      router.push("/findmatch");
+      router.push("/");
     }
   }, []);
   useEffect(() => {
@@ -89,7 +89,7 @@ const Play = () => {
       if (gid && !inGameRoom) {
         socket.emit("joinGameLobby", gid);
       } else {
-        router.push("/findmatch");
+        router.push("/");
       }
     });
     socket.on("c2sr", (t, t2) => {
@@ -282,7 +282,7 @@ const Play = () => {
 
     socket.on("connect_error", (err) => {
       if (err.message === "sidInvalid") {
-        router.push("/findmatch");
+        router.push("/");
       }
     });
     return () => {
