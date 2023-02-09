@@ -149,8 +149,8 @@ export default function Home() {
             <div className='text-white tracking-wide rounded-md border-2 border-neutral-500 flex justify-between'>
               <div className='p-4 grow max-w-[95%]'>
                 Chess2 is a project made by me, Josh Rudesill for my web
-                development portfolio. It's built using React / Next, Websockets
-                (socket.io), Express, MongoDB and Tailwind.
+                development portfolio. It&apos;s built using React / Next,
+                Websockets (socket.io), Express, MongoDB and Tailwind.
               </div>
               <div className='border-l-2 border-neutral-500 bg-neutral-500 w-3'></div>
             </div>

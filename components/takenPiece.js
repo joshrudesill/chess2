@@ -43,7 +43,12 @@ const TakenPiece = ({ white, type, height }) => {
   return (
     <>
       {src ? (
-        <Image src={src} height={height * 0.9} width={height * 0.9} />
+        <Image
+          src={src}
+          height={height * 0.9}
+          width={height * 0.9}
+          alt={"piece"}
+        />
       ) : (
         <></>
       )}
