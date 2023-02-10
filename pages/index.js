@@ -162,38 +162,58 @@ export default function Home() {
               <div className='border-l-2 border-red-500 bg-red-500 w-3' />
             </div>
             <div className='flex flex-row justify-between p-2'>
-              <button className='rounded-md bg-teal-600 py-2 px-2 text-white font-semibold tracking-wide flex flex-row text-sm hover:bg-teal-700'>
+              <a
+                className='rounded-md bg-teal-600 py-2 px-2 text-white font-semibold tracking-wide flex flex-row text-sm hover:bg-teal-700'
+                href='https://github.com/joshrudesill/chess2'
+                rel='noreferrer'
+                target='_blank'
+              >
                 <MarkGithubIcon
                   verticalAlign='middle'
                   size={16}
                   className='my-auto mr-2'
                 />
                 <p className='my-auto'>Source</p>
-              </button>
-              <button className='rounded-md bg-teal-600 py-2 px-2 text-white font-semibold tracking-wide flex flex-row text-sm hover:bg-teal-700'>
+              </a>
+              <a
+                className='rounded-md bg-teal-600 py-2 px-2 text-white font-semibold tracking-wide flex flex-row text-sm hover:bg-teal-700'
+                href='#'
+                rel='noreferrer'
+                target='_blank'
+              >
                 <SmileyIcon
                   verticalAlign='middle'
                   size={16}
                   className='my-auto mr-2'
                 />
                 <p className='my-auto'>Contact Me</p>
-              </button>
-              <button className='rounded-md bg-teal-600 py-2 px-2 text-white font-semibold tracking-wide flex flex-row text-sm hover:bg-teal-700'>
+              </a>
+              <a
+                className='rounded-md bg-teal-600 py-2 px-2 text-white font-semibold tracking-wide flex flex-row text-sm hover:bg-teal-700'
+                href='https://blog.jrudesill.dev'
+                rel='noreferrer'
+                target='_blank'
+              >
                 <CodeReviewIcon
                   verticalAlign='middle'
                   size={16}
                   className='my-auto mr-2'
                 />
                 <p className='my-auto'>Blog</p>
-              </button>
-              <button className='rounded-md bg-teal-600 py-2 px-2 text-white font-semibold tracking-wide flex flex-row text-sm hover:bg-teal-700'>
+              </a>
+              <a
+                className='rounded-md bg-teal-600 py-2 px-2 text-white font-semibold tracking-wide flex flex-row text-sm hover:bg-teal-700'
+                href='https://jrudesill.dev'
+                rel='noreferrer'
+                target='_blank'
+              >
                 <LogIcon
                   verticalAlign='middle'
                   size={16}
                   className='my-auto mr-2'
                 />
                 <p className='my-auto'>Resume</p>
-              </button>
+              </a>
             </div>
           </div>
         </div>
