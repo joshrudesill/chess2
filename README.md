@@ -1,34 +1,31 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Chess 2
+A portfolio project built for playing chess online vs anyone in the world, or for playing against a [Chess Engine](https://github.com/nmrugg/stockfish.js). The name comes from a common joke in the online chess world where players will often criticize chess as if it were a modern game with updates.
+- *"When is chess 2 coming out"* 
+## Features
+#### Live Online Chess 
+- Play online against anyone in the world with <100ms move delay.
+- Matchmaking for finding other players looking to play
+- Your session and games are saved when leaving and returning to the site
+#### Play Against a Chess engine
+- Play against [Stockfish 11](https://github.com/nmrugg/stockfish.js), one of the best Chess engines in the world
+#### Coming soon
+- Play chess variants such as Chess960 and Chess 2, a variant created by me for this project.
 
-## Getting Started
+## Technical Details
+### Front-End
+- Built using [React](https://reactjs.org/) and [Next.js](nextjs.org)
+- Styled using [Tailwind](https://tailwindcss.com/)
+- Chess Engine is [Stockfish.js](https://github.com/nmrugg/stockfish.js) which is a WASM implementation of the [Stockfish](https://github.com/official-stockfish/Stockfish) engine.
+- State is managed by [Redux-Toolkit](https://redux-toolkit.js.org/) and [react-redux](https://react-redux.js.org/)
+- Websocket connecting uses [Socket.io](socket.io)
+- Sound managed with [use-sound](https://github.com/joshwcomeau/use-sound)
+### Server-Side
+- Server is built using [Expressjs](https://expressjs.com/) and Node.js
+- Database is [MongoDB](https://www.mongodb.com/) which is used for game state persistence and session management
+- [Socket.io](socket.io) is used to create and manage Websocket connections
+- [Redis](https://redis.com/) is used as an adapter for the websocket connections.
+- [Mongoose](https://mongoosejs.com/) used as an ORM
 
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
-
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
-
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## Notes
+This project was built to serve as a portfolio project showing off my fullstack capabilities. I am currently looking for a job in web development so I wanted this project to be as close as I can get to a real production level application. As of writing this, I am still finishing up development of this project.
+### For any inquiries please email **joshrudesill@gmail.com**
