@@ -1,6 +1,10 @@
 # Chess 2
 A portfolio project built for playing chess online vs anyone in the world, or for playing against a [Chess Engine](https://github.com/nmrugg/stockfish.js). The name comes from a common joke in the online chess world where players will often criticize chess as if it were a modern game with updates.
+##
+<image src= "assets/Frame2.svg" width=250></image>
+##
 - *"When is chess 2 coming out"* 
+
 ## Features
 #### Live Online Chess 
 - Play online against anyone in the world with <100ms move delay.
