@@ -373,8 +373,8 @@ export const boardSlice = createSlice({
 
         state.activePiece = null;
       } else {
-        if (engine.active) {
-          engine.engineTurn = state.myTurn;
+        if (state.engine.active) {
+          state.engine.engineTurn = state.myTurn;
           state.myTurn = !state.myTurn;
         } else {
           state.myTurn = false;
