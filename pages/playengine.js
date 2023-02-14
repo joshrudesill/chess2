@@ -46,8 +46,6 @@ const dayjs = require("dayjs");
 var utc = require("dayjs/plugin/utc");
 dayjs.extend(utc);
 const PlayEngine = () => {
-  const { bestMove, engineMessages, findBestMove } =
-    useStockfish(onBestMoveFound);
   const dispatch = useDispatch();
   const router = useRouter();
   const [inGameRoom, setInGameRoom] = useState(false);
@@ -90,7 +88,8 @@ const PlayEngine = () => {
     },
     []
   );
-
+  const { bestMove, engineMessages, findBestMove } =
+    useStockfish(onBestMoveFound);
   useEffect(() => {
     pingRef.current = setInterval(() => {
       socket.emit("c2s", dayjs().utc().toISOString());
