@@ -463,7 +463,7 @@ export const boardSlice = createSlice({
         state.activePiece = null;
 
         state.kingData = initialState.kingData;
-        if (engine.active) {
+        if (state.engine.active) {
           const files = ["a", "b", "c", "d", "e", "f", "g", "h"].reverse();
           const engineNotation = `
           ${files[lastMove[0] + 1]}
