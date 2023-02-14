@@ -36,10 +36,12 @@ import Sidebar from "../components/sidebar";
 import GameInfo from "../components/gameInfo";
 import useTimer from "../util/usetimer";
 import useSound from "use-sound";
+import useStockfish from "../util/usestockfish";
 const dayjs = require("dayjs");
 var utc = require("dayjs/plugin/utc");
 dayjs.extend(utc);
 const PlayEngine = () => {
+  const { bestMove, engineMessages, findBestMove } = useStockfish();
   const dispatch = useDispatch();
   const router = useRouter();
   const [inGameRoom, setInGameRoom] = useState(false);
@@ -80,7 +82,7 @@ const PlayEngine = () => {
 
       socket.connect();
     } else {
-      router.push("/");
+      // router.push("/");
     }
   }, []);
   useEffect(() => {
@@ -89,7 +91,7 @@ const PlayEngine = () => {
       if (gid && !inGameRoom) {
         socket.emit("joinGameLobby", gid);
       } else {
-        router.push("/");
+        //router.push("/");
       }
     });
     socket.on("c2sr", (t, t2) => {
@@ -98,7 +100,7 @@ const PlayEngine = () => {
     });
     socket.on("gameRoomJoined", (gid, messages) => {
       setInGameRoom(true);
-      dispatch(setChatOnReconnect(messages));
+      dispatch(setChatOnReconnect(messages)); //
       socket.emit("readyToPlay", gid);
     });
     socket.on("reconnectingToGame", (g) => {
@@ -185,12 +187,13 @@ const PlayEngine = () => {
       dispatch(resetPieceState());
     });
     socket.on("gameReadyToStart", (g) => {
-      dispatch(setChatOnReconnect(g.messages));
+      dispatch(setChatOnReconnect(g.messages)); //
       const sid = localStorage.getItem("sessionID");
-      const w = g.players[0].sid === sid ? true : false;
+      const w = g.players[0].sid === sid ? true : false; //
       const gameType = g.gameType;
-      const opponent = g.players.find((p) => p.sid !== sid);
+      const opponent = g.players.find((p) => p.sid !== sid); //
       const opponentData = {
+        //
         username: opponent.un,
         connected: opponent.connected,
       };
@@ -212,7 +215,7 @@ const PlayEngine = () => {
       }
     });
     socket.on("incomingMessage", (m) => {
-      dispatch(addChatMessage(m));
+      dispatch(addChatMessage(m)); //
     });
     socket.on("firstMove", (position, notation, lastMove) => {
       let offsetW = 0;
@@ -328,6 +331,9 @@ const PlayEngine = () => {
   return (
     <div className='flex flex-row gap-5 overflow-x-hidden'>
       <Sidebar />
+      <button onClick={() => findBestMove("e2e4")} className='z-50'>
+        s
+      </button>
       <div className='flex w-[85vmin] md:w-max mx-auto md:mx-0 flex-col lg:flex-row gap-3 md:ml-48 overflow-x-hidden'>
         <Board play={play} />
         <GameInfo myTimer={myTimer} oppTimer={oppTimer} />
