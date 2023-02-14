@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Board from "../components/board";
 import {
@@ -21,6 +21,11 @@ import {
   pushTakenPiece,
   setTakenPiecesOnReconnect,
   setEnPassant,
+  setEngine,
+  pushEngineNotation,
+  changePieceAtSquare,
+  setActivePieceAtSquare,
+  capturePiece,
 } from "../features/board/boardSlice";
 import {
   endGame,
@@ -41,7 +46,8 @@ const dayjs = require("dayjs");
 var utc = require("dayjs/plugin/utc");
 dayjs.extend(utc);
 const PlayEngine = () => {
-  const { bestMove, engineMessages, findBestMove } = useStockfish();
+  const { bestMove, engineMessages, findBestMove } =
+    useStockfish(onBestMoveFound);
   const dispatch = useDispatch();
   const router = useRouter();
   const [inGameRoom, setInGameRoom] = useState(false);
@@ -53,16 +59,37 @@ const PlayEngine = () => {
     gameStarted: state.app.inGameData.gameStarted,
   }));
 
-  const { startTime, timerOffset, myTurn, white } = useSelector((state) => ({
-    startTime: state.board.startTime,
-    timerOffset: state.board.currentTimerOffset,
-    myTurn: state.board.myTurn,
-    white: state.board.white,
-  }));
+  const { startTime, timerOffset, myTurn, white, position } = useSelector(
+    (state) => ({
+      startTime: state.board.startTime,
+      timerOffset: state.board.currentTimerOffset,
+      myTurn: state.board.myTurn,
+      white: state.board.white,
+      position: state.board.position,
+    })
+  );
   const myTimer = useTimer();
   const oppTimer = useTimer();
   const pingRef = useRef(null);
   const [play] = useSound("/move.mp3");
+
+  const onBestMoveFound = useCallback(
+    (startingX, startingY, endingX, endingY) => {
+      dispatch(setActivePieceAtSquare({ x: startingX, y: startingY }));
+      if (position[endingX][endingY].piece !== null) {
+        dispatch(
+          capturePiece({
+            toBeCaptured: position[endingX][endingY].piece,
+            enPassant: false,
+          })
+        );
+      } else {
+        dispatch(changePieceAtSquare({ x: endingX, y: endingY }));
+      }
+      //check for enpassant
+    },
+    []
+  );
 
   useEffect(() => {
     pingRef.current = setInterval(() => {
@@ -73,6 +100,7 @@ const PlayEngine = () => {
     };
   }, []);
   useEffect(() => {
+    dispatch(setEngine());
     const sid = localStorage.getItem("sessionID");
     if (sid) {
       if (!inGameRoom && gameID) {
@@ -189,13 +217,12 @@ const PlayEngine = () => {
     socket.on("gameReadyToStart", (g) => {
       dispatch(setChatOnReconnect(g.messages)); //
       const sid = localStorage.getItem("sessionID");
-      const w = g.players[0].sid === sid ? true : false; //
-      const gameType = g.gameType;
-      const opponent = g.players.find((p) => p.sid !== sid); //
+      const w = true; //
+      const gameType = "Engine";
       const opponentData = {
         //
-        username: opponent.un,
-        connected: opponent.connected,
+        username: "Stockfish 11",
+        connected: "true",
       };
       dispatch(setWhite(w));
       dispatch(setMyTurn(w));
@@ -217,7 +244,7 @@ const PlayEngine = () => {
     socket.on("incomingMessage", (m) => {
       dispatch(addChatMessage(m)); //
     });
-    socket.on("firstMove", (position, notation, lastMove) => {
+    socket.on("firstMove", (position, notation, lastMove, engineNotation) => {
       let offsetW = 0;
       let offsetB = 0;
       dispatch(setMoveInTime(dayjs().utc().toISOString()));
@@ -225,47 +252,92 @@ const PlayEngine = () => {
       dispatch(setLastMove(lastMove));
       dispatch(setGameStarted());
       dispatch(setFirstMove());
+      dispatch(setMyTurn(false));
       dispatch(setTimerOffset({ offsetW, offsetB }));
-      dispatch(setMyTurn(true));
-      dispatch(setPosition(position));
+      //dispatch(setPosition(position));
       dispatch(pushNewNotation(notation));
-      dispatch(resetPieceState());
+      dispatch(pushEngineNotation(engineNotation));
+      //dispatch(resetPieceState());
     });
-    socket.on("newPosition", (p, t, notation, lastMove, captured) => {
-      play();
-      dispatch(setGameStarted());
-      dispatch(setMoveInTime(dayjs().utc().toISOString()));
-      dispatch(setLastMove(lastMove));
-      if (captured !== null) {
-        dispatch(
-          pushTakenPiece({ white: captured.white, type: captured.type })
-        );
-      }
-      if (t) {
-        dispatch(pushMoveTime(t.at(-1)));
-        let offsetW = 0;
-        let offsetB = 0;
-
-        t.forEach((t, i) => {
-          if (i === 0 || i % 2 === 0) {
-            offsetW += t;
-          } else if (i % 2 !== 0) {
-            offsetB += t;
-          }
-        });
-        dispatch(setTimerOffset({ offsetW, offsetB }));
-        dispatch(setMyTurn(true));
-      }
-      if (p[lastMove[2]][lastMove[3]].piece?.type === 1) {
-        const xDiff = lastMove[0] - lastMove[2];
-        if (Math.abs(xDiff) === 2) {
-          dispatch(setEnPassant({ lastMove }));
+    socket.on(
+      "engineMoveIn",
+      (p, t, notation, lastMove, captured, engineNotation) => {
+        play();
+        dispatch(setGameStarted());
+        dispatch(setMoveInTime(dayjs().utc().toISOString()));
+        if (captured !== null) {
+          dispatch(
+            pushTakenPiece({ white: captured.white, type: captured.type })
+          );
         }
+        if (t) {
+          dispatch(pushMoveTime(t.at(-1)));
+          let offsetW = 0;
+          let offsetB = 0;
+
+          t.forEach((t, i) => {
+            if (i === 0 || i % 2 === 0) {
+              offsetW += t;
+            } else if (i % 2 !== 0) {
+              offsetB += t;
+            }
+          });
+          dispatch(setTimerOffset({ offsetW, offsetB }));
+          dispatch(setMyTurn(true));
+        }
+        if (p[lastMove[2]][lastMove[3]].piece?.type === 1) {
+          const xDiff = lastMove[0] - lastMove[2];
+          if (Math.abs(xDiff) === 2) {
+            dispatch(setEnPassant({ lastMove }));
+          }
+        }
+
+        dispatch(setPosition(p));
+
+        dispatch(pushNewNotation(notation));
+        dispatch(resetPieceState());
       }
-      dispatch(setPosition(p));
-      dispatch(pushNewNotation(notation));
-      dispatch(resetPieceState());
-    });
+    );
+    socket.on(
+      "newPosition",
+      (p, t, notation, lastMove, captured, engineNotation) => {
+        play();
+        dispatch(setGameStarted());
+        dispatch(setMoveInTime(dayjs().utc().toISOString()));
+        dispatch(setLastMove(lastMove));
+        if (captured !== null) {
+          dispatch(
+            pushTakenPiece({ white: captured.white, type: captured.type })
+          );
+        }
+        if (t) {
+          dispatch(pushMoveTime(t.at(-1)));
+          let offsetW = 0;
+          let offsetB = 0;
+
+          t.forEach((t, i) => {
+            if (i === 0 || i % 2 === 0) {
+              offsetW += t;
+            } else if (i % 2 !== 0) {
+              offsetB += t;
+            }
+          });
+          dispatch(setTimerOffset({ offsetW, offsetB }));
+          dispatch(setMyTurn(true));
+        }
+        if (p[lastMove[2]][lastMove[3]].piece?.type === 1) {
+          const xDiff = lastMove[0] - lastMove[2];
+          if (Math.abs(xDiff) === 2) {
+            dispatch(setEnPassant({ lastMove }));
+          }
+        }
+        //dispatch(setPosition(p));
+        dispatch(pushEngineNotation(engineNotation));
+        dispatch(pushNewNotation(notation));
+        findBestMove(engineNotation);
+        //dispatch(resetPieceState());
+      }
+    );
     socket.on("playerDisconnect", (messages) => {
       dispatch(setOpponentConnection(false));
       dispatch(setChatOnReconnect(messages));

@@ -140,6 +140,11 @@ const initialState = {
     pawnLocation: [],
     attackSquare: [],
   },
+  engine: {
+    active: false,
+    moveHistory: [],
+    engineTurn: false,
+  },
 };
 
 // search all legal moves and remove any not in sqauresToBeBlocked
@@ -284,6 +289,9 @@ export const boardSlice = createSlice({
     },
     setMyTurn: (state, action) => {
       state.myTurn = action.payload;
+      if (state.engine.active) {
+        state.engine.engineTurn = !action.payload;
+      }
     },
     setPosition: (state, action) => {
       state.position = action.payload;
@@ -340,6 +348,12 @@ export const boardSlice = createSlice({
         white: !state.white,
       };
     },
+    setEngine: (state, action) => {
+      state.engine.active = true;
+    },
+    pushEngineNotation: (state, action) => {
+      state.engine.moveHistory = action.payload;
+    },
     changePieceAtSquare: (state, action) => {
       //if pawn and x is 7 or 0 move pawn then transform piece type, dont send, have dialog bool true, reset active piece here
       const { x, y } = action.payload;
@@ -359,7 +373,12 @@ export const boardSlice = createSlice({
 
         state.activePiece = null;
       } else {
-        state.myTurn = false;
+        if (engine.active) {
+          engine.engineTurn = state.myTurn;
+          state.myTurn = !state.myTurn;
+        } else {
+          state.myTurn = false;
+        }
         if (
           (lastMove[0] === 1 && lastMove[2] === 3) ||
           (lastMove[0] === 6 && lastMove[2] === 4)
@@ -444,19 +463,67 @@ export const boardSlice = createSlice({
         state.activePiece = null;
 
         state.kingData = initialState.kingData;
-        if (state.firstMove) {
-          state.firstMove = false;
-          socket.emit("firstMove", state.position, algebraicNotation, lastMove);
+        if (engine.active) {
+          const files = ["a", "b", "c", "d", "e", "f", "g", "h"].reverse();
+          const engineNotation = `
+          ${files[lastMove[0] + 1]}
+          ${lastMove[1] + 1}
+          ${files[lastMove[2] + 1]}${lastMove[3] + 1}`;
+          if (state.firstMove) {
+            state.firstMove = false;
+            socket.emit(
+              "firstMove",
+              state.position,
+              algebraicNotation,
+              lastMove,
+              engineNotation
+            );
+          } else {
+            if (state.myTurn) {
+              socket.emit(
+                "pieceMove",
+                state.position,
+                state.startTime,
+                state.moveInTime,
+                algebraicNotation,
+                lastMove,
+                null,
+                engineNotation
+              );
+            } else {
+              socket.emit(
+                "pieceMoveEngine",
+                state.position,
+                state.startTime,
+                state.moveInTime,
+                algebraicNotation,
+                lastMove,
+                null,
+                engineNotation
+              );
+            }
+          }
         } else {
-          socket.emit(
-            "pieceMove",
-            state.position,
-            state.startTime,
-            state.moveInTime,
-            algebraicNotation,
-            lastMove,
-            null
-          );
+          if (state.firstMove) {
+            state.firstMove = false;
+            socket.emit(
+              "firstMove",
+              state.position,
+              algebraicNotation,
+              lastMove,
+              engineNotation
+            );
+          } else {
+            socket.emit(
+              "pieceMove",
+              state.position,
+              state.startTime,
+              state.moveInTime,
+              algebraicNotation,
+              lastMove,
+              null
+            );
+          }
         }
       }
     },
@@ -557,6 +624,10 @@ export const boardSlice = createSlice({
     },
     setActivePiece: (state, action) => {
       state.activePiece = action.payload;
+    },
+    setActivePieceAtSquare: (state, action) => {
+      const { x, y } = action.payload;
+      state.activePiece = state.position[x][x].piece;
     },
     resetActivePiece: (state) => {
       state.activePiece = null;
@@ -799,6 +870,9 @@ export const {
   castleKing,
   transformPieceOnPromotion,
   setEnPassant,
+  setEngine,
+  pushEngineNotation,
+  setActivePieceAtSquare,
 } = boardSlice.actions;
 
 export default boardSlice.reducer;
