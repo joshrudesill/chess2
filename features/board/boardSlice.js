@@ -510,8 +510,7 @@ export const boardSlice = createSlice({
               "firstMove",
               state.position,
               algebraicNotation,
-              lastMove,
-              engineNotation
+              lastMove
             );
           } else {
             socket.emit(
