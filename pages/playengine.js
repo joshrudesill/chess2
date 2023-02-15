@@ -88,16 +88,15 @@ const PlayEngine = () => {
     },
     []
   );
-  const { bestMove, engineMessages, findBestMove } =
-    useStockfish(onBestMoveFound);
-  useEffect(() => {
-    pingRef.current = setInterval(() => {
-      socket.emit("c2s", dayjs().utc().toISOString());
-    }, 5000);
-    return () => {
-      clearInterval(pingRef.current);
-    };
-  }, []);
+  const {
+    bestMove,
+    engineMessages,
+    findBestMove,
+    engineInitialized,
+    engineReady,
+    engineWorking,
+  } = useStockfish(onBestMoveFound);
+
   useEffect(() => {
     dispatch(setEngine());
     const sid = localStorage.getItem("sessionID");
@@ -128,7 +127,7 @@ const PlayEngine = () => {
     socket.on("gameRoomJoined", (gid, messages) => {
       setInGameRoom(true);
       dispatch(setChatOnReconnect(messages)); //
-      socket.emit("readyToPlay", gid);
+      socket.emit("readyToPlay", gid, true);
     });
     socket.on("reconnectingToGame", (g) => {
       setInGameRoom(true);
@@ -250,13 +249,16 @@ const PlayEngine = () => {
       dispatch(pushMoveTime(0));
       dispatch(setLastMove(lastMove));
       dispatch(setGameStarted());
-      dispatch(setFirstMove());
+      //dispatch(setFirstMove());
       dispatch(setMyTurn(false));
       dispatch(setTimerOffset({ offsetW, offsetB }));
       //dispatch(setPosition(position));
       dispatch(pushNewNotation(notation));
       dispatch(pushEngineNotation(engineNotation));
       //dispatch(resetPieceState());
+      if (engineInitialized && engineReady && !engineWorking) {
+        findBestMove(engineNotation);
+      }
     });
     socket.on(
       "engineMoveIn",
@@ -322,7 +324,6 @@ const PlayEngine = () => {
             }
           });
           dispatch(setTimerOffset({ offsetW, offsetB }));
-          dispatch(setMyTurn(true));
         }
         if (p[lastMove[2]][lastMove[3]].piece?.type === 1) {
           const xDiff = lastMove[0] - lastMove[2];
@@ -402,7 +403,12 @@ const PlayEngine = () => {
   return (
     <div className='flex flex-row gap-5 overflow-x-hidden'>
       <Sidebar />
-      <button onClick={() => findBestMove("e2e4")} className='z-50'>
+      <button
+        onClick={() =>
+          console.log(engineInitialized, engineReady, engineWorking)
+        }
+        className='z-50'
+      >
         s
       </button>
       <div className='flex w-[85vmin] md:w-max mx-auto md:mx-0 flex-col lg:flex-row gap-3 md:ml-48 overflow-x-hidden'>

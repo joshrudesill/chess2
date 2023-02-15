@@ -373,12 +373,10 @@ export const boardSlice = createSlice({
 
         state.activePiece = null;
       } else {
-        if (state.engine.active) {
-          state.engine.engineTurn = state.myTurn;
-          state.myTurn = !state.myTurn;
-        } else {
+        if (!state.engine.active) {
           state.myTurn = false;
         }
+
         if (
           (lastMove[0] === 1 && lastMove[2] === 3) ||
           (lastMove[0] === 6 && lastMove[2] === 4)
@@ -464,11 +462,10 @@ export const boardSlice = createSlice({
 
         state.kingData = initialState.kingData;
         if (state.engine.active) {
-          const files = ["a", "b", "c", "d", "e", "f", "g", "h"].reverse();
-          const engineNotation = `
-          ${files[lastMove[0] + 1]}
-          ${lastMove[1] + 1}
-          ${files[lastMove[2] + 1]}${lastMove[3] + 1}`;
+          const files = ["a", "b", "c", "d", "e", "f", "g", "h"];
+          const engineNotation = `${files[lastMove[1]]}${8 - lastMove[0]}${
+            files[lastMove[3]]
+          }${8 - lastMove[2]}`;
           if (state.firstMove) {
             state.firstMove = false;
             socket.emit(
@@ -480,6 +477,9 @@ export const boardSlice = createSlice({
             );
           } else {
             if (state.myTurn) {
+              console.log("human move out");
+              state.myTurn = false;
+              state.engine.engineTurn = true;
               socket.emit(
                 "pieceMove",
                 state.position,
@@ -491,6 +491,9 @@ export const boardSlice = createSlice({
                 engineNotation
               );
             } else {
+              console.log("engine move out");
+              state.myTurn = true;
+              state.engine.engineTurn = false;
               socket.emit(
                 "pieceMoveEngine",
                 state.position,
@@ -626,7 +629,7 @@ export const boardSlice = createSlice({
     },
     setActivePieceAtSquare: (state, action) => {
       const { x, y } = action.payload;
-      state.activePiece = state.position[x][x].piece;
+      state.activePiece = state.position[x][y].piece;
     },
     resetActivePiece: (state) => {
       state.activePiece = null;

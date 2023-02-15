@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 const useStockfish = (onBestMove) => {
   const engine = useRef();
   const BEST_MOVE_REG = /^bestmove ([a-h][1-8])([a-h][1-8])([qrbn])?/;
-  const files = ["a", "b", "c", "d", "e", "f", "g", "h"].reverse();
+  const files = ["a", "b", "c", "d", "e", "f", "g", "h"];
   const [engineMessages, setEngineMessages] = useState([]);
   const [engineInitialized, setEngineInitialized] = useState(false);
   const [engineReady, setEngineReady] = useState(false);
@@ -28,10 +28,11 @@ const useStockfish = (onBestMove) => {
         setBestMoveFound(true);
         const [, from, to, promotion] = line.match(BEST_MOVE_REG);
         setBestMove({ from, to, promotion });
-        const startingX = files.indexOf(from[0]);
-        const startingY = from[1];
-        const endingX = files.indexOf(to[0]);
-        const endingY = to[1];
+        const startingY = files.indexOf(from[0]);
+        const startingX = 8 - Number(from[1]);
+        const endingY = files.indexOf(to[0]);
+        const endingX = 8 - Number(to[1]);
+        console.log(startingX, startingY, endingX, endingY);
         onBestMove(startingX, startingY, endingX, endingY);
       }
     },
@@ -39,19 +40,19 @@ const useStockfish = (onBestMove) => {
   );
 
   const sendCommand = useCallback((command) => {
+    setEngineMessages((engineMessages) => [...engineMessages, command]);
     engine?.current.postMessage(command);
   }, []);
 
   const findBestMove = useCallback(
     (moveHistory) => {
-      if (engineInitialized && engineReady && !engineWorking) {
-        setEngineWorking(true);
-        setBestMove(null);
-        sendCommand(`position startpos moves ${moveHistory}`);
-        sendCommand("go");
-      } else {
-        return;
-      }
+      console.log("finding");
+      setEngineWorking(true);
+      setBestMove(null);
+      sendCommand(
+        `position startpos moves ${moveHistory.reduce((a, cv) => `${a} ${cv}`)}`
+      );
+      sendCommand("go");
     },
     [sendCommand]
   );
@@ -68,13 +69,19 @@ const useStockfish = (onBestMove) => {
 
   useEffect(() => {
     sendCommand("uci");
-    sendCommand("setoption name Ponder value true");
   }, [sendCommand]);
 
   useEffect(() => {
-    sendCommand("isready");
-    sendCommand("ucinewgame");
-  }, [sendCommand]);
+    if (engineInitialized) {
+      sendCommand("setoption name Ponder value true");
+      sendCommand("isready");
+    }
+  }, [sendCommand, engineInitialized]);
+  useEffect(() => {
+    if (engineReady) {
+      sendCommand("ucinewgame");
+    }
+  }, [sendCommand, engineReady]);
 
   useEffect(() => {
     return () => {

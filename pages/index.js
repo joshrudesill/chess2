@@ -29,7 +29,12 @@ export default function Home() {
       setAwaitingInQueue(true);
     }
   };
-
+  const joinEngineQueue = () => {
+    if (!awaitingQueue) {
+      socket.emit("joinEngineQueue");
+      setAwaitingInQueue(true);
+    }
+  };
   useEffect(() => {
     const sid = localStorage.getItem("sessionID");
     if (sid) {
@@ -65,6 +70,11 @@ export default function Home() {
       dispatch(setGame(gid));
       dispatch(setChatOnReconnect(messages));
       router.push("/play");
+    });
+    socket.on("engineRoomCreated", (gid, messages) => {
+      dispatch(setGame(gid));
+      dispatch(setChatOnReconnect(messages));
+      router.push("/playengine");
     });
     return () => {
       socket.off("connect");
@@ -108,6 +118,12 @@ export default function Home() {
                     {awaitingQueue ? "Joining.." : "Play"}
                   </button>
                 )}
+                <button
+                  className='rounded-md bg-lime-600 py-2 px-4 text-lg font-bold text-white border-b-4 ml-2 border-lime-700 tracking-wider hover:bg-lime-500 active:translate-y-1 active:border-0'
+                  onClick={() => joinEngineQueue()}
+                >
+                  Engine
+                </button>
               </div>
               <div className='grow flex justify-end'>
                 {inQueue ? (
