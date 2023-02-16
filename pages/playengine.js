@@ -403,14 +403,7 @@ const PlayEngine = () => {
   return (
     <div className='flex flex-row gap-5 overflow-x-hidden'>
       <Sidebar />
-      <button
-        onClick={() =>
-          console.log(engineInitialized, engineReady, engineWorking)
-        }
-        className='z-50'
-      >
-        s
-      </button>
+
       <div className='flex w-[85vmin] md:w-max mx-auto md:mx-0 flex-col lg:flex-row gap-3 md:ml-48 overflow-x-hidden'>
         <Board play={play} />
         <GameInfo myTimer={myTimer} oppTimer={oppTimer} />

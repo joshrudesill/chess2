@@ -32,7 +32,6 @@ const useStockfish = (onBestMove) => {
         const startingX = 8 - Number(from[1]);
         const endingY = files.indexOf(to[0]);
         const endingX = 8 - Number(to[1]);
-        console.log(startingX, startingY, endingX, endingY);
         onBestMove(startingX, startingY, endingX, endingY);
       }
     },
@@ -46,7 +45,6 @@ const useStockfish = (onBestMove) => {
 
   const findBestMove = useCallback(
     (moveHistory) => {
-      console.log("finding");
       setEngineWorking(true);
       setBestMove(null);
       sendCommand(

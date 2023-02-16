@@ -477,7 +477,6 @@ export const boardSlice = createSlice({
             );
           } else {
             if (state.myTurn) {
-              console.log("human move out");
               state.myTurn = false;
               state.engine.engineTurn = true;
               socket.emit(
@@ -491,7 +490,6 @@ export const boardSlice = createSlice({
                 engineNotation
               );
             } else {
-              console.log("engine move out");
               state.myTurn = true;
               state.engine.engineTurn = false;
               socket.emit(
