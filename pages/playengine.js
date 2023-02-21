@@ -58,15 +58,21 @@ const PlayEngine = () => {
     gameStarted: state.app.inGameData.gameStarted,
   }));
 
-  const { startTime, timerOffset, myTurn, white, position } = useSelector(
-    (state) => ({
-      startTime: state.board.startTime,
-      timerOffset: state.board.currentTimerOffset,
-      myTurn: state.board.myTurn,
-      white: state.board.white,
-      position: state.board.position,
-    })
-  );
+  const {
+    startTime,
+    timerOffset,
+    myTurn,
+    white,
+    position,
+    blackKingCanCastle,
+  } = useSelector((state) => ({
+    startTime: state.board.startTime,
+    timerOffset: state.board.currentTimerOffset,
+    myTurn: state.board.myTurn,
+    white: state.board.white,
+    position: state.board.position,
+    blackKingCanCastle: state.board.blackKingCanCastle,
+  }));
   const myTimer = useTimer();
   const oppTimer = useTimer();
   const pingRef = useRef(null);
@@ -103,11 +109,25 @@ const PlayEngine = () => {
           );
         } else {
           console.log("NORMAL MOVE");
-          dispatch(changePieceAtSquare({ x: endingX, y: endingY }));
+          if (
+            blackKingCanCastle &&
+            endingX === 0 &&
+            (endingY === 2 || endingY === 6) &&
+            startingY === 1
+          ) {
+            console.log("CASTLE");
+            if (endingY === 2) {
+              dispatch(castleKing({ white: false, short: false }));
+            } else {
+              dispatch(castleKing({ white: false, short: true }));
+            }
+          } else {
+            dispatch(changePieceAtSquare({ x: endingX, y: endingY }));
+          }
         }
       }
     },
-    [position]
+    [position, blackKingCanCastle]
   );
   const {
     bestMove,
