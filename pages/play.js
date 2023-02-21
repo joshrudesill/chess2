@@ -21,6 +21,7 @@ import {
   pushTakenPiece,
   setTakenPiecesOnReconnect,
   setEnPassant,
+  resetAll,
 } from "../features/board/boardSlice";
 import {
   endGame,
@@ -275,6 +276,8 @@ const Play = () => {
     socket.on("gameEnded", (result) => {
       dispatch(setMyTurn(false));
       dispatch(endGame());
+      dispatch(setLastMove([-1, -1, -1, -1]));
+      dispatch(resetAll());
       myTimer.stopTimer();
       oppTimer.stopTimer();
       alert(`Winner: ${result.winnerID} - won by: ${result.wonBy}`);

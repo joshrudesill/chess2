@@ -527,119 +527,11 @@ export const boardSlice = createSlice({
         }
       }
     },
-    setLastMove: (state, action) => {
-      state.lastMove = action.payload;
-    },
-    resetPieceState: (state) => {
-      state.whiteKingCalculated = false;
-      state.blackKingCalculated = false;
-      state.whiteKingCanCastle = [true, true];
-      state.blackKingCanCastle = [true, true];
-      state.position.forEach((r) => {
-        r.forEach((s) => {
-          if (s.piece !== null) {
-            s.piece.legalMovesUpdated = false;
-            s.piece.pinned = false;
-            s.piece.pinDirection = null;
-          }
-        });
-      });
-    },
-    setLegalMoves: (state, action) => {
-      const { piece, moves } = action.payload;
-      state.position[piece.x][piece.y].piece.legalMovesUpdated = true;
-      if (piece.type === 0) {
-        if (piece.white) {
-          if (state.whiteKingCanCastle[0] || state.whiteKingCanCastle[1]) {
-            if (state.whiteKingCanCastle[0]) {
-              state.position[piece.x][piece.y].piece.legalMoves = [
-                { x: 7, y: 2 },
-                ...moves,
-              ];
-            }
-            if (state.whiteKingCanCastle[1]) {
-              state.position[piece.x][piece.y].piece.legalMoves = [
-                { x: 7, y: 6 },
-                ...moves,
-              ];
-            }
-          } else {
-            state.position[piece.x][piece.y].piece.legalMoves = moves;
-          }
-        } else {
-          if (state.blackKingCanCastle[0] || state.blackKingCanCastle[1]) {
-            if (state.blackKingCanCastle[0]) {
-              state.position[piece.x][piece.y].piece.legalMoves = [
-                { x: 0, y: 2 },
-                ...moves,
-              ];
-            }
-            if (state.blackKingCanCastle[1]) {
-              state.position[piece.x][piece.y].piece.legalMoves = [
-                { x: 0, y: 6 },
-                ...moves,
-              ];
-            }
-          } else {
-            state.position[piece.x][piece.y].piece.legalMoves = moves;
-          }
-        }
-      } else {
-        state.position[piece.x][piece.y].piece.legalMoves = moves;
-      }
-    },
-    removeLegalMovesFromKing: (state, action) => {
-      const { white, moves } = action.payload;
-      const kingPos = !white
-        ? [state.kingLocations[0].x, state.kingLocations[0].y]
-        : [state.kingLocations[1].x, state.kingLocations[1].y];
-
-      let newMoves = [];
-      const legalmoves =
-        state.position[kingPos[0]][kingPos[1]].piece.legalMoves;
-      if (legalmoves.length > 0) {
-        for (const move of legalmoves) {
-          if (
-            !moves.some((m) => {
-              if (m.x === move.x && m.y === move.y) {
-                return true;
-              }
-              return false;
-            })
-          ) {
-            newMoves.push({ x: move.x, y: move.y });
-          }
-        }
-      }
-
-      state.position[kingPos[0]][kingPos[1]].piece.legalMoves = newMoves;
-    },
-    changeKingLocation: (state, action) => {
-      const { white, position } = action.payload;
-      state.kingLocations[white ? 0 : 1] = position;
-    },
-    resetLegalMoves: (state, action) => {
-      const { x, y } = action.payload;
-      state.position[x][y].piece.legalMoves = [];
-    },
-    setActivePiece: (state, action) => {
-      state.activePiece = action.payload;
-    },
-    setActivePieceAtSquare: (state, action) => {
-      const { x, y } = action.payload;
-      state.activePiece = state.position[x][y].piece;
-    },
-    resetActivePiece: (state) => {
-      state.activePiece = null;
-    },
-    pushNewNotation: (state, action) => {
-      state.notation.push(action.payload);
-    },
-    setNotationOnReconnnect: (state, action) => {
-      state.notation = action.payload;
-    },
     capturePiece: (state, action) => {
-      state.myTurn = false;
+      if (!state.engine.active) {
+        state.myTurn = false;
+      }
+
       state.enPassant = initialState.enPassant;
       const { toBeCaptured, enPassant } = action.payload;
       state.takenPieces.push({
@@ -757,17 +649,163 @@ export const boardSlice = createSlice({
         state.activePiece = null;
 
         state.kingData = initialState.kingData;
-        socket.emit(
-          "pieceMove",
-          state.position,
-          state.startTime,
-          state.moveInTime,
-          algebraicNotation,
-          lastMove,
-          { white: toBeCaptured.white, type: toBeCaptured.type }
-        );
+        if (state.engine.active) {
+          const files = ["a", "b", "c", "d", "e", "f", "g", "h"];
+          const engineNotation = `${files[lastMove[1]]}${8 - lastMove[0]}${
+            files[lastMove[3]]
+          }${8 - lastMove[2]}`;
+          if (state.myTurn) {
+            state.myTurn = false;
+            state.engine.engineTurn = true;
+            socket.emit(
+              "pieceMove",
+              state.position,
+              state.startTime,
+              state.moveInTime,
+              algebraicNotation,
+              lastMove,
+              { white: toBeCaptured.white, type: toBeCaptured.type },
+              engineNotation
+            );
+          } else {
+            state.myTurn = true;
+            state.engine.engineTurn = false;
+            socket.emit(
+              "pieceMoveEngine",
+              state.position,
+              state.startTime,
+              state.moveInTime,
+              algebraicNotation,
+              lastMove,
+              { white: toBeCaptured.white, type: toBeCaptured.type },
+              engineNotation
+            );
+          }
+        } else {
+          socket.emit(
+            "pieceMoveEngine",
+            state.position,
+            state.startTime,
+            state.moveInTime,
+            algebraicNotation,
+            lastMove,
+            { white: toBeCaptured.white, type: toBeCaptured.type }
+          );
+        }
       }
     },
+    setLastMove: (state, action) => {
+      state.lastMove = action.payload;
+    },
+    resetPieceState: (state) => {
+      state.whiteKingCalculated = false;
+      state.blackKingCalculated = false;
+      state.whiteKingCanCastle = [true, true];
+      state.blackKingCanCastle = [true, true];
+      state.position.forEach((r) => {
+        r.forEach((s) => {
+          if (s.piece !== null) {
+            s.piece.legalMovesUpdated = false;
+            s.piece.pinned = false;
+            s.piece.pinDirection = null;
+          }
+        });
+      });
+    },
+    setLegalMoves: (state, action) => {
+      const { piece, moves } = action.payload;
+      state.position[piece.x][piece.y].piece.legalMovesUpdated = true;
+      if (piece.type === 0) {
+        if (piece.white) {
+          if (state.whiteKingCanCastle[0] || state.whiteKingCanCastle[1]) {
+            if (state.whiteKingCanCastle[0]) {
+              state.position[piece.x][piece.y].piece.legalMoves = [
+                { x: 7, y: 2 },
+                ...moves,
+              ];
+            }
+            if (state.whiteKingCanCastle[1]) {
+              state.position[piece.x][piece.y].piece.legalMoves = [
+                { x: 7, y: 6 },
+                ...moves,
+              ];
+            }
+          } else {
+            state.position[piece.x][piece.y].piece.legalMoves = moves;
+          }
+        } else {
+          if (state.blackKingCanCastle[0] || state.blackKingCanCastle[1]) {
+            if (state.blackKingCanCastle[0]) {
+              state.position[piece.x][piece.y].piece.legalMoves = [
+                { x: 0, y: 2 },
+                ...moves,
+              ];
+            }
+            if (state.blackKingCanCastle[1]) {
+              state.position[piece.x][piece.y].piece.legalMoves = [
+                { x: 0, y: 6 },
+                ...moves,
+              ];
+            }
+          } else {
+            state.position[piece.x][piece.y].piece.legalMoves = moves;
+          }
+        }
+      } else {
+        state.position[piece.x][piece.y].piece.legalMoves = moves;
+      }
+    },
+    removeLegalMovesFromKing: (state, action) => {
+      const { white, moves } = action.payload;
+      const kingPos = !white
+        ? [state.kingLocations[0].x, state.kingLocations[0].y]
+        : [state.kingLocations[1].x, state.kingLocations[1].y];
+
+      let newMoves = [];
+      const legalmoves =
+        state.position[kingPos[0]][kingPos[1]].piece.legalMoves;
+      if (legalmoves.length > 0) {
+        for (const move of legalmoves) {
+          if (
+            !moves.some((m) => {
+              if (m.x === move.x && m.y === move.y) {
+                return true;
+              }
+              return false;
+            })
+          ) {
+            newMoves.push({ x: move.x, y: move.y });
+          }
+        }
+      }
+
+      state.position[kingPos[0]][kingPos[1]].piece.legalMoves = newMoves;
+    },
+    changeKingLocation: (state, action) => {
+      const { white, position } = action.payload;
+      state.kingLocations[white ? 0 : 1] = position;
+    },
+    resetLegalMoves: (state, action) => {
+      const { x, y } = action.payload;
+      state.position[x][y].piece.legalMoves = [];
+    },
+    setActivePiece: (state, action) => {
+      state.activePiece = action.payload;
+    },
+    setActivePieceAtSquare: (state, action) => {
+      const { x, y } = action.payload;
+      state.activePiece = state.position[x][y].piece;
+    },
+    resetActivePiece: (state) => {
+      state.activePiece = null;
+    },
+    pushNewNotation: (state, action) => {
+      state.notation.push(action.payload);
+    },
+    setNotationOnReconnnect: (state, action) => {
+      state.notation = action.payload;
+    },
+
     pinPiece: (state, action) => {
       const { piece, direction } = action.payload;
       const { x, y } = piece;
@@ -791,6 +829,7 @@ export const boardSlice = createSlice({
         state.whiteKingCanCastle = [false, false];
       }
     },
+    resetAll: (state) => initialState,
     recheckLegalMoves: (state) => {
       const foundOneLegalMove = false;
       //add checkmate logic here
@@ -863,6 +902,7 @@ export const {
   setMoveTimesOnReconnect,
   setNotationOnReconnnect,
   setMouseDragging,
+  resetAll,
   setLastMove,
   pushTakenPiece,
   setTakenPiecesOnReconnect,

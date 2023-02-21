@@ -26,6 +26,7 @@ import {
   changePieceAtSquare,
   setActivePieceAtSquare,
   capturePiece,
+  resetAll,
 } from "../features/board/boardSlice";
 import {
   endGame,
@@ -74,7 +75,9 @@ const PlayEngine = () => {
   const onBestMoveFound = useCallback(
     (startingX, startingY, endingX, endingY) => {
       dispatch(setActivePieceAtSquare({ x: startingX, y: startingY }));
+      console.log(position);
       if (position[endingX][endingY].piece !== null) {
+        console.log("NORMAL CAPTURE");
         dispatch(
           capturePiece({
             toBeCaptured: position[endingX][endingY].piece,
@@ -82,11 +85,29 @@ const PlayEngine = () => {
           })
         );
       } else {
-        dispatch(changePieceAtSquare({ x: endingX, y: endingY }));
+        if (
+          position[startingX][startingY].piece?.type === 1 &&
+          startingY !== endingY
+        ) {
+          console.log("EP CAPTURE");
+          dispatch(
+            capturePiece({
+              toBeCaptured: {
+                x: startingX,
+                y: endingY,
+                type: 1,
+                white: false,
+              },
+              enPassant: true,
+            })
+          );
+        } else {
+          console.log("NORMAL MOVE");
+          dispatch(changePieceAtSquare({ x: endingX, y: endingY }));
+        }
       }
-      //check for enpassant
     },
-    []
+    [position]
   );
   const {
     bestMove,
@@ -349,6 +370,8 @@ const PlayEngine = () => {
 
     socket.on("gameEnded", (result) => {
       dispatch(setMyTurn(false));
+      dispatch(setLastMove([-1, -1, -1, -1]));
+      dispatch(resetAll());
       dispatch(endGame());
       myTimer.stopTimer();
       oppTimer.stopTimer();

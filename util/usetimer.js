@@ -118,9 +118,7 @@ const useTimer = (timeF) => {
     timerRef.current = null;
     startTimeRef.current = null;
     intermediateTimeRef.current = null;
-
-    setIsPaused(false);
-    setMS(0);
+    onTimeOut.current = null;
   };
 
   return {

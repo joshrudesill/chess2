@@ -8,6 +8,7 @@ import {
 import { useRouter } from "next/router";
 import { useDispatch } from "react-redux";
 import { endGame, setMyTurn } from "../features/app/appSlice";
+import { resetAll, setLastMove } from "../features/board/boardSlice";
 import socket from "../socket";
 const Sidebar = () => {
   const dispatch = useDispatch();
@@ -19,6 +20,8 @@ const Sidebar = () => {
         onClick={() => {
           socket.emit("endGame", "resignation");
           dispatch(setMyTurn(false));
+          dispatch(setLastMove([-1, -1, -1, -1]));
+          dispatch(resetAll());
           dispatch(endGame());
           router.push("/");
         }}

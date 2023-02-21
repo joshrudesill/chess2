@@ -79,7 +79,7 @@ const GameInfo = ({ myTimer, oppTimer }) => {
                       key={i}
                       white={t.white}
                       type={t.type}
-                      height={boxRef.current.clientHeight}
+                      height={boxRef?.current?.clientHeight}
                     />
                   );
                 }
@@ -93,7 +93,7 @@ const GameInfo = ({ myTimer, oppTimer }) => {
                       key={i}
                       white={t.white}
                       type={t.type}
-                      height={boxRef.current.clientHeight}
+                      height={boxRef?.current?.clientHeight}
                     />
                   );
                 }
