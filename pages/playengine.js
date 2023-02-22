@@ -27,6 +27,7 @@ import {
   setActivePieceAtSquare,
   capturePiece,
   resetAll,
+  castleKing,
 } from "../features/board/boardSlice";
 import {
   endGame,
@@ -113,7 +114,7 @@ const PlayEngine = () => {
             blackKingCanCastle &&
             endingX === 0 &&
             (endingY === 2 || endingY === 6) &&
-            startingY === 1
+            startingY === 4
           ) {
             console.log("CASTLE");
             if (endingY === 2) {

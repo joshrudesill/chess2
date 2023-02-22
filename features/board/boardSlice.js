@@ -192,7 +192,8 @@ export const boardSlice = createSlice({
     },
     castleKing: (state, action) => {
       const { white, short } = action.payload;
-      state.myTurn = false;
+      if (!state.engine.active) state.myTurn = false;
+
       let rookLocation, algebraicNotation, kingLocation;
       if (white) {
         kingLocation = [7, 4];
@@ -246,16 +247,48 @@ export const boardSlice = createSlice({
       state.activePiece = null;
 
       state.kingData = initialState.kingData;
-
-      socket.emit(
-        "pieceMove",
-        state.position,
-        state.startTime,
-        state.moveInTime,
-        algebraicNotation,
-        lastMove,
-        null
-      );
+      if (state.engine.active) {
+        const engineNotation = `${white ? "e1" : "e8"}${short ? "g" : "c"}${
+          white ? "1" : "8"
+        }`;
+        if (state.myTurn) {
+          state.myTurn = false;
+          state.engine.engineTurn = true;
+          socket.emit(
+            "pieceMove",
+            state.position,
+            state.startTime,
+            state.moveInTime,
+            algebraicNotation,
+            lastMove,
+            null,
+            engineNotation
+          );
+        } else {
+          state.myTurn = true;
+          state.engine.engineTurn = false;
+          socket.emit(
+            "pieceMoveEngine",
+            state.position,
+            state.startTime,
+            state.moveInTime,
+            algebraicNotation,
+            lastMove,
+            null,
+            engineNotation
+          );
+        }
+      } else {
+        socket.emit(
+          "pieceMove",
+          state.position,
+          state.startTime,
+          state.moveInTime,
+          algebraicNotation,
+          lastMove,
+          null
+        );
+      }
     },
     pushTakenPiece: (state, action) => {
       const { white, type } = action.payload;
@@ -683,7 +716,7 @@ export const boardSlice = createSlice({
           }
         } else {
           socket.emit(
-            "pieceMoveEngine",
+            "pieceMove",
             state.position,
             state.startTime,
             state.moveInTime,

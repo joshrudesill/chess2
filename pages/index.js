@@ -133,7 +133,7 @@ export default function Home() {
                   </div>
                 ) : (
                   <div className='text-white text-sm rounded-md border border-lime-700 border-b-4 py-1 px-2 flex flex-row my-auto select-none'>
-                    Players Online: 5
+                    Players Online: 1
                   </div>
                 )}
               </div>
