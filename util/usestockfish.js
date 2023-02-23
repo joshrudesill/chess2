@@ -72,6 +72,7 @@ const useStockfish = (onBestMove) => {
   useEffect(() => {
     if (engineInitialized) {
       sendCommand("setoption name Ponder value true");
+      sendCommand("setoption name Minimum Thinking Time value 500");
       sendCommand("isready");
     }
   }, [sendCommand, engineInitialized]);

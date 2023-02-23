@@ -10,7 +10,7 @@ import socket from "../socket";
 import Chat from "./chat";
 import Notation from "./notation";
 import TakenPiece from "./takenPiece";
-const GameInfo = ({ myTimer, oppTimer }) => {
+const GameInfo = ({ myTimer, oppTimer, engineMode }) => {
   const dispatch = useDispatch();
   const [drawRequest, setDrawRequest] = useState(false);
   const myTurn = useSelector((state) => state.board.myTurn);
@@ -41,7 +41,16 @@ const GameInfo = ({ myTimer, oppTimer }) => {
     <div className='lg:w-[30vw] w-11/12 md:h-[88vmin] border rounded-md border-neutral-600 divide-neutral-600 shadow-lg flex flex-col divide-y text-white mx-auto md:mx-0 lg:mt-8 lg:mr-2'>
       <div className='grid grid-flow-row grid-rows-6 h-3/5 2xl:h-7/12 divide-neutral-600 divide-y'>
         <div className='flex justify-between p-2 text-black row-span-1 h-min my-auto divide-x divide-neutral-600'>
-          {myTurn ? (
+          {engineMode ? (
+            <>
+              <p className='font-mono md:text-2xl lg:text-3xl border bg-white rounded-lg px-2 align-text-bottom'>
+                &infin;
+              </p>
+              <p className='font-mono md:text-2xl rounded-lg text-gray-500 bg-neutral-400 lg:text-3xl px-2 align-text-bottom'>
+                &infin;
+              </p>
+            </>
+          ) : myTurn ? (
             <>
               <p className='font-mono md:text-2xl lg:text-3xl border bg-white rounded-lg px-2 align-text-bottom'>
                 {myTimer.formattedTime}

@@ -174,16 +174,17 @@ const PlayEngine = () => {
     socket.on("reconnectingToGame", (g) => {
       setInGameRoom(true);
       dispatch(setFirstMove());
+      dispatch(setEngine());
+      dispatch(pushEngineNotation(g.engineNotation));
       dispatch(setChatOnReconnect(g.messages));
       dispatch(setNotationOnReconnnect(g.algebraicNotation));
       dispatch(setMoveTimesOnReconnect(g.moveTimes));
       dispatch(setTakenPiecesOnReconnect(g.capturedPieces));
-      const w = g.players[0].sid === sessionID ? true : false;
+      const w = true;
       const gameType = g.gameType;
-      const opponent = g.players.find((p) => p.sid !== sessionID);
       const opponentData = {
-        username: opponent.un,
-        connected: opponent.connected,
+        username: "Stockfish 11",
+        connected: true,
       };
       dispatch(setWhite(w));
 
@@ -233,6 +234,9 @@ const PlayEngine = () => {
         const newOffset = oppOffset + diffToReconnect;
         oppTimer.resumeTimerWithOffset(newOffset);
         myTimer.updateTimerToOffset(myOffset);
+        if (engineInitialized && engineReady && !engineWorking) {
+          findBestMove(g.engineNotation);
+        }
       }
       dispatch(setInGameData({ gameType, w, startTime, opponentData }));
       //init timer and ..
@@ -308,11 +312,7 @@ const PlayEngine = () => {
         play();
         dispatch(setGameStarted());
         dispatch(setMoveInTime(dayjs().utc().toISOString()));
-        if (captured !== null) {
-          dispatch(
-            pushTakenPiece({ white: captured.white, type: captured.type })
-          );
-        }
+
         if (t) {
           dispatch(pushMoveTime(t.at(-1)));
           let offsetW = 0;
@@ -344,29 +344,10 @@ const PlayEngine = () => {
     socket.on(
       "newPosition",
       (p, t, notation, lastMove, captured, engineNotation) => {
-        play();
         dispatch(setGameStarted());
         dispatch(setMoveInTime(dayjs().utc().toISOString()));
         dispatch(setLastMove(lastMove));
-        if (captured !== null) {
-          dispatch(
-            pushTakenPiece({ white: captured.white, type: captured.type })
-          );
-        }
-        if (t) {
-          dispatch(pushMoveTime(t.at(-1)));
-          let offsetW = 0;
-          let offsetB = 0;
 
-          t.forEach((t, i) => {
-            if (i === 0 || i % 2 === 0) {
-              offsetW += t;
-            } else if (i % 2 !== 0) {
-              offsetB += t;
-            }
-          });
-          dispatch(setTimerOffset({ offsetW, offsetB }));
-        }
         if (p[lastMove[2]][lastMove[3]].piece?.type === 1) {
           const xDiff = lastMove[0] - lastMove[2];
           if (Math.abs(xDiff) === 2) {
@@ -421,36 +402,13 @@ const PlayEngine = () => {
     };
   });
 
-  useEffect(() => {
-    if (myTurn && gameStarted) {
-      var myOffset = 0;
-      if (white) {
-        myOffset = timerOffset.white;
-      } else {
-        myOffset = timerOffset.black;
-      }
-      myTimer.resumeTimerWithOffset(myOffset);
-      oppTimer.stopTimer();
-    } else if (!myTurn && gameStarted) {
-      //start opp timer with delay
-      var oppOffset = 0;
-      if (white) {
-        oppOffset = timerOffset.black;
-      } else {
-        oppOffset = timerOffset.white;
-      }
-      oppTimer.resumeTimerWithOffset(oppOffset);
-      //resume timer from where its at, possibly send time stamps
-      myTimer.stopTimer();
-    }
-  }, [myTurn]);
   return (
     <div className='flex flex-row gap-5 overflow-x-hidden'>
       <Sidebar />
 
       <div className='flex w-[85vmin] md:w-max mx-auto md:mx-0 flex-col lg:flex-row gap-3 md:ml-48 overflow-x-hidden'>
         <Board play={play} />
-        <GameInfo myTimer={myTimer} oppTimer={oppTimer} />
+        <GameInfo myTimer={myTimer} oppTimer={oppTimer} engineMode={true} />
       </div>
     </div>
   );
