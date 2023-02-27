@@ -100,10 +100,16 @@ const Rook = ({
               pieceHit = true;
             } else if (p.white !== piece.white) {
               if (p.type === 0) {
+                var direction;
+                if (i === 0) direction = 1;
+                if (i === 1) direction = 3;
+                if (i === 2) direction = 5;
+                if (i === 3) direction = 7;
                 dispatch(
                   checkKing({
                     piece: piece,
                     squares: [...checkedSquares, { x: piece.x, y: piece.y }],
+                    direction: direction,
                   })
                 );
                 pieceHit = true;
@@ -148,7 +154,6 @@ const Rook = ({
     }
     //hacky
     if (piece.hasMoved) {
-      console.log("rook mvoed");
       if (piece.id === 18) {
         dispatch(
           setKingCanCastle({

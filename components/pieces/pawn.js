@@ -109,6 +109,7 @@ const Pawn = ({
               checkKing({
                 piece: piece,
                 squares: [{ x: piece.x, y: piece.y }],
+                direction: -1,
               })
             );
           } else {

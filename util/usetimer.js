@@ -51,7 +51,9 @@ const useTimer = (timeF) => {
   };
   const timeOut = () => {
     timerRef.current = null;
-    onTimeOut.current();
+    if (onTimeOut.current) {
+      onTimeOut.current();
+    }
     isRunning.current = false;
     setMS(totalTimeMS.current);
     setFT("0:00");

@@ -51,7 +51,11 @@ const Knight = ({
             board[m.x][m.y].piece.white !== piece.white
           ) {
             dispatch(
-              checkKing({ piece: piece, squares: [{ x: piece.x, y: piece.y }] })
+              checkKing({
+                piece: piece,
+                squares: [{ x: piece.x, y: piece.y }],
+                direction: -1,
+              })
             );
           } else if (
             //for capturing opp piece

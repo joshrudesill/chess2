@@ -852,20 +852,148 @@ export const boardSlice = createSlice({
     },
     checkKing: (state, action) => {
       //change last notation to have + on the end
+      const { direction } = action.payload;
+      var x, y;
+      if (direction === 0) {
+        x = -1;
+        y = -1;
+      }
+
+      if (direction === 1) {
+        x = -1;
+        y = 0;
+      }
+
+      if (direction === 2) {
+        x = -1;
+        y = 1;
+      }
+
+      if (direction === 3) {
+        x = 0;
+        y = 1;
+      }
+
+      if (direction === 4) {
+        x = 1;
+        y = 1;
+      }
+
+      if (direction === 5) {
+        x = 1;
+        y = 0;
+      }
+
+      if (direction === 6) {
+        x = 1;
+        y = -1;
+      }
+
+      if (direction === 7) {
+        x = 0;
+        y = -1;
+      }
       state.kingData.inCheck = true;
       state.kingData.checkingPiece = action.payload.piece;
       state.kingData.squaresToBeBlocked = action.payload.squares;
       state.kingData.white = !action.payload.piece.white;
       if (action.payload.piece.white) {
         state.blackKingCanCastle = [false, false];
+        const xRayMove = {
+          x:
+            state.position[state.kingLocations[1].x][state.kingLocations[1].y]
+              .piece.x + x,
+          y:
+            state.position[state.kingLocations[1].x][state.kingLocations[1].y]
+              .piece.y + y,
+        };
+        const oldMoves =
+          state.position[state.kingLocations[1].x][state.kingLocations[1].y]
+            .piece.legalMoves;
+        const newMoves = oldMoves.filter((move) => {
+          if (move.x === 0 && (move.y === 2 || move.y === 6)) {
+            return false;
+          }
+          if (move.x === xRayMove.x && move.y === xRayMove.y) {
+            return false;
+          }
+          return true;
+        });
+        state.position[state.kingLocations[1].x][
+          state.kingLocations[1].y
+        ].piece.legalMoves = newMoves;
       } else {
         state.whiteKingCanCastle = [false, false];
+        const xRayMove = {
+          x:
+            state.position[state.kingLocations[0].x][state.kingLocations[0].y]
+              .piece.x + x,
+          y:
+            state.position[state.kingLocations[0].x][state.kingLocations[0].y]
+              .piece.y + y,
+        };
+        const oldMoves =
+          state.position[state.kingLocations[0].x][state.kingLocations[0].y]
+            .piece.legalMoves;
+        const newMoves = oldMoves.filter((move) => {
+          if (move.x === 7 && (move.y === 2 || move.y === 6)) {
+            return false;
+          }
+          if (move.x === xRayMove.x && move.y === xRayMove.y) {
+            return false;
+          }
+          return true;
+        });
+        state.position[state.kingLocations[0].x][
+          state.kingLocations[0].y
+        ].piece.legalMoves = newMoves;
       }
     },
     resetAll: (state) => initialState,
     recheckLegalMoves: (state) => {
       const foundOneLegalMove = false;
       //add checkmate logic here
+      const white = state.kingData.white;
+      console.log(
+        white,
+        state.whiteKingCanCastle[0],
+        state.whiteKingCanCastle[1]
+      );
+      if (
+        white &&
+        (state.whiteKingCanCastle[0] || state.whiteKingCanCastle[1])
+      ) {
+        state.whiteKingCanCastle = [false, false];
+        const oldMoves =
+          state.position[state.kingLocations[0].x][state.kingLocations[0].y]
+            .piece.legalMoves;
+        const newMoves = oldMoves.filter((move) => {
+          if (move.x === 7 && (move.y === 2 || move.y === 6)) {
+            return false;
+          }
+          return true;
+        });
+        state.position[state.kingLocations[0].x][
+          state.kingLocations[0].y
+        ].piece.legalMoves = newMoves;
+      } else if (
+        !white &&
+        (state.blackKingCanCastle[0] || state.blackKingCanCastle[1])
+      ) {
+        state.blackKingCanCastle = [false, false];
+        const oldMoves =
+          state.position[state.kingLocations[1].x][state.kingLocations[1].y]
+            .piece.legalMoves;
+        const newMoves = oldMoves.filter((move) => {
+          if (move.x === 0 && (move.y === 2 || move.y === 6)) {
+            return false;
+          }
+          return true;
+        });
+        state.position[state.kingLocations[1].x][
+          state.kingLocations[1].y
+        ].piece.legalMoves = newMoves;
+      }
       state.position.forEach((r) => {
         r.forEach((s) => {
           if (

@@ -97,10 +97,16 @@ const Queen = ({
               pieceHit = true;
             } else if (p.white !== piece.white) {
               if (p.type === 0) {
+                var direction;
+                if (i === 0) direction = 0;
+                if (i === 1) direction = 2;
+                if (i === 2) direction = 4;
+                if (i === 3) direction = 6;
                 dispatch(
                   checkKing({
                     piece: piece,
                     squares: [...checkedSquares, { x: piece.x, y: piece.y }],
+                    direction: direction,
                   })
                 );
                 pieceHit = true;
@@ -185,13 +191,20 @@ const Queen = ({
               pieceHit = true;
             } else if (p.white !== piece.white) {
               if (p.type === 0) {
+                var direction;
+                if (i === 0) direction = 1;
+                if (i === 1) direction = 3;
+                if (i === 2) direction = 5;
+                if (i === 3) direction = 7;
                 dispatch(
                   checkKing({
                     piece: piece,
                     squares: [...checkedSquares, { x: piece.x, y: piece.y }],
+                    direction: direction,
                   })
                 );
                 pieceHit = true;
+                //remove xray moves
               } else {
                 legalMoves.push({ x: coords.x, y: coords.y });
                 pieceHit = true;
