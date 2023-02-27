@@ -177,7 +177,7 @@ export default function Home() {
                   coming soon
                 </h2>
               </div>
-              <div className='relative rounded-3xl basis-1/2 w-72 h-48 '>
+              <div className='relative rounded-3xl basis-1/2 h-48 md:h-56 w-56 md:w-80'>
                 <Image
                   src={logo}
                   alt='chess2logo'
