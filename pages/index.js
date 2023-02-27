@@ -29,6 +29,13 @@ export default function Home() {
       setAwaitingInQueue(true);
     }
   };
+  const leaveQueue = () => {
+    if (!awaitingQueue) {
+      socket.emit("leaveQueue");
+      setAwaitingInQueue(false);
+      setInQueue(false);
+    }
+  };
   const joinEngineQueue = () => {
     if (!awaitingQueue) {
       socket.emit("joinEngineQueue");
@@ -87,57 +94,75 @@ export default function Home() {
     <>
       <div className='flex flex-row w-screen h-screen'>
         <div className='flex justify-center h-full grow'>
-          <div className='flex rounded-md flex-col gap-5 my-auto h-min w-min p-3'>
-            <div className='flex flex-row items-center gap-3 border-b border-neutral-600 pb-1'>
-              <div className='flex flex-col p-1'>
-                <div className='flex flex-row gap-1'>
-                  <span className='text-2xl font-semibold tracking-wider rounded-md text-white align-text-bottom select-none'>
-                    Chess
-                  </span>
-                  <div className='flex flex-col justify-center px-1 rounded-lg text-xs bg-orange-500 text-white select-none'>
-                    <p>v1.0</p>
+          <div className='flex rounded-md flex-col gap-4 my-auto h-min w-min p-3'>
+            <div className='flex flex-col gap-1'>
+              <div className='flex flex-row items-center gap-3'>
+                <div className='flex flex-col p-1'>
+                  <div className='flex flex-row gap-1'>
+                    <span className='text-2xl font-semibold tracking-wider rounded-md text-white align-text-bottom select-none'>
+                      Chess
+                    </span>
+                    <div className='flex flex-col justify-center px-1 rounded-lg text-xs bg-orange-500 text-white select-none'>
+                      <p>v1.0</p>
+                    </div>
+                  </div>
+                  <div className='flex flex-row text-neutral-200 text-xs select-none'>
+                    classic edition
                   </div>
                 </div>
-                <div className='flex flex-row text-neutral-200 text-xs select-none'>
-                  classic edition
+
+                <div className='grow flex justify-end'>
+                  {inQueue ? (
+                    <div className='text-white rounded-md border border-lime-700 p-1 flex flex-row text-lg pl-2 select-none'>
+                      in queue
+                      <MagnifyingGlassCircleIcon className='h-6 w-6 text-lime-600 my-auto ml-1 animate-pulse' />
+                    </div>
+                  ) : (
+                    <div className='text-white text-sm rounded-md border border-lime-700 border-b-4 py-1 px-2 flex flex-row my-auto select-none'>
+                      Players Online: 1
+                    </div>
+                  )}
                 </div>
               </div>
-              <div>
+              <div className='flex flex-row gap-2 border-b border-neutral-600 pb-2'>
                 {inQueue ? (
-                  <button
-                    className='rounded-md bg-red-600 py-2 px-4 text-lg font-bold text-white border-b-4 border-red-800 tracking-wider hover:bg-red-500 active:translate-y-1 active:border-0'
-                    onClick={() => joinQueue()}
-                  >
-                    Leave Queue
-                  </button>
+                  <div className='flex-start'>
+                    <button
+                      className=' rounded-md bg-red-600 py-2 px-4 text-lg font-bold text-white border-b-4 border-red-800 tracking-wider hover:bg-red-500 active:translate-y-1 active:border-0'
+                      onClick={() => leaveQueue()}
+                    >
+                      Leave Queue
+                    </button>
+                  </div>
                 ) : (
                   <button
-                    className='rounded-md bg-lime-600 py-2 px-4 text-lg font-bold text-white border-b-4 border-lime-700 tracking-wider hover:bg-lime-500 active:translate-y-1 active:border-0'
+                    className='w-[50%] rounded-md bg-lime-600 py-2 px-4 text-lg font-bold text-white border-b-4 border-lime-700 tracking-wider hover:bg-lime-500 active:translate-y-1 active:border-0'
                     onClick={() => joinQueue()}
                   >
-                    {awaitingQueue ? "Joining.." : "Play"}
+                    {awaitingQueue ? "Joining.." : "Play vs Human"}
                   </button>
                 )}
-                <button
-                  className='rounded-md bg-lime-600 py-2 px-4 text-lg font-bold text-white border-b-4 ml-2 border-lime-700 tracking-wider hover:bg-lime-500 active:translate-y-1 active:border-0'
-                  onClick={() => joinEngineQueue()}
-                >
-                  Engine
-                </button>
-              </div>
-              <div className='grow flex justify-end'>
                 {inQueue ? (
-                  <div className='text-white rounded-md border border-lime-700 p-1 flex flex-row text-lg pl-2 select-none'>
-                    in queue
-                    <MagnifyingGlassCircleIcon className='h-6 w-6 text-lime-600 my-auto ml-1 animate-pulse' />
+                  <div className='text-xs basis-1/2 text-center border-2 rounded-md flex px-2 items-center font-bold border-neutral-400'>
+                    If no one is online, leave the queue and click play engine
                   </div>
                 ) : (
-                  <div className='text-white text-sm rounded-md border border-lime-700 border-b-4 py-1 px-2 flex flex-row my-auto select-none'>
-                    Players Online: 1
-                  </div>
+                  <></>
+                )}
+                {!awaitingQueue && !inQueue ? (
+                  <button
+                    className='w-[50%] rounded-md bg-orange-600 py-1 px-4 text-lg font-bold text-white border-b-4 ml-2 border-orange-800 tracking-wider hover:bg-orange-500 active:translate-y-1 active:border-0 flex flex-col justify-center items-center'
+                    onClick={() => joinEngineQueue()}
+                  >
+                    <p>Play vs Engine</p>
+                    <p className='text-xs text-black'>Recommended</p>
+                  </button>
+                ) : (
+                  <></>
                 )}
               </div>
             </div>
+
             <div className='flex flex-row gap-3 rounded-3xl border-neutral-800'>
               <div className='flex flex-col justify-center s rounded-3xl basis-1/2 flex-wrap py-5 px-5 shadow-lg bg-neutral-500 border-b-8 border-neutral-800'>
                 <div className='flex flex-row gap-1 mx-auto '>

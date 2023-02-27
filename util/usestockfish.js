@@ -32,7 +32,7 @@ const useStockfish = (onBestMove) => {
         const startingX = 8 - Number(from[1]);
         const endingY = files.indexOf(to[0]);
         const endingX = 8 - Number(to[1]);
-        onBestMove(startingX, startingY, endingX, endingY);
+        onBestMove(startingX, startingY, endingX, endingY, promotion);
       }
     },
     [onBestMove]

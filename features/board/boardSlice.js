@@ -349,10 +349,11 @@ export const boardSlice = createSlice({
     },
     transformPieceOnPromotion: (state, action) => {
       const { x, y, pieceType } = action.payload;
-      state.myTurn = false;
+      if (!state.engine.active) state.myTurn = false;
+
       //change type 6 at square to new type, add notation, movetimes, reset stuff, then send
       state.position[x][y].piece.type = pieceType;
-      const designations = ["K", "", "R", "B", "N", "Q"];
+      const designations = ["K", , "R", "B", "N", "Q"];
       const pieceDesignation = designations[pieceType];
       const notation = `${state.position[x][y].an}${pieceDesignation}`;
       state.notation.push(notation);
@@ -361,15 +362,60 @@ export const boardSlice = createSlice({
 
       state.moveTimes.push(diff);
       state.promotionOpen = false;
-      socket.emit(
-        "pieceMove",
-        state.position,
-        state.startTime,
-        state.moveInTime,
-        notation,
-        state.lastMove,
-        state.promotionCapture
-      );
+      if (state.engine.active) {
+        const files = ["a", "b", "c", "d", "e", "f", "g", "h"];
+        const engineNotation = `${files[lastMove[1]]}${8 - lastMove[0]}${
+          files[lastMove[3]]
+        }${8 - lastMove[2]}${
+          pieceType === 2
+            ? "r"
+            : pieceType === 3
+            ? "b"
+            : pieceType === 4
+            ? "n"
+            : pieceType === 5
+            ? "q"
+            : "q"
+        }`;
+        if (state.myTurn) {
+          state.myTurn = false;
+          state.engine.engineTurn = true;
+          socket.emit(
+            "pieceMove",
+            state.position,
+            state.startTime,
+            state.moveInTime,
+            notation,
+            state.lastMove,
+            state.promotionCapture,
+            engineNotation
+          );
+        } else {
+          state.myTurn = true;
+          state.engine.engineTurn = false;
+          socket.emit(
+            "pieceMoveEngine",
+            state.position,
+            state.startTime,
+            state.moveInTime,
+            notation,
+            state.lastMove,
+            state.promotionCapture,
+            engineNotation
+          );
+        }
+      } else {
+        socket.emit(
+          "pieceMove",
+          state.position,
+          state.startTime,
+          state.moveInTime,
+          notation,
+          state.lastMove,
+          state.promotionCapture
+        );
+      }
+
       state.promotionCapture = null;
     },
     setEnPassant: (state, action) => {

@@ -42,16 +42,28 @@ const Bishop = ({
 
       if (piece.pinned) {
         if (diagonals.includes(piece.pinDirection)) {
-          if (i === 0 && piece.pinDirection === 0) {
+          if (
+            i === 0 &&
+            (piece.pinDirection === 0 || piece.pinDirection === 4)
+          ) {
             x = -1;
             y = -1;
-          } else if (i === 1 && piece.pinDirection === 2) {
+          } else if (
+            i === 1 &&
+            (piece.pinDirection === 2 || piece.pinDirection === 6)
+          ) {
             x = -1;
             y = 1;
-          } else if (i === 2 && piece.pinDirection === 4) {
+          } else if (
+            i === 2 &&
+            (piece.pinDirection === 0 || piece.pinDirection === 4)
+          ) {
             x = 1;
             y = 1;
-          } else if (i === 3 && piece.pinDirection === 6) {
+          } else if (
+            i === 3 &&
+            (piece.pinDirection === 2 || piece.pinDirection === 6)
+          ) {
             x = 1;
             y = -1;
           } else {

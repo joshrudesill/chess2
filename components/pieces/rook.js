@@ -27,7 +27,7 @@ const Rook = ({
   const calculateLegalMoves = () => {
     var legalMoves = [];
 
-    /*   0
+    /*       0
            3 R 1
              2
         */
@@ -47,14 +47,26 @@ const Rook = ({
 
       if (piece.pinned) {
         if (files.includes(piece.pinDirection)) {
-          if (i === 0 && piece.pinDirection === 1) {
+          if (
+            i === 0 &&
+            (piece.pinDirection === 1 || piece.pinDirection === 5)
+          ) {
             x = -1;
-          } else if (i === 1 && piece.pinDirection === 3) {
+          } else if (
+            i === 1 &&
+            (piece.pinDirection === 3 || piece.pinDirection === 7)
+          ) {
+            y = 1;
+          } else if (
+            i === 2 &&
+            (piece.pinDirection === 1 || piece.pinDirection === 5)
+          ) {
             x = 1;
-          } else if (i === 2 && piece.pinDirection === 5) {
-            x = 1;
-          } else if (i === 3 && piece.pinDirection === 7) {
-            x = -1;
+          } else if (
+            i === 3 &&
+            (piece.pinDirection === 3 || piece.pinDirection === 7)
+          ) {
+            y = -1;
           } else {
             x = -100;
             y = -100;

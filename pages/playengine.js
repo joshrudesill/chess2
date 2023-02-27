@@ -28,6 +28,7 @@ import {
   capturePiece,
   resetAll,
   castleKing,
+  transformPieceOnPromotion,
 } from "../features/board/boardSlice";
 import {
   endGame,
@@ -80,10 +81,20 @@ const PlayEngine = () => {
   const [play] = useSound("/move.mp3");
 
   const onBestMoveFound = useCallback(
-    (startingX, startingY, endingX, endingY) => {
+    (startingX, startingY, endingX, endingY, promotion) => {
       dispatch(setActivePieceAtSquare({ x: startingX, y: startingY }));
-      console.log(position);
-      if (position[endingX][endingY].piece !== null) {
+      console.log(promotion);
+      if (promotion !== undefined) {
+        const designations = [, , "r", "b", "n", "q"];
+        const pType = designations.indexOf(promotion);
+        dispatch(
+          transformPieceOnPromotion({
+            x: endingX,
+            y: endingY,
+            pieceType: pType,
+          })
+        );
+      } else if (position[endingX][endingY].piece !== null) {
         console.log("NORMAL CAPTURE");
         dispatch(
           capturePiece({
@@ -266,7 +277,7 @@ const PlayEngine = () => {
       const opponentData = {
         //
         username: "Stockfish 11",
-        connected: "true",
+        connected: true,
       };
       dispatch(setWhite(w));
       dispatch(setMyTurn(w));
@@ -318,13 +329,6 @@ const PlayEngine = () => {
           let offsetW = 0;
           let offsetB = 0;
 
-          t.forEach((t, i) => {
-            if (i === 0 || i % 2 === 0) {
-              offsetW += t;
-            } else if (i % 2 !== 0) {
-              offsetB += t;
-            }
-          });
           dispatch(setTimerOffset({ offsetW, offsetB }));
           dispatch(setMyTurn(true));
         }
