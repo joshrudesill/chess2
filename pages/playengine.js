@@ -29,6 +29,7 @@ import {
   resetAll,
   castleKing,
   transformPieceOnPromotion,
+  setMouseDragging,
 } from "../features/board/boardSlice";
 import {
   endGame,
@@ -223,8 +224,8 @@ const PlayEngine = () => {
           whiteTurn = true;
         }
       }
-      myTimer.initTimer(startTime, 10, () => socket.emit("endGame", "timeout"));
-      oppTimer.initTimer(startTime, 10, () => {});
+      myTimer.initTimer(startTime, 1000, () => {});
+      oppTimer.initTimer(startTime, 1000, () => {});
       const lastMoveTime = dayjs(startTime)
         .utc()
         .add(offsetB + offsetW);
@@ -310,7 +311,6 @@ const PlayEngine = () => {
       dispatch(setMyTurn(false));
       dispatch(setTimerOffset({ offsetW, offsetB }));
       //dispatch(setPosition(position));
-      dispatch(pushNewNotation(notation));
       dispatch(pushEngineNotation(engineNotation));
       //dispatch(resetPieceState());
       if (engineInitialized && engineReady && !engineWorking) {
@@ -341,7 +341,6 @@ const PlayEngine = () => {
 
         dispatch(setPosition(p));
 
-        dispatch(pushNewNotation(notation));
         dispatch(resetPieceState());
       }
     );
@@ -360,7 +359,6 @@ const PlayEngine = () => {
         }
         //dispatch(setPosition(p));
         dispatch(pushEngineNotation(engineNotation));
-        dispatch(pushNewNotation(notation));
         findBestMove(engineNotation);
         //dispatch(resetPieceState());
       }
@@ -407,7 +405,10 @@ const PlayEngine = () => {
   });
 
   return (
-    <div className='flex flex-row gap-5 overflow-x-hidden'>
+    <div
+      className='flex flex-row gap-5 overflow-x-hidden'
+      onMouseUp={() => dispatch(setMouseDragging(false))}
+    >
       <Sidebar />
 
       <div className='flex w-[85vmin] md:w-max mx-auto md:mx-0 flex-col lg:flex-row gap-3 md:ml-48 overflow-x-hidden'>

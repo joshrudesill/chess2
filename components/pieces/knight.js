@@ -124,8 +124,8 @@ const Knight = ({
   const boxRef = useRef(null);
   return (
     <div
-      className={`select-none cursor-grabbing ${
-        activePiece ? "z-auto pointer-events-none" : "z-50"
+      className={`select-none cursor-grabbing pointer-events-auto ${
+        activePiece ? "z-auto " : "z-50"
       } w-[80%] h-[80%] mx-auto my-auto"`}
       ref={boxRef}
       onMouseDown={onMouseDown}
@@ -137,7 +137,9 @@ const Knight = ({
             ? {
                 position: "fixed",
                 left: "0",
+                background: "red",
                 top: "0",
+                pointerEvents: "none",
                 width: `${boxRef.current?.clientWidth}`,
                 height: `${boxRef.current?.clientHeight}`,
                 transform: `translate(${

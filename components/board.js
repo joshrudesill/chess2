@@ -1,4 +1,4 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import BoardSquare from "./boardSquare";
 import { useState } from "react";
 const Board = ({ play }) => {
@@ -31,12 +31,13 @@ const Board = ({ play }) => {
     setX(e.pageX);
     setY(e.pageY);
   };
+  const dispatch = useDispatch();
   //  <DraggablePiece x={pieceX} y={pieceY} /> onMouseLeave={() => dispatch(resetActivePiece())}
   return (
     <>
       <div
-        className={`flex flex-col md:flex-row justify-center gap-3 mt-8 `}
-        onMouseMove={mouseMove}
+        className={`flex flex-col md:flex-row justify-center gap-3 mt-8 z-auto `}
+        onMouseMoveCapture={mouseMove}
       >
         <div className='md:shrink w-[100%] md:w-[88vmin] overflow-x-hidden'>
           <div className='grid grid-cols-8 grid-rows-8'>

@@ -14,6 +14,8 @@ const GameInfo = ({ myTimer, oppTimer, engineMode }) => {
   const dispatch = useDispatch();
   const [drawRequest, setDrawRequest] = useState(false);
   const myTurn = useSelector((state) => state.board.myTurn);
+  const activePiece = useSelector((state) => state.board.activePiece);
+  const pdrag = useSelector((state) => state.board.mouseDragging);
   const startTime = useSelector((state) => state.board.startTime);
   const gameStarted = useSelector((state) => state.app.inGameData.gameStarted);
   const session = useSelector((state) => state.app.sessionDetails);
@@ -114,6 +116,14 @@ const GameInfo = ({ myTimer, oppTimer, engineMode }) => {
           {debugMode ? (
             <>
               <div className='flex bg-neutral-700 w-full p-1 justify-between'>
+                <div>ap</div>
+                <div>{activePiece ? "True" : "False"}</div>
+              </div>
+              <div className='flex bg-neutral-700 w-full p-1 justify-between'>
+                <div>pd</div>
+                <div>{pdrag ? "True" : "False"}</div>
+              </div>
+              <div className='flex bg-neutral-700 w-full p-1 justify-between'>
                 <div>myTurn</div>
                 <div>{myTurn ? "True" : "False"}</div>
               </div>
@@ -142,10 +152,6 @@ const GameInfo = ({ myTimer, oppTimer, engineMode }) => {
               <div className='flex bg-neutral-700 w-full p-1 justify-between'>
                 <div>Opponent Connected</div>
                 <div>{oData?.connected ? "True" : "False"}</div>
-              </div>
-              <div className='flex bg-neutral-700 w-full p-1 justify-between'>
-                <div>King</div>
-                <div>{king ? "True" : "False"}</div>
               </div>
             </>
           ) : (

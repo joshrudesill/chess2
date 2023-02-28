@@ -22,6 +22,7 @@ import {
   setTakenPiecesOnReconnect,
   setEnPassant,
   resetAll,
+  setMouseDragging,
 } from "../features/board/boardSlice";
 import {
   endGame,
@@ -330,7 +331,10 @@ const Play = () => {
     }
   }, [myTurn]);
   return (
-    <div className='flex flex-row gap-5 overflow-x-hidden'>
+    <div
+      className='flex flex-row gap-5 overflow-x-hidden'
+      onMouseUp={() => dispatch(setMouseDragging(false))}
+    >
       <Sidebar />
       <div className='flex w-[85vmin] md:w-max mx-auto md:mx-0 flex-col lg:flex-row gap-3 md:ml-48 overflow-x-hidden'>
         <Board play={play} />

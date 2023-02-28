@@ -106,7 +106,7 @@ export default function Home() {
                       <p>v1.0</p>
                     </div>
                   </div>
-                  <div className='flex flex-row text-neutral-200 text-xs select-none'>
+                  <div className='flex flex-row text-xs select-none'>
                     classic edition
                   </div>
                 </div>
@@ -216,11 +216,9 @@ export default function Home() {
                 />
                 <p className='my-auto'>Source</p>
               </a>
-              <a
-                className='rounded-md bg-teal-600 py-2 px-2 text-white font-semibold tracking-wide flex flex-row text-sm hover:bg-teal-700'
-                href='#'
-                rel='noreferrer'
-                target='_blank'
+              <div
+                className='rounded-md bg-teal-600 py-2 px-2 text-white font-semibold tracking-wide flex flex-row text-sm hover:bg-teal-700 cursor-pointer'
+                onClick={() => router.push("/contact")}
               >
                 <SmileyIcon
                   verticalAlign='middle'
@@ -228,7 +226,7 @@ export default function Home() {
                   className='my-auto mr-2'
                 />
                 <p className='my-auto'>Contact Me</p>
-              </a>
+              </div>
               <a
                 className='rounded-md bg-teal-600 py-2 px-2 text-white font-semibold tracking-wide flex flex-row text-sm hover:bg-teal-700'
                 href='https://blog.jrudesill.dev'

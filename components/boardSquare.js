@@ -27,6 +27,7 @@ const BoardSquare = ({
   activePiece,
   lastMove,
   mouseDragging,
+  white,
   myTurn,
   play,
   whiteKingCanCastle,
@@ -38,7 +39,11 @@ const BoardSquare = ({
 
   const onMouseDown = () => {
     if (myTurn && !promotionOpen) {
-      if (activePiece === null && squareData.piece !== null) {
+      if (
+        activePiece === null &&
+        squareData.piece !== null &&
+        squareData.piece.white === white
+      ) {
         dispatch(setMouseDragging(true));
         dispatch(setActivePiece(squareData.piece));
       } else if (activePiece && squareData.piece === null) {
@@ -123,7 +128,8 @@ const BoardSquare = ({
         squareData.piece &&
         activePiece.white === squareData.piece.white
       ) {
-        dispatch(resetActivePiece());
+        dispatch(setActivePiece(squareData.piece));
+        dispatch(setMouseDragging(true));
       } else if (
         activePiece &&
         squareData.piece &&
@@ -157,9 +163,9 @@ const BoardSquare = ({
         activePiece !== null &&
         squareData.piece !== null &&
         activePiece.x === squareData.piece.x &&
-        activePiece.y === squareData.piece.y
+        activePiece.y === squareData.piece.y &&
+        squareData.piece.white === white
       ) {
-        dispatch(resetActivePiece());
         dispatch(setActivePiece(squareData.piece));
       } else {
         if (activePiece !== null && squareData.piece === null) {

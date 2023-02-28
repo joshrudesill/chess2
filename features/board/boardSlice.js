@@ -169,25 +169,18 @@ export const boardSlice = createSlice({
           state.kingLocations[white ? 0 : 1].y
         ].piece.hasMoved === false
       ) {
-        const indexToRemove = state.position[
-          state.kingLocations[white ? 0 : 1].x
-        ][state.kingLocations[white ? 0 : 1].y].piece.legalMoves.findIndex(
-          (e) => {
-            if (e.x === white ? 7 : 0 && e.y === short ? 2 : 6) {
-              return e;
-            }
+        const newMoves = state.position[state.kingLocations[white ? 0 : 1].x][
+          state.kingLocations[white ? 0 : 1].y
+        ].piece.legalMoves.filter((e) => {
+          if (e.x === white ? 7 : 0 && e.y === short ? 2 : 6) {
+            return true;
           }
-        );
-        if (indexToRemove !== -1) {
-          const newMoves =
-            state.position[state.kingLocations[white ? 0 : 1].x][
-              state.kingLocations[white ? 0 : 1].y
-            ].piece.legalMoves;
-          newMoves.splice(indexToRemove, 1);
-          state.position[state.kingLocations[white ? 0 : 1].x][
-            state.kingLocations[white ? 0 : 1].y
-          ].piece.legalMoves = newMoves;
-        }
+          return false;
+        });
+
+        state.position[state.kingLocations[white ? 0 : 1].x][
+          state.kingLocations[white ? 0 : 1].y
+        ].piece.legalMoves = newMoves;
       }
     },
     castleKing: (state, action) => {
@@ -957,7 +950,11 @@ export const boardSlice = createSlice({
           state.position[state.kingLocations[1].x][state.kingLocations[1].y]
             .piece.legalMoves;
         const newMoves = oldMoves.filter((move) => {
-          if (move.x === 0 && (move.y === 2 || move.y === 6)) {
+          if (
+            (state.blackKingCanCastle[0] || state.blackKingCanCastle[1]) &&
+            move.x === 0 &&
+            (move.y === 2 || move.y === 6)
+          ) {
             return false;
           }
           if (move.x === xRayMove.x && move.y === xRayMove.y) {
@@ -968,8 +965,8 @@ export const boardSlice = createSlice({
         state.position[state.kingLocations[1].x][
           state.kingLocations[1].y
         ].piece.legalMoves = newMoves;
+        state.blackKingCanCastle = [false, false];
       } else {
-        state.whiteKingCanCastle = [false, false];
         const xRayMove = {
           x:
             state.position[state.kingLocations[0].x][state.kingLocations[0].y]
@@ -982,7 +979,11 @@ export const boardSlice = createSlice({
           state.position[state.kingLocations[0].x][state.kingLocations[0].y]
             .piece.legalMoves;
         const newMoves = oldMoves.filter((move) => {
-          if (move.x === 7 && (move.y === 2 || move.y === 6)) {
+          if (
+            (state.whiteKingCanCastle[0] || state.whiteKingCanCastle[1]) &&
+            move.x === 7 &&
+            (move.y === 2 || move.y === 6)
+          ) {
             return false;
           }
           if (move.x === xRayMove.x && move.y === xRayMove.y) {
@@ -994,6 +995,7 @@ export const boardSlice = createSlice({
           state.kingLocations[0].y
         ].piece.legalMoves = newMoves;
       }
+      state.whiteKingCanCastle = [false, false];
     },
     resetAll: (state) => initialState,
     recheckLegalMoves: (state) => {
