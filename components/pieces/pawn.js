@@ -199,7 +199,7 @@ const Pawn = ({
             ? {
                 position: "fixed",
                 left: "0",
-                background: "red",
+
                 top: "0",
                 pointerEvents: "none",
                 width: `${boxRef.current?.clientWidth}`,
@@ -216,22 +216,22 @@ const Pawn = ({
         <svg
           width={`${boxRef.current?.clientWidth}`}
           height={`${boxRef.current?.clientHeight}`}
-          viewBox='0 0 114 149'
-          fill='none'
-          xmlns='http://www.w3.org/2000/svg'
+          viewBox="0 0 114 149"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <g clip-path='url(#clip0_101_106)'>
+          <g clip-path="url(#clip0_101_106)">
             <path
-              d='M57.05 3C46.663 3 38.25 11.413 38.25 21.8C38.25 25.983 39.613 29.837 41.916 32.986C32.751 38.25 26.5 48.073 26.5 59.4C26.5 68.941 30.918 77.448 37.827 83.041C23.727 88.023 3 109.126 3 146.35H111.1C111.1 109.126 90.373 88.023 76.273 83.041C83.182 77.448 87.6 68.941 87.6 59.4C87.6 48.073 81.349 38.25 72.184 32.986C74.487 29.837 75.85 25.983 75.85 21.8C75.85 11.413 67.437 3 57.05 3Z'
+              d="M57.05 3C46.663 3 38.25 11.413 38.25 21.8C38.25 25.983 39.613 29.837 41.916 32.986C32.751 38.25 26.5 48.073 26.5 59.4C26.5 68.941 30.918 77.448 37.827 83.041C23.727 88.023 3 109.126 3 146.35H111.1C111.1 109.126 90.373 88.023 76.273 83.041C83.182 77.448 87.6 68.941 87.6 59.4C87.6 48.073 81.349 38.25 72.184 32.986C74.487 29.837 75.85 25.983 75.85 21.8C75.85 11.413 67.437 3 57.05 3Z"
               fill={`${piece.white ? "white" : "black"}`}
-              stroke='black'
-              stroke-width='5'
-              stroke-linecap='round'
+              stroke="black"
+              stroke-width="5"
+              stroke-linecap="round"
             />
           </g>
           <defs>
-            <clipPath id='clip0_101_106'>
-              <rect width='114' height='149' fill='white' />
+            <clipPath id="clip0_101_106">
+              <rect width="114" height="149" fill="white" />
             </clipPath>
           </defs>
         </svg>
